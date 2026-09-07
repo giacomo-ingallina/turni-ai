@@ -473,13 +473,51 @@ def _togli_custom_props(percorso):
             r'<Override[^>]*docProps/custom\.xml[^>]*/>', '',
             dati["[Content_Types].xml"].decode()).encode()
         tolto = True
-    # 2) valore memorizzato VUOTO accanto a ogni formula: openpyxl lo scrive
-    #    sempre, ed Excel lo prende per buono mostrando la cella vuota invece
-    #    di calcolare. Va rimosso, così Excel è costretto a fare il conto.
-    for nome in list(dati):
-        if nome.startswith("xl/worksheets/sheet"):
-            testo = dati[nome].decode()
-            dati[nome] = testo.replace("<v></v>", "").replace("<v/>", "").encode()
+    # 2) i risultati del file VUOTO, scritti accanto alle formule.
+    #    openpyxl lascia lì un valore vuoto, ed Excel lo mostra invece di
+    #    calcolare: la cella appare bianca. Qui ci si mette il valore giusto,
+    #    che per un file senza codici e senza assegnazioni è noto in partenza.
+    #    Appena scrivi qualcosa, Excel ricalcola da sé.
+    testo = dati["xl/worksheets/sheet1.xml"].decode()
+
+    def valore(rif, v):
+        """sostituisce il <v></v> vuoto della cella con il risultato"""
+        nonlocal testo
+        if isinstance(v, str):
+            nuovo = ('<v>' + v.replace("&", "&amp;").replace("<", "&lt;")
+                     .replace(">", "&gt;") + '</v>')
+            testo = re.sub(r'(<c r="' + rif + r'"[^>]*?)(\s+t="[^"]*")?(>.*?<f[^>]*>.*?</f>)<v></v>',
+                           lambda m: m.group(1) + ' t="str"' + m.group(3) + nuovo,
+                           testo, count=1, flags=re.S)
+        else:
+            testo = re.sub(r'(<c r="' + rif + r'"[^>]*>.*?<f[^>]*>.*?</f>)<v></v>',
+                           lambda m: m.group(1) + '<v>' + str(v) + '</v>',
+                           testo, count=1, flags=re.S)
+
+    tutti_i_nomi = ", ".join(PERSONE)
+    for i in range(NG):
+        r = R0 + i
+        g = calendar.weekday(ANNO, NMESE, i + 1)
+        valore("A%d" % r, GG[g])
+        valore("%s%d" % (get_column_letter(C_GG), r), GG[g])
+        valore("%s%d" % (get_column_letter(C_DD), r), i + 1)
+        valore("%s%d" % (get_column_letter(C_CTRL), r), "")
+        valore("%s%d" % (get_column_letter(C_DISP), r), tutti_i_nomi)
+        valore("%s%d" % (get_column_letter(C_LIB), r), tutti_i_nomi)
+        for i2, p in enumerate(PERSONE):
+            valore("%s%d" % (get_column_letter(A_D + i2), r), p + ", ")
+            valore("%s%d" % (get_column_letter(A_L + i2), r), p + ", ")
+    for i2, p in enumerate(PERSONE):
+        r = 4 + i2
+        for c0 in (CC0, PC0):
+            valore("%s%d" % (get_column_letter(c0), r), p)
+        for c in range(CC0 + 1, CC1 + 1):
+            valore("%s%d" % (get_column_letter(c), r), 0)
+        valore("%s%d" % (get_column_letter(A_D + i2), 3), p)
+        valore("%s%d" % (get_column_letter(A_L + i2), 3), p)
+    for c in list(range(CC0 + 1, CC1 + 1)) + list(range(PC0 + 1, PC1 + 1)):
+        valore("%s%d" % (get_column_letter(c), RT), 0)
+    dati["xl/worksheets/sheet1.xml"] = testo.encode()
     with zipfile.ZipFile(tmp, "w", zipfile.ZIP_DEFLATED) as z:
         for n, d in dati.items():
             z.writestr(n, d)
@@ -499,8 +537,8 @@ def esito(t, ok, extra=""):
     print(("  OK   " if ok else "  ERRORE ") + t + ((" — " + extra) if extra else ""))
 
 print("=== VERIFICHE SUL FILE SALVATO ===")
-print("  OK   file ripulito: nessun valore memorizzato vuoto accanto alle formule,")
-print("       così Excel le calcola all'apertura invece di mostrarle vuote")
+print("  OK   risultati del file vuoto scritti accanto alle formule: si vedono")
+print("       anche se Excel è impostato su calcolo manuale")
 esito(f"righe del mese: {NG}", w.cell(row=R1, column=2).value == NG)
 esito("giorno della settimana calcolato con formula",
       str(w["A4"].value).startswith("=CHOOSE"))

@@ -343,13 +343,25 @@ def _togli_custom_props(percorso):
             r'<Override[^>]*docProps/custom\.xml[^>]*/>', '',
             dati["[Content_Types].xml"].decode()).encode()
         tolto = True
-    # 2) valore memorizzato VUOTO accanto a ogni formula: openpyxl lo scrive
-    #    sempre, ed Excel lo prende per buono mostrando la cella vuota invece
-    #    di calcolare. Va rimosso, così Excel è costretto a fare il conto.
+    # 2) i giorni della settimana, scritti accanto alla formula. openpyxl lascia
+    #    lì un valore vuoto ed Excel mostra quello invece di calcolare: la cella
+    #    appare bianca se il calcolo è impostato su manuale.
     for nome in list(dati):
-        if nome.startswith("xl/worksheets/sheet"):
-            testo = dati[nome].decode()
-            dati[nome] = testo.replace("<v></v>", "").replace("<v/>", "").encode()
+        if not nome.startswith("xl/worksheets/sheet"):
+            continue
+        testo = dati[nome].decode()
+        m = re.search(r'<c r="A2"[^>]*><v>(\d+)</v>', testo)
+        m2 = re.search(r'<c r="B1"[^>]*><v>(\d+)</v>', testo)
+        if m and m2:
+            mm, aa = int(m.group(1)), int(m2.group(1))
+            for i in range(calendar.monthrange(aa, mm)[1]):
+                r = 4 + i
+                g = GG[calendar.weekday(aa, mm, i + 1)]
+                testo = re.sub(
+                    r'(<c r="A%d"[^>]*?)(\s+t="[^"]*")?(>.*?</f>)<v></v>' % r,
+                    lambda x, g=g: x.group(1) + ' t="str"' + x.group(3) + "<v>" + g + "</v>",
+                    testo, count=1, flags=re.S)
+        dati[nome] = testo.encode()
     with zipfile.ZipFile(tmp, "w", zipfile.ZIP_DEFLATED) as z:
         for n, d in dati.items():
             z.writestr(n, d)
