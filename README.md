@@ -56,7 +56,7 @@ Sono previsti tre approcci differenti. Clicca su quello che ti serve.
 | [**C**](#prompt-c--assegnazione-dei-turni) | Assegna in modo automatico le persone ai turni | Ogni mese |
 
 **1. Crea il file dell'orario.** Compila la sezione A del modulo, premi «Genera il
-programma» e incollalo nel chatbot chiedendogli di eseguirlo. La sezione A ti chiede cinque
+programma» e incollalo nel chatbot chiedendogli di eseguirlo. La sezione A ti chiede quattro
 cose:
 
 1. mese e anno del file;
@@ -65,11 +65,20 @@ cose:
 3. i nomi delle persone che coprono i turni;
 4. i codici di indisponibilità che usi oltre a quelli di base (`X` = non disponibile tutto
    il giorno, più uno per ogni parte della giornata: `Xm` la mattina, `Xp` il pomeriggio,
-   `Xn` la notte);
-5. quali turni impegnano la persona per l'intera giornata — di solito la notte, perché chi
-   monta non lavora quel giorno né il giorno dopo. Gli altri turni invece convivono: chi
-   lavora la mattina può fare anche il pomeriggio, e infatti resta nell'elenco dei liberi
-   con il solo pomeriggio ancora disponibile.
+   `Xn` la notte).
+
+**Come chiami i turni conta**, perché da lì discendono le regole, senza che tu debba
+dichiararle:
+
+| Nome del turno | Chi lo fa |
+|---|---|
+| `MAT` | resta libero il pomeriggio |
+| `POM` | resta libero la mattina |
+| `GIORNO` | non è libero per il resto della giornata |
+| `NOTTE` | non è libero quel giorno né il giorno dopo, perché smonta |
+
+Un'etichetta diversa da queste quattro vale come mezza giornata, e convive con le altre. Se
+nel tuo caso servisse una regola diversa, chiedila al chatbot dopo aver creato il file.
 
 La regola per capire come va indicato un impegno: **se lo decidi tu è un'attività, se te lo
 comunicano è un'indisponibilità.**
@@ -176,7 +185,7 @@ in corso, mostrando due colonne di numeri identici.
 | [**C**](#prompt-c--assegnazione-dei-turni) | Assegna in modo automatico le persone ai turni | Ogni mese |
 
 **1. Crea il file dell'orario.** Compila la sezione A del modulo, premi «Genera il
-programma» e incollalo nel chatbot chiedendogli di eseguirlo. La sezione A ti chiede cinque
+programma» e incollalo nel chatbot chiedendogli di eseguirlo. La sezione A ti chiede quattro
 cose:
 
 1. mese e anno del file;
@@ -185,11 +194,20 @@ cose:
 3. i nomi delle persone che coprono i turni;
 4. i codici di indisponibilità che usi oltre a quelli di base (`X` = non disponibile tutto
    il giorno, più uno per ogni parte della giornata: `Xm` la mattina, `Xp` il pomeriggio,
-   `Xn` la notte);
-5. quali turni impegnano la persona per l'intera giornata — di solito la notte, perché chi
-   monta non lavora quel giorno né il giorno dopo. Gli altri turni invece convivono: chi
-   lavora la mattina può fare anche il pomeriggio, e infatti resta nell'elenco dei liberi
-   con il solo pomeriggio ancora disponibile.
+   `Xn` la notte).
+
+**Come chiami i turni conta**, perché da lì discendono le regole, senza che tu debba
+dichiararle:
+
+| Nome del turno | Chi lo fa |
+|---|---|
+| `MAT` | resta libero il pomeriggio |
+| `POM` | resta libero la mattina |
+| `GIORNO` | non è libero per il resto della giornata |
+| `NOTTE` | non è libero quel giorno né il giorno dopo, perché smonta |
+
+Un'etichetta diversa da queste quattro vale come mezza giornata, e convive con le altre. Se
+nel tuo caso servisse una regola diversa, chiedila al chatbot dopo aver creato il file.
 
 La regola per capire come va indicato un impegno: **se lo decidi tu è un'attività, se te lo
 comunicano è un'indisponibilità.**
@@ -408,7 +426,6 @@ come si risponde prima di compilare la tua.
                   assegno io.
              C = congresso, blocca tutto il giorno
 
-5) RISPOSTA: NOTTE
 ```
 
 *Da questa scheda esce il file dell'orario vuoto: 30 righe, 14 colonne di turni, il blocco

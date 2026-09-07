@@ -34,11 +34,6 @@ Gn = guardia notte in ALTRA SEDE, blocca tutto il giorno stesso e tutto il
 C = congresso, blocca tutto il giorno
 """
 
-# Turni che impegnano la persona per l'INTERA giornata: chi li fa non può
-# fare nessun altro turno quel giorno. Di solito è la notte.
-# Scrivi «nessuno» se non ce ne sono.
-TURNI_ESCLUSIVI_TESTO = """NOTTE"""
-
 NOME_FILE = "Turni_Novembre_2026.xlsx"
 
 # --------------------- FINE DATI DA COMPILARE ------------------------
@@ -174,9 +169,6 @@ try:
     ATTIVITA, _av1 = leggi_attivita(ATTIVITA_DA_COPRIRE)
     PERSONE = leggi_persone(NOMI_DELLE_PERSONE)
     CODICI_IN_PIU, _av2 = leggi_codici(CODICI_IN_PIU_TESTO)
-    _t = TURNI_ESCLUSIVI_TESTO.strip()
-    TURNI_ESCLUSIVI = ([] if _t.lower() in ("", "nessuno", "-")
-                       else [x.strip().upper() for x in re.split(r"[,;\n]", _t) if x.strip()])
 except Problema as _e:
     print("NON POSSO PROCEDERE:", _e)
     raise SystemExit
@@ -227,7 +219,13 @@ EXTRA  = {p: [] for p in PARTI}
 for c, _, q in CODICI_IN_PIU:
     parte = q[6:] if q.startswith("parte:") else ALIAS.get(q)
     if parte in EXTRA: EXTRA[parte].append(c)
-ESCL = [p for p in TURNI_ESCLUSIVI if p in PARTI]
+# Le regole discendono dal nome del turno, senza doverle dichiarare:
+#   MAT / POM ... mezze giornate, convivono fra loro
+#   GIORNO ...... occupa l'intera giornata: chi lo fa non è libero per niente
+#   NOTTE ....... occupa la giornata e anche quella dopo, perché si smonta
+# Un'etichetta diversa da queste è trattata come una mezza giornata.
+ESCL = [p for p in PARTI if p in ("GIORNO", "NOTTE")]
+DOPO_TURNO = [p for p in PARTI if p == "NOTTE"]
 
 wb = Workbook(); ws = wb.active; ws.title = f"{MESE.capitalize()} {ANNO}"
 CAL = "Calibri"
@@ -332,17 +330,20 @@ for c0, tit in ((A_D, "AREA DI CALCOLO DISPONIBILI — non modificare"),
 
 def pezzo(i, r, con_turni):
     p = get_column_letter(P0 + i); cod = f"{p}{r}"; nome = f"{p}$3"
-    interi = "+".join(f'({cod}="{c}")' for c in INTERI)
+    # lo zero iniziale non è un vezzo: in Excel i valori logici valgono più di
+    # qualsiasi numero, quindi FALSO>0 darebbe VERO. Sommando uno zero il
+    # risultato è un numero, e il confronto torna a significare quello che dice.
+    interi = "0+" + "+".join(f'({cod}="{c}")' for c in INTERI)
     if r > R0 and DOPO:
         interi += "+" + "+".join(f'({p}{r-1}="{c}")' for c in DOPO)
     def libero(et, riga=None):
         rr = r if riga is None else riga
         return f'(COUNTIFS(${LT0}$3:${LT1}$3,"{et}",${LT0}{rr}:${LT1}{rr},{nome})=0)'
-    # chi ieri era in un turno che impegna l'intera giornata (di solito la notte)
-    # oggi smonta: non è libero per niente, esattamente come per i codici prolungati
+    # chi ieri era di notte oggi smonta: non è libero per niente, esattamente
+    # come per i codici prolungati
     smonto = ""
     if con_turni and r > R0:
-        for e in ESCL:
+        for e in DOPO_TURNO:
             smonto += f'*{libero(e, r - 1)}'
     pezzi = []
     for parte in PARTI:
@@ -358,7 +359,7 @@ def pezzo(i, r, con_turni):
                 t += f'*{libero(e)}'
             t += smonto
         pezzi.append(t)
-    tot = "+".join(f"({x})" for x in pezzi)
+    tot = "0+" + "+".join(f"({x})" for x in pezzi)
     suff = "".join(f'&IF({x},"{SUF_PARTE[p]}","")'
                    for p, x in zip(PARTI, pezzi))
     return (f'=IF({interi}>0,"",'
@@ -449,7 +450,6 @@ ws.add_data_validation(dv); dv.add(f"{LP0}{R0}:{LP1}{R1}")
 
 ws.freeze_panes = "C4"
 ws.protection.sheet = False
-wb.calculation.fullCalcOnLoad = True
 wb.save(NOME_FILE)
 
 # ---------------- pulizia di una parte che fa "riparare" il file --------------
@@ -518,6 +518,18 @@ def _togli_custom_props(percorso):
     for c in list(range(CC0 + 1, CC1 + 1)) + list(range(PC0 + 1, PC1 + 1)):
         valore("%s%d" % (get_column_letter(c), RT), 0)
     dati["xl/worksheets/sheet1.xml"] = testo.encode()
+    # 3) il modo di calcolo: automatico, e NIENTE ricalcolo forzato all'apertura.
+    #    Con fullCalcOnLoad Excel butta via i valori memorizzati per ricalcolare;
+    #    se il calcolo è impostato su manuale non ricalcola, e le celle restano
+    #    vuote. Meglio lasciargli i valori che ci sono e chiedere il calcolo
+    #    automatico, che vale poi per le modifiche successive.
+    wbx = dati["xl/workbook.xml"].decode()
+    wbx = re.sub(r"<calcPr[^>]*/>", '<calcPr calcId="191029" calcMode="auto" '
+                 'fullCalcOnLoad="0" forceFullCalc="0"/>', wbx)
+    if "<calcPr" not in wbx:
+        wbx = wbx.replace("</workbook>", '<calcPr calcId="191029" calcMode="auto"/>'
+                          "</workbook>")
+    dati["xl/workbook.xml"] = wbx.encode()
     with zipfile.ZipFile(tmp, "w", zipfile.ZIP_DEFLATED) as z:
         for n, d in dati.items():
             z.writestr(n, d)

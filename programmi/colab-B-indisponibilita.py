@@ -362,6 +362,18 @@ def _togli_custom_props(percorso):
                     lambda x, g=g: x.group(1) + ' t="str"' + x.group(3) + "<v>" + g + "</v>",
                     testo, count=1, flags=re.S)
         dati[nome] = testo.encode()
+    # 3) il modo di calcolo: automatico, e NIENTE ricalcolo forzato all'apertura.
+    #    Con fullCalcOnLoad Excel butta via i valori memorizzati per ricalcolare;
+    #    se il calcolo è impostato su manuale non ricalcola, e le celle restano
+    #    vuote. Meglio lasciargli i valori che ci sono e chiedere il calcolo
+    #    automatico, che vale poi per le modifiche successive.
+    wbx = dati["xl/workbook.xml"].decode()
+    wbx = re.sub(r"<calcPr[^>]*/>", '<calcPr calcId="191029" calcMode="auto" '
+                 'fullCalcOnLoad="0" forceFullCalc="0"/>', wbx)
+    if "<calcPr" not in wbx:
+        wbx = wbx.replace("</workbook>", '<calcPr calcId="191029" calcMode="auto"/>'
+                          "</workbook>")
+    dati["xl/workbook.xml"] = wbx.encode()
     with zipfile.ZipFile(tmp, "w", zipfile.ZIP_DEFLATED) as z:
         for n, d in dati.items():
             z.writestr(n, d)
