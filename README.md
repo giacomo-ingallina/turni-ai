@@ -1038,11 +1038,11 @@ proprio su quella. Se il blocco è vuoto, parti da zero e dimmelo in una riga.
 |  riga. Non cancellare i numeri: servono al chatbot.            |
 +---------------------------------------------------------------+
 
-Delle risposte contano solo le PAROLE IN MAIUSCOLO che trovi spiegate nei
-singoli punti: PRIMA DISPONIBILE, A PARITÀ, ESCLUSIONE, INCOMPATIBILITÀ,
-CHIUSI, LI COMPILO IO, MAI OLTRE, POSSIBILMENTE ENTRO. Quelle vanno scritte
-esattamente così, perché è da lì che si capisce di che tipo di regola si
-tratta. Il resto della riga è testo libero: basta che sia chiaro.
+Delle risposte contano solo queste parole scritte in maiuscolo:
+PRIMA DISPONIBILE, A PARITÀ, ESCLUSIONE, INCOMPATIBILITÀ, CHIUSI,
+LI COMPILO IO, MAI OLTRE, POSSIBILMENTE ENTRO. Vanno scritte esattamente
+così, perché è da lì che si capisce di che tipo di regola si tratta.
+Il resto della riga è testo libero: basta che sia chiaro.
 
 1) Codici usati oltre a X, Xm, Xp, Xn: per ognuno il significato e
    quale parte della giornata blocca. (Se non ce ne sono scrivi: nessuno)
