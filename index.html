@@ -29,10 +29,7 @@ body{
 .foglio{max-width:1120px;margin:0 auto;padding:0 20px 96px}
 
 /* intestazione: la testata di un modulo */
-header.testata{
-  border-bottom:2px solid var(--inchiostro);
-  padding:40px 0 18px;margin-bottom:34px;
-}
+header.testata{padding:40px 0 10px;margin-bottom:26px}
 .occhiello{
   font-family:"IBM Plex Sans Condensed",sans-serif;font-weight:700;
   text-transform:uppercase;letter-spacing:.16em;font-size:12px;
@@ -44,12 +41,10 @@ h1{
   letter-spacing:-.01em;
 }
 .sottotitolo{margin:0;color:var(--tenue)}
-.apri-modulo{margin:44px 0 18px;color:var(--tenue);border-top:2px solid var(--inchiostro);padding-top:18px}
-.apri-modulo a{color:var(--timbro)}
 .sottotitolo a{color:var(--timbro)}
 
 /* scelta del prompt: è una sequenza, quindi è numerata */
-.scelta{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:34px}
+.scelta{display:flex;flex-wrap:wrap;gap:10px;margin:34px 0 34px}
 .scheda-btn{
   flex:1 1 210px;min-width:0;
   position:relative;text-align:left;cursor:pointer;
@@ -76,7 +71,7 @@ h1{
 
 /* il modulo */
 .modulo{background:#fff;border:1px solid var(--riga);border-radius:2px;padding:26px 26px 30px}
-.spiega{margin:0 0 18px;font-size:16px}
+.spiega{margin:0 0 22px;font-size:18.5px;line-height:1.5}
 .nota{
   border-left:3px solid var(--timbro);background:var(--carta-alt);
   padding:12px 14px;margin:0 0 24px;font-size:14.5px;
@@ -184,11 +179,13 @@ pre.copia{
 pre.copia mark{background:var(--marca);padding:1px 2px;border-radius:1px}
 .zampa{margin-top:14px;font-size:14px;color:var(--tenue)}
 
-.istruzioni{margin-top:64px;border-top:2px solid var(--inchiostro);padding-top:8px}
+.istruzioni{margin-top:8px}
 .istruzioni h2{
   font-family:"IBM Plex Sans Condensed",sans-serif;font-weight:700;
-  font-size:28px;margin:44px 0 14px;letter-spacing:-.01em;
+  font-size:28px;margin:14px 0 14px;letter-spacing:-.01em;
 }
+.istruzioni h2 + p{margin-top:0}
+.istruzioni > :first-child{margin-top:0}
 .istruzioni h3{
   font-family:"IBM Plex Sans Condensed",sans-serif;font-weight:700;
   font-size:20px;margin:34px 0 12px;color:var(--timbro);
@@ -246,7 +243,6 @@ footer a{color:var(--timbro)}
 
 <header class="testata">
   <h1>Turni e orari con l'AI</h1>
-  <p class="sottotitolo">Le istruzioni per organizzare i turni con un chatbot, e i riquadri da compilare per ottenere i testi da incollargli.</p>
 </header>
 
 <section class="istruzioni" id="istruzioni"><h2 id="introduzione">Introduzione</h2>
@@ -295,9 +291,6 @@ orario</a></td>
 </tbody>
 </table></section>
 
-<p class="apri-modulo">Rispondi alle domande e premi il tasto: ottieni il testo pronto da
-incollare nel chatbot. Le risposte restano salvate su questo computer, così il mese prossimo
-le ritrovi. <a href="#come-fare">Torna a «Situazione di partenza»</a>.</p>
 
 <div class="scelta" id="compila" role="tablist" aria-label="Scegli la sezione"></div>
 
