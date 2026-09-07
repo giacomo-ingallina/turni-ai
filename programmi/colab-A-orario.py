@@ -335,8 +335,15 @@ def pezzo(i, r, con_turni):
     interi = "+".join(f'({cod}="{c}")' for c in INTERI)
     if r > R0 and DOPO:
         interi += "+" + "+".join(f'({p}{r-1}="{c}")' for c in DOPO)
-    def libero(et):
-        return f'(COUNTIFS(${LT0}$3:${LT1}$3,"{et}",${LT0}{r}:${LT1}{r},{nome})=0)'
+    def libero(et, riga=None):
+        rr = r if riga is None else riga
+        return f'(COUNTIFS(${LT0}$3:${LT1}$3,"{et}",${LT0}{rr}:${LT1}{rr},{nome})=0)'
+    # chi ieri era in un turno che impegna l'intera giornata (di solito la notte)
+    # oggi smonta: non è libero per niente, esattamente come per i codici prolungati
+    smonto = ""
+    if con_turni and r > R0:
+        for e in ESCL:
+            smonto += f'*{libero(e, r - 1)}'
     pezzi = []
     for parte in PARTI:
         t = f'({cod}<>"{COD_PARTE[parte]}")'
@@ -349,6 +356,7 @@ def pezzo(i, r, con_turni):
                            [parte] + [e for e in ESCL if e != parte]
             for e in da_escludere:
                 t += f'*{libero(e)}'
+            t += smonto
         pezzi.append(t)
     tot = "+".join(f"({x})" for x in pezzi)
     suff = "".join(f'&IF({x},"{SUF_PARTE[p]}","")'
@@ -454,20 +462,29 @@ def _togli_custom_props(percorso):
     tmp = percorso + ".tmp"
     with zipfile.ZipFile(percorso) as z:
         dati = {n: z.read(n) for n in z.namelist()}
-    if "docProps/custom.xml" not in dati:
-        return False
-    del dati["docProps/custom.xml"]
-    dati["_rels/.rels"] = re.sub(
-        r'<Relationship[^>]*custom-properties[^>]*/>', '',
-        dati["_rels/.rels"].decode()).encode()
-    dati["[Content_Types].xml"] = re.sub(
-        r'<Override[^>]*docProps/custom\.xml[^>]*/>', '',
-        dati["[Content_Types].xml"].decode()).encode()
+    tolto = False
+    # 1) sezione accessoria vuota: fa comparire l'avviso di riparazione
+    if "docProps/custom.xml" in dati:
+        del dati["docProps/custom.xml"]
+        dati["_rels/.rels"] = re.sub(
+            r'<Relationship[^>]*custom-properties[^>]*/>', '',
+            dati["_rels/.rels"].decode()).encode()
+        dati["[Content_Types].xml"] = re.sub(
+            r'<Override[^>]*docProps/custom\.xml[^>]*/>', '',
+            dati["[Content_Types].xml"].decode()).encode()
+        tolto = True
+    # 2) valore memorizzato VUOTO accanto a ogni formula: openpyxl lo scrive
+    #    sempre, ed Excel lo prende per buono mostrando la cella vuota invece
+    #    di calcolare. Va rimosso, così Excel è costretto a fare il conto.
+    for nome in list(dati):
+        if nome.startswith("xl/worksheets/sheet"):
+            testo = dati[nome].decode()
+            dati[nome] = testo.replace("<v></v>", "").replace("<v/>", "").encode()
     with zipfile.ZipFile(tmp, "w", zipfile.ZIP_DEFLATED) as z:
         for n, d in dati.items():
             z.writestr(n, d)
     os.replace(tmp, percorso)
-    return True
+    return tolto
 _pulito = _togli_custom_props(NOME_FILE)
 
 # ------------------------- VERIFICHE ---------------------------------
@@ -482,9 +499,8 @@ def esito(t, ok, extra=""):
     print(("  OK   " if ok else "  ERRORE ") + t + ((" — " + extra) if extra else ""))
 
 print("=== VERIFICHE SUL FILE SALVATO ===")
-print(("  OK   sezione accessoria vuota rimossa" if _pulito
-       else "  OK   nessuna sezione accessoria da rimuovere")
-      + " (è una causa nota dell'avviso di riparazione di Excel)")
+print("  OK   file ripulito: nessun valore memorizzato vuoto accanto alle formule,")
+print("       così Excel le calcola all'apertura invece di mostrarle vuote")
 esito(f"righe del mese: {NG}", w.cell(row=R1, column=2).value == NG)
 esito("giorno della settimana calcolato con formula",
       str(w["A4"].value).startswith("=CHOOSE"))

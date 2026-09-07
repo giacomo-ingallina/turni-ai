@@ -1,5 +1,9 @@
 # Turni e orari con l'AI — istruzioni e prompt
 
+> **[Apri la pagina per compilare le schede](https://giacomo-ingallina.github.io/turni-ai/)**
+> — le stesse istruzioni che leggi qui, con i riquadri da riempire e il tasto che genera il
+> testo da incollare nel chatbot.
+
 ## Indice
 
 - [Introduzione](#introduzione)
@@ -35,13 +39,15 @@ Sono previsti tre approcci differenti. Clicca su quello che ti serve.
 
 | Situazione di partenza |
 |---|
-| [Non hai orari precedenti e non hai un Excel per l'orario già pronto](#non-hai-orari-precedenti-sequenza-a--b--c) |
-| [Hai orari precedenti e vuoi un file Excel nuovo](#hai-orari-precedenti-e-vuoi-un-file-excel-nuovo-sequenza-a--b--0--c) |
-| [Hai orari precedenti e vuoi mantenere il tuo file Excel modello di orario](#hai-orari-precedenti-e-vuoi-mantenere-il-tuo-file-excel-modello-di-orario-sequenza-b--0--c) |
+| [Non hai orari precedenti e non hai un Excel per l'orario già pronto](#non-hai-orari-precedenti) |
+| [Hai orari precedenti e vuoi un file Excel nuovo](#hai-orari-precedenti-e-vuoi-un-file-excel-nuovo) |
+| [Hai orari precedenti e vuoi mantenere il tuo file Excel modello di orario](#hai-orari-precedenti-e-vuoi-mantenere-il-tuo-file-excel-modello-di-orario) |
 
 ---
 
-### Non hai orari precedenti [sequenza A → B → C]
+### Non hai orari precedenti
+
+**Sequenza: A → B → C**
 
 | Sezione | A cosa serve | Quando si usa |
 |---|---|---|
@@ -78,7 +84,11 @@ si possono nascondere.
 
 ![Il calendario del mese con le colonne dei turni, ancora vuote](img/a1-orario-vuoto-turni.png)
 
-Le altre parti del file sono in [Modello di turni](#modello-di-turni-utilizzato-come-esempio).
+![Le tre colonne di controllo: CONTROLLO, DISPONIBILI e LIBERI](img/a4-colonne-controllo.png)
+
+![Il blocco delle indisponibilità e la legenda dei codici](img/a2-blocco-disponibilita-legenda.png)
+
+![I due blocchi di conteggio dei turni, mese corrente e mese precedente](img/a3-blocchi-conteggio.png)
 
 Salva il programma generato: lo puoi aprire con TextEdit su Mac o Blocco note su Windows.
 Il mese successivo ti basta cambiare il nome del mese all'inizio ed eseguirlo di nuovo,
@@ -154,7 +164,9 @@ in corso, mostrando due colonne di numeri identici.
 
 ---
 
-### Hai orari precedenti e vuoi un file Excel nuovo [sequenza A → B → 0 → C]
+### Hai orari precedenti e vuoi un file Excel nuovo
+
+**Sequenza: A → B → 0 → C**
 
 | Sezione | A cosa serve | Quando si usa |
 |---|---|---|
@@ -192,7 +204,11 @@ si possono nascondere.
 
 ![Il calendario del mese con le colonne dei turni, ancora vuote](img/a1-orario-vuoto-turni.png)
 
-Le altre parti del file sono in [Modello di turni](#modello-di-turni-utilizzato-come-esempio).
+![Le tre colonne di controllo: CONTROLLO, DISPONIBILI e LIBERI](img/a4-colonne-controllo.png)
+
+![Il blocco delle indisponibilità e la legenda dei codici](img/a2-blocco-disponibilita-legenda.png)
+
+![I due blocchi di conteggio dei turni, mese corrente e mese precedente](img/a3-blocchi-conteggio.png)
 
 Salva il programma generato: lo puoi aprire con TextEdit su Mac o Blocco note su Windows.
 Il mese successivo ti basta cambiare il nome del mese all'inizio ed eseguirlo di nuovo,
@@ -263,7 +279,9 @@ sezione C: otterrai l'orario compilato.
 
 ---
 
-### Hai orari precedenti e vuoi mantenere il tuo file Excel modello di orario [sequenza B → 0 → C]
+### Hai orari precedenti e vuoi mantenere il tuo file Excel modello di orario
+
+**Sequenza: B → 0 → C**
 
 | Sezione | A cosa serve | Quando si usa |
 |---|---|---|
@@ -360,21 +378,6 @@ disponibile la notte):
 
 **Gli esempi sono finti. Non copiarli nella tua scheda.**
 
-### Com'è fatto il file dell'orario
-
-Sono le quattro parti del file prodotto dal programma della sezione A, nell'ordine in cui
-compaiono da sinistra a destra.
-
-![Il calendario del mese con le colonne dei turni, ancora vuote](img/a1-orario-vuoto-turni.png)
-
-![Le tre colonne di controllo: CONTROLLO, DISPONIBILI e LIBERI](img/a4-colonne-controllo.png)
-
-![Il blocco delle indisponibilità e la legenda dei codici](img/a2-blocco-disponibilita-legenda.png)
-
-![I due blocchi di conteggio dei turni, mese corrente e mese precedente](img/a3-blocchi-conteggio.png)
-
----
-
 ## Esempi compilati
 
 Qui trovi, in un posto solo, gli stessi esempi che compaiono dentro i quattro prompt: le
@@ -434,11 +437,7 @@ delle indisponibilità, i due blocchi di conteggio e la legenda.*
                   da un'altra struttura, che mi arriva già decisa.
              C = congresso, blocca tutto il giorno
 
-5) RISPOSTA: MAT, POM, NOTTE
 ```
-
-Se il PROMPT B lo invii nella stessa conversazione del PROMPT A, ai punti 3 e 4 basta
-scrivere `gli stessi del prompt precedente`.
 
 *Da questa scheda escono 12 fogli, uno per mese, con la tendina dei codici e i fogli
 protetti senza password.*
@@ -488,10 +487,10 @@ e l'altro, l'elenco di quello che non ha potuto dedurre e il carico storico per 
              STANZA 43, STANZA 31 e AMB ESTERNO solo se avanza qualcuno:
              possono restare vuote e non vanno coperte forzando i turni
 
-3) RISPOSTA: PRIMA DISPONIBILE — per STANZA 23: LEONI, ROSSI M,
-                          FERRARI, VERDI, GALLINA
-             PRIMA DISPONIBILE — per GUARDIA: ROSSI L, ROSSI M, RUSSO,
-                          HU, CONTI A, GRECO
+3) RISPOSTA: PRIMA DISPONIBILE — per STANZA 23: 1° LEONI, 2° ROSSI M,
+                          3° FERRARI, 4° VERDI, 5° GALLINA
+             PRIMA DISPONIBILE — per GUARDIA: 1° ROSSI L, 2° ROSSI M,
+                          3° RUSSO, 4° HU, 5° CONTI A, 6° GRECO
              A PARITÀ — per tutte le altre attività nessuna preferenza:
                           conta solo l'equilibrio
 
@@ -594,12 +593,13 @@ stesso e tutto il giorno successivo` sì. Un codice deve reggersi da solo, senza
 un altro punto della scheda: chi lo legge — il chatbot, ma anche un collega tra sei mesi —
 deve capire cos'è e quanto dura leggendo solo quella riga.
 
-Due dettagli, se ti capita di notarli. Le colonne DISPONIBILI e LIBERI tengono conto da sole
-dei codici come `Gn`, che si portano dietro il giorno dopo: chi scrive `Gn` il 5 sparisce
-dalle due colonne sia il 5 sia il 6. Non lo fanno invece per la GUARDIA che assegni tu:
-quella la vede il PROMPT C in fase di assegnazione, e il 6 novembre RUSSO comparirà ancora
-tra i liberi. E il primo giorno del mese non ha un ieri: se qualcuno era di notte il 31 del
-mese scorso, quello devi ricordartelo tu.
+La colonna LIBERI se ne accorge da sola in entrambi i casi: chi ha `Gn` il 5, e chi è messo
+nella colonna NOTTE del 5, sparisce dai liberi sia il 5 sia il 6. La colonna DISPONIBILI
+invece guarda solo i codici e non le assegnazioni — è la sua funzione, dire chi c'è quel
+giorno — quindi lì il 6 la persona compare ancora.
+
+Un limite che resta: il primo giorno del mese non ha un ieri. Se qualcuno era di notte il 31
+del mese scorso, quello devi ricordartelo tu.
 
 [Torna alle domande frequenti](#domande-frequenti)
 
@@ -1038,6 +1038,12 @@ proprio su quella. Se il blocco è vuoto, parti da zero e dimmelo in una riga.
 |  riga. Non cancellare i numeri: servono al chatbot.            |
 +---------------------------------------------------------------+
 
+Delle risposte contano solo le PAROLE IN MAIUSCOLO che trovi spiegate nei
+singoli punti: PRIMA DISPONIBILE, A PARITÀ, ESCLUSIONE, INCOMPATIBILITÀ,
+CHIUSI, LI COMPILO IO, MAI OLTRE, POSSIBILMENTE ENTRO. Quelle vanno scritte
+esattamente così, perché è da lì che si capisce di che tipo di regola si
+tratta. Il resto della riga è testo libero: basta che sia chiaro.
+
 1) Codici usati oltre a X, Xm, Xp, Xn: per ognuno il significato e
    quale parte della giornata blocca. (Se non ce ne sono scrivi: nessuno)
    RISPOSTA:
@@ -1052,7 +1058,9 @@ proprio su quella. Se il blocco è vuoto, parti da zero e dimmelo in una riga.
 
 3) Ordine tra le persone. Comincia ogni riga con una di queste due
    parole:
-     PRIMA DISPONIBILE .. vincolante: quell'attività la fa il primo
+     PRIMA DISPONIBILE .. vincolante: l'elenco è una graduatoria, il primo
+                          nome è la prima scelta, il secondo la seconda e
+                          così via. Quell'attività la fa il primo
                           dell'elenco che è libero quel giorno, anche se
                           ha già più turni degli altri. Se non è libero,
                           la fa il secondo, e così via lungo l'elenco.
@@ -1305,8 +1313,8 @@ Consegnami il file .xlsx.
 ### Variante: file senza blocchi di conteggio
 
 Se il file dell'orario non ha i due blocchi di conteggio — per esempio è un modello tuo,
-non generato con il PROMPT A — il saldo di partenza va passato a mano. Aggiungi in testa
-al PROMPT C queste righe:
+non generato dal programma della sezione A — il saldo di partenza va passato a mano.
+Aggiungi in testa al testo della sezione C queste righe:
 
 ```
 Qui sotto ti incollo il numero di turni che ciascuna persona ha svolto il mese scorso.
