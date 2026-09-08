@@ -34,7 +34,6 @@ Gn = guardia notte in ALTRA SEDE, blocca tutto il giorno stesso e tutto il
 C = congresso, blocca tutto il giorno
 """
 
-NOME_FILE = "Turni_Novembre_2026.xlsx"
 
 # --------------------- FINE DATI DA COMPILARE ------------------------
 
@@ -102,15 +101,27 @@ def leggi_persone(testo):
     return nomi
 
 # ---------------------------------------------------------------- codici
-DURATE = [
+DURATE_BASE = [
     ("giorno+dopo", r"giorno\s+success|giorno\s+dopo|due\s+giorni"),
     ("mattina",     r"\bmattin"),
     ("pomeriggio",  r"\bpomerigg"),
     ("notte",       r"\bnott"),
     ("giorno",      r"tutto\s+il\s+giorno|intera\s+giornata|tutta\s+la\s+giornata"),
 ]
+PAROLE = {"MAT": "la mattina", "POM": "il pomeriggio", "NOTTE": "la notte"}
 
-def leggi_codici(testo):
+def durate_per(parti):
+    """Alle quattro durate di base aggiunge i turni con un nome tutto loro,
+    per esempio SERA: così «blocca la sera» viene riconosciuto."""
+    fuori = list(DURATE_BASE)
+    for p in parti or []:
+        if p.upper() in ("MAT", "POM", "NOTTE", "GIORNO"):
+            continue
+        radice = re.escape(p.lower()[:max(3, len(p) - 1)])
+        fuori.insert(1, ("parte:" + p.upper(), r"\b" + radice))
+    return fuori
+
+def leggi_codici(testo, parti=None):
     t = _pulisci(testo).strip()
     if not t or t.lower() in ("nessuno", "nessun", "no", "-"):
         return [], []
@@ -129,6 +140,7 @@ def leggi_codici(testo):
                        "Gn = guardia notte, blocca tutto il giorno stesso e "
                        "tutto il giorno successivo")
 
+    DURATE = durate_per(parti)
     fuori, avvisi = [], []
     for sigla, descr in voci:
         d = re.sub(r"\s+", " ", descr).strip().rstrip(".")
@@ -143,9 +155,11 @@ def leggi_codici(testo):
         if durata is None:
             raise Problema(
                 f"del codice «{sigla}» non capisco che cosa blocca. Aggiungi alla "
-                f"descrizione una di queste espressioni: «blocca la mattina», "
-                f"«blocca il pomeriggio», «blocca la notte», «blocca tutto il giorno», "
-                f"«blocca tutto il giorno stesso e tutto il giorno successivo».")
+                f"descrizione una di queste espressioni: "
+                + ", ".join("«blocca " + PAROLE.get(p, "la " + p.lower()) + "»"
+                            for p in (parti or ["MAT", "POM", "NOTTE"]))
+                + ", «blocca tutto il giorno», «blocca tutto il giorno stesso e tutto "
+                  "il giorno successivo».")
         # ambiguità: più indicazioni diverse nella stessa descrizione
         trovate = [n for n, s in DURATE if re.search(s, pezzo)]
         if len(trovate) > 1 and not (trovate[0] == "giorno+dopo" and set(trovate) <= {"giorno+dopo", "giorno", "notte"}):
@@ -168,7 +182,14 @@ try:
     MESE = _nome_mese.upper()
     ATTIVITA, _av1 = leggi_attivita(ATTIVITA_DA_COPRIRE)
     PERSONE = leggi_persone(NOMI_DELLE_PERSONE)
-    CODICI_IN_PIU, _av2 = leggi_codici(CODICI_IN_PIU_TESTO)
+    _parti = []
+    for _, _ts in ATTIVITA:
+        for _t in _ts:
+            if _t not in _parti: _parti.append(_t)
+    CODICI_IN_PIU, _av2 = leggi_codici(CODICI_IN_PIU_TESTO, _parti)
+    # il nome del file segue il mese: così cambiando il mese non si sovrascrive
+    # per sbaglio l'orario precedente
+    NOME_FILE = f"Turni_{_nome_mese.capitalize()}_{ANNO}.xlsx"
 except Problema as _e:
     print("NON POSSO PROCEDERE:", _e)
     raise SystemExit
@@ -501,7 +522,6 @@ def _togli_custom_props(percorso):
         valore("A%d" % r, GG[g])
         valore("%s%d" % (get_column_letter(C_GG), r), GG[g])
         valore("%s%d" % (get_column_letter(C_DD), r), i + 1)
-        valore("%s%d" % (get_column_letter(C_CTRL), r), "")
         valore("%s%d" % (get_column_letter(C_DISP), r), tutti_i_nomi)
         valore("%s%d" % (get_column_letter(C_LIB), r), tutti_i_nomi)
         for i2, p in enumerate(PERSONE):
@@ -517,6 +537,10 @@ def _togli_custom_props(percorso):
         valore("%s%d" % (get_column_letter(A_L + i2), 3), p)
     for c in list(range(CC0 + 1, CC1 + 1)) + list(range(PC0 + 1, PC1 + 1)):
         valore("%s%d" % (get_column_letter(c), RT), 0)
+    # nelle celle il cui risultato è vuoto — CONTROLLO quando non c'è nessuna
+    # sovrapposizione — non si lascia un valore memorizzato vuoto: senza, Excel
+    # calcola e ottiene comunque vuoto, che è il risultato giusto.
+    testo = testo.replace("<v></v>", "").replace("<v/>", "")
     dati["xl/worksheets/sheet1.xml"] = testo.encode()
     # 3) il modo di calcolo: automatico, e NIENTE ricalcolo forzato all'apertura.
     #    Con fullCalcOnLoad Excel butta via i valori memorizzati per ricalcolare;
@@ -549,6 +573,7 @@ def esito(t, ok, extra=""):
     print(("  OK   " if ok else "  ERRORE ") + t + ((" — " + extra) if extra else ""))
 
 print("=== VERIFICHE SUL FILE SALVATO ===")
+print("  file:", NOME_FILE)
 print("  OK   risultati del file vuoto scritti accanto alle formule: si vedono")
 print("       anche se Excel è impostato su calcolo manuale")
 esito(f"righe del mese: {NG}", w.cell(row=R1, column=2).value == NG)

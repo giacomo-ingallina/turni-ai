@@ -111,8 +111,7 @@ primo. La sezione B chiede:
 1. mese e anno da cui partire;
 2. quanti mesi generare (di solito 12);
 3. i nomi delle persone, gli stessi della sezione A;
-4. i codici di indisponibilità, gli stessi della sezione A;
-5. le parti della giornata, le stesse etichette dei turni usate nella sezione A.
+4. i codici di indisponibilità, gli stessi della sezione A.
 
 **IMPORTANTE.** I codici di indisponibilità devono essere gli stessi identici in tutte le
 sezioni — per esempio `X` = indisponibile tutto il giorno, `Gn` = guardia notte. Se un
@@ -239,8 +238,7 @@ primo. La sezione B chiede:
 1. mese e anno da cui partire;
 2. quanti mesi generare (di solito 12);
 3. i nomi delle persone, gli stessi della sezione A;
-4. i codici di indisponibilità, gli stessi della sezione A;
-5. le parti della giornata, le stesse etichette dei turni usate nella sezione A.
+4. i codici di indisponibilità, gli stessi della sezione A.
 
 **IMPORTANTE.** I codici di indisponibilità devono essere gli stessi identici in tutte le
 sezioni — per esempio `X` = indisponibile tutto il giorno, `Gn` = guardia notte. Se un
@@ -315,8 +313,7 @@ dichiarerai al punto 1 della sezione C. Altrimenti compila la sezione B, che chi
 1. mese e anno da cui partire;
 2. quanti mesi generare (di solito 12);
 3. i nomi delle persone, gli stessi del tuo orario;
-4. i codici di indisponibilità, gli stessi che usi nel tuo orario;
-5. le parti della giornata, le stesse etichette dei turni del tuo orario.
+4. i codici di indisponibilità, gli stessi che usi nel tuo orario.
 
 **IMPORTANTE.** I codici di indisponibilità devono essere gli stessi identici in tutte le
 sezioni — per esempio `X` = indisponibile tutto il giorno, `Gn` = guardia notte. Se un
@@ -535,6 +532,8 @@ e l'altro, l'elenco di quello che non ha potuto dedurre e il carico storico per 
 
 7) RISPOSTA: MAI OLTRE — nessuno più di 4 turni di NOTTE nel mese
                          (colonna NOTTE della GUARDIA)
+             POSSIBILMENTE ENTRO — nessuno più di 4 turni in GUARDIA,
+                         turno NOTTE nel mese
 ```
 
 *Da questa scheda esce l'orario con i nomi assegnati: weekend con la sola GUARDIA, STANZA 31
@@ -1043,6 +1042,13 @@ PRIMA DI ASSEGNARE, fai questi due controlli veloci e riferimeli in una riga cia
 - C'è qualche persona che risulta senza alcuna indisponibilità per l'intero mese? Può
   essere vero, ma più spesso significa che non ha compilato. Chiedimelo invece di darlo
   per scontato.
+- Le regole della scheda si contraddicono fra loro? Confronta i punti 3, 4 e 5: un nome
+  che compare in un ordine PRIMA DISPONIBILE o A PARITÀ per un'attività, oppure in un
+  turno fisso, ma che al punto 5 risulta escluso da quella stessa attività, è quasi
+  sempre un errore di scrittura. La scala dei conflitti lo risolverebbe da sola, perché
+  l'esclusione sta più in alto, ma il risultato sarebbe un orario che non somiglia a
+  quello che mi aspetto. Elencami queste contraddizioni e ASPETTA una mia risposta
+  prima di procedere.
 
 Se il file contiene un blocco TURNI MESE PRECEDENTE compilato, leggilo e usalo come SALDO
 DI PARTENZA per l'equilibrio: chi il mese scorso è stato più caricato va scelto per ultimo
@@ -1056,10 +1062,11 @@ proprio su quella. Se il blocco è vuoto, parti da zero e dimmelo in una riga.
 +---------------------------------------------------------------+
 
 Delle risposte contano solo queste parole scritte in maiuscolo:
-PRIMA DISPONIBILE, A PARITÀ, ESCLUSIONE, INCOMPATIBILITÀ, CHIUSI,
-LI COMPILO IO, MAI OLTRE, POSSIBILMENTE ENTRO. Vanno scritte esattamente
-così, perché è da lì che si capisce di che tipo di regola si tratta.
-Il resto della riga è testo libero: basta che sia chiaro.
+SEMPRE COPERTA, COPRIRE SE POSSIBILE, PUÒ RESTARE VUOTA, PRIMA DISPONIBILE,
+A PARITÀ, ESCLUSIONE, INCOMPATIBILITÀ, CHIUSI, LI COMPILO IO, MAI OLTRE,
+POSSIBILMENTE ENTRO. Vanno scritte esattamente così, perché è da lì che si
+capisce di che tipo di regola si tratta. Il resto della riga è testo libero:
+basta che sia chiaro.
 
 1) Codici usati oltre a X, Xm, Xp, Xn: per ognuno il significato e
    quale parte della giornata blocca. (Se non ce ne sono scrivi: nessuno)
@@ -1089,7 +1096,9 @@ Il resto della riga è testo libero: basta che sia chiaro.
                           tra persone che hanno lo stesso numero di
                           turni. Conta prima l'equilibrio.
    Una riga per ogni attività o turno che ha un suo ordine, più una riga
-   per tutto il resto. (Se non ce ne sono scrivi: nessuno)
+   per tutto il resto. Anche qui l'ordine si può restringere a certi turni
+   di un'attività, scrivendo per esempio "per GUARDIA, turni MAT e POM".
+   (Se non ce ne sono scrivi: nessuno)
    RISPOSTA:
 
 4) Turni fissi ricorrenti: chi, quando, dove. Uno per riga.
@@ -1103,6 +1112,13 @@ Il resto della riga è testo libero: basta che sia chiaro.
                           - "TIZIO va solo in ATTIVITÀ, mai fuori"
                           - "in ATTIVITÀ vanno solo TIZIO e CAIO,
                             nessun altro"
+                          Ognuna delle tre si può restringere a UN SOLO
+                          turno dell'attività, aggiungendo "turno X":
+                          "TIZIO non va mai in GUARDIA, turno NOTTE"
+                          significa che TIZIO la guardia la fa, ma solo
+                          di mattina e di pomeriggio. Se il turno non lo
+                          scrivo, l'esclusione vale per tutti i turni di
+                          quell'attività.
      INCOMPATIBILITÀ .... due persone che non devono trovarsi
                           contemporaneamente nello stesso gruppo di
                           attività. Scrivi QUALI attività: fuori da
@@ -1112,7 +1128,9 @@ Il resto della riga è testo libero: basta che sia chiaro.
 
 6) Attività o giorni da lasciare vuoti, perché sono chiusi oppure
    perché li compilo io a mano. Scrivi quale dei due, così so se posso
-   coprirli in caso di necessità o se non devo toccarli.
+   coprirli in caso di necessità o se non devo toccarli. Se invece
+   l'orario ti serve tutti i giorni, weekend compreso e per tutte le
+   attività, scrivi: nessuno.
    RISPOSTA:
 
 7) Limiti al numero di turni per persona nel mese. Comincia ogni riga
@@ -1315,7 +1333,9 @@ aggiornano da sole quando scrivi i nomi nelle celle dei turni.
    Nessun MAI OLTRE deve risultare superato: se lo è, l'orario è sbagliato, rifallo.
 7. Per ogni riga del punto 5 dimmi come l'hai applicata, riportando il conteggio: per
    un'ESCLUSIONE nella forma "non va mai in X", quante volte quella persona compare in X
-   (deve essere zero); nella forma "va solo in X", quante volte compare fuori da X (zero);
+   (deve essere zero; se l'esclusione era limitata a un turno, conta solo quel turno, e
+   dimmi anche quante volte compare negli altri turni della stessa attività, che possono
+   essere più di zero ed è corretto); nella forma "va solo in X", quante volte compare fuori da X (zero);
    nella forma "in X vanno solo A e B", quali nomi compaiono in X. Per un'INCOMPATIBILITÀ,
    in quanti giorni le due persone compaiono insieme dentro il gruppo indicato (zero) e in
    quanti fuori da quel gruppo (può essere diverso da zero, ed è corretto). Se hai dovuto
