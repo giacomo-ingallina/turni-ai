@@ -61,12 +61,27 @@ def leggi_mese(testo):
     return MESI[m.group(1)], int(m.group(2)), m.group(1)
 
 # ---------------------------------------------------------------- attività
+OCCUPA = re.compile(
+    r"^\s*([A-Za-z0-9 ]+?)\s+occupa\s+"
+    r"(tutta la giornata|tutto il giorno|la giornata e quella dopo|"
+    r"il giorno e quello dopo)\s*\.?\s*$", re.I)
+
 def leggi_attivita(testo):
-    """Una attività per riga: NOME - 2 turni: MAT, POM"""
+    """Una attività per riga: NOME - 2 turni: MAT, POM
+    Una riga può invece dichiarare come si comporta un turno:
+    «SERA occupa tutta la giornata» oppure «SERA occupa la giornata e quella dopo»."""
     fuori, avvisi = [], []
+    esclusivi, prolungati = [], []
     for riga in _pulisci(testo).split("\n"):
         r = riga.strip().strip("-•").strip()
         if not r:
+            continue
+        m = OCCUPA.match(r)
+        if m:
+            turno = m.group(1).strip().upper()
+            esclusivi.append(turno)
+            if "dopo" in m.group(2).lower():
+                prolungati.append(turno)
             continue
         # tutto quello che sta dopo i due punti sono le etichette dei turni
         if ":" not in r:
@@ -87,7 +102,13 @@ def leggi_attivita(testo):
         fuori.append((nome.upper(), turni))
     if not fuori:
         raise Problema("non ho trovato nessuna attività")
-    return fuori, avvisi
+    tutti = {t for _, ts in fuori for t in ts}
+    ignoti = [t for t in esclusivi if t not in tutti]
+    if ignoti:
+        raise Problema("dichiari che " + ", ".join(ignoti) + " occupa tutta la giornata, "
+                       "ma quel turno non compare in nessuna attività. Controlla come "
+                       "l'hai scritto: deve essere identico all'etichetta del turno.")
+    return fuori, esclusivi, prolungati, avvisi
 
 # ---------------------------------------------------------------- persone
 def leggi_persone(testo):
@@ -180,7 +201,7 @@ def leggi_codici(testo, parti=None):
 try:
     NMESE, ANNO, _nome_mese = leggi_mese(MESE_E_ANNO)
     MESE = _nome_mese.upper()
-    ATTIVITA, _av1 = leggi_attivita(ATTIVITA_DA_COPRIRE)
+    ATTIVITA, _escl, _prol, _av1 = leggi_attivita(ATTIVITA_DA_COPRIRE)
     PERSONE = leggi_persone(NOMI_DELLE_PERSONE)
     _parti = []
     for _, _ts in ATTIVITA:
@@ -244,9 +265,10 @@ for c, _, q in CODICI_IN_PIU:
 #   MAT / POM ... mezze giornate, convivono fra loro
 #   GIORNO ...... occupa l'intera giornata: chi lo fa non è libero per niente
 #   NOTTE ....... occupa la giornata e anche quella dopo, perché si smonta
-# Un'etichetta diversa da queste è trattata come una mezza giornata.
-ESCL = [p for p in PARTI if p in ("GIORNO", "NOTTE")]
-DOPO_TURNO = [p for p in PARTI if p == "NOTTE"]
+# Ogni altro turno è una mezza giornata, a meno che tu non lo dichiari fra le
+# attività con una riga «NOME occupa tutta la giornata» o «... e quella dopo».
+ESCL = [p for p in PARTI if p in ("GIORNO", "NOTTE") or p in _escl]
+DOPO_TURNO = [p for p in PARTI if p == "NOTTE" or p in _prol]
 
 wb = Workbook(); ws = wb.active; ws.title = f"{MESE.capitalize()} {ANNO}"
 CAL = "Calibri"
