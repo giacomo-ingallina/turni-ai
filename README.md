@@ -97,8 +97,8 @@ pomeriggio convivono: chi ha fatto il turno del mattino non lavora anche di pome
 Si scrive così:
 
 ```
-LINEA A - 3 turni: MAT, POM, NOTTE
-LINEA B - 3 turni: MAT, POM, NOTTE
+RADIOLOGIA A - 3 turni: MAT, POM, NOTTE
+RADIOLOGIA B - 3 turni: MAT, POM, NOTTE
 MAT occupa tutta la giornata
 POM occupa tutta la giornata
 ```
@@ -255,8 +255,8 @@ pomeriggio convivono: chi ha fatto il turno del mattino non lavora anche di pome
 Si scrive così:
 
 ```
-LINEA A - 3 turni: MAT, POM, NOTTE
-LINEA B - 3 turni: MAT, POM, NOTTE
+RADIOLOGIA A - 3 turni: MAT, POM, NOTTE
+RADIOLOGIA B - 3 turni: MAT, POM, NOTTE
 MAT occupa tutta la giornata
 POM occupa tutta la giornata
 ```
