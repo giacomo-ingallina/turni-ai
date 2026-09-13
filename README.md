@@ -33,19 +33,12 @@ prevedibili sull'Excel creato.
 
 ## Come fare
 
-Sono quattro passaggi. I primi due creano i file Excel di partenza e si fanno una volta
-(l'orario ogni mese, le indisponibilità una volta l'anno); il terzo scrive le regole, una
-volta sola; il quarto è quello che ripeti ogni mese.
+### 1. Crea il file Excel con i turni vuoti
 
-**SE HAI GIÀ UN FILE EXCEL CON I TUOI TURNI E NON VUOI CAMBIARLO, I PRIMI DUE PASSAGGI NON
-TI SERVONO:** parti dal terzo, e al quarto allega il tuo file invece di quello creato qui.
-
----
-
-### 1. Crea il file dell'orario, vuoto
-
-Compila la **sezione A** del modulo, premi «Genera il programma» e incollalo nel chatbot
-chiedendogli di eseguirlo. Ti chiede quattro cose:
+Rispondi alle quattro domande, premi il tasto «Genera il comando pronto da incollare» e
+incolla il testo in una chat nuova del chatbot che userai — Claude, ChatGPT o Gemini:
+otterrai il file Excel dell'orario del mese, vuoto e pronto da compilare. Le domande sono
+queste:
 
 1. mese e anno del file;
 2. le attività da coprire: per ognuna il nome (ambulatorio 23), quanti turni al giorno
@@ -117,22 +110,26 @@ si possono nascondere.
 
 ![I due blocchi di conteggio dei turni, mese corrente e mese precedente](img/a3-blocchi-conteggio.png)
 
-lo puoi aprire con TextEdit su Mac o Blocco note su Windows.
-Il mese successivo ti basta cambiare il nome del mese all'inizio ed eseguirlo di nuovo,
-senza passare dal modulo: la riga da cambiare è la prima del blocco DATI DA COMPILARE, in
-cima al programma.
+Se non premi «Svuota il modulo», quando torni sulla pagina per l'orario del mese successivo
+trovi i campi ancora compilati: ti basta cambiare il nome del mese e rigenerare. In
+alternativa conserva il testo generato — lo puoi aprire con TextEdit su Mac o Blocco note su
+Windows — e il mese dopo cambia il nome del mese direttamente lì: è la prima riga del blocco
+DATI DA COMPILARE, in cima al comando.
 
 ---
 
-### 2. Crea il file delle indisponibilità
+### 2. Crea il file Excel per raccogliere le indisponibilità del personale
 
-È il file che gira tra le persone, con un foglio per ogni mese: ognuno segna i propri giorni
-di assenza e tu poi copi le colonne dentro l'orario. Compila la **sezione B**, che chiede:
+Genera il file Excel con un foglio per ogni mese, da caricare online — per esempio su Google
+Drive — così che tutti possano inserire le proprie indisponibilità: ognuno compila la propria
+colonna e tu poi le copi tutte dentro l'orario. Va creato una volta l'anno. Se lo invii nella
+stessa chat in cui hai creato il file dell'orario, ai punti 3 e 4 puoi scrivere «gli stessi
+del comando precedente». Le domande sono:
 
 1. mese e anno da cui partire;
 2. quanti mesi generare (di solito 12);
-3. i nomi delle persone, gli stessi della sezione A;
-4. i codici di indisponibilità, gli stessi della sezione A.
+3. i nomi delle persone, gli stessi di «Crea il file Excel con i turni vuoti»;
+4. i codici di indisponibilità, gli stessi di «Crea il file Excel con i turni vuoti».
 
 ![Un foglio del file delle indisponibilità, con la legenda e le istruzioni per chi compila](img/b1-file-indisponibilita.png)
 
@@ -147,12 +144,11 @@ il chatbot lo ignora e assegna qualcuno che non c'è.
 
 ---
 
-### 3. Scrivi le regole di assegnazione
+### 3. Indica le regole per compilare i turni o ottienile dai tuoi orari precedenti
 
-Compila la **sezione C**, che contiene le regole con cui l'AI assegna i turni. Le domande
-sono sette:
+Qui scrivi le regole con cui l'AI assegna i turni. Le domande sono sette:
 
-1. i codici di indisponibilità, gli stessi della sezione A;
+1. i codici di indisponibilità, gli stessi di «Crea il file Excel con i turni vuoti»;
 2. la priorità delle attività: quali devono essere sempre coperte e quali possono restare
    vuote;
 3. la gerarchia tra le persone nel coprire le varie attività, vincolante o solo indicativa;
@@ -161,7 +157,7 @@ sono sette:
 6. le attività o i giorni da lasciare vuoti, perché chiusi o perché li compili tu;
 7. i limiti al numero di turni per persona.
 
-![Le sette domande della sezione C nel modulo](img/s2-sezione-c-regole.png)
+![Le sette domande nel modulo](img/s2-sezione-c-regole.png)
 
 Si compila una volta sola: le risposte restano salvate e ogni mese reincolli lo stesso
 testo.
@@ -180,26 +176,30 @@ usarla.
 
 ---
 
-### 4. Fai compilare l'orario
+### 4. Fai compilare i turni dell'orario
 
 Questo è il passaggio che ripeti ogni mese.
 
- Quando il personale ha compilato le indisponibilità, copiale nel blocco dedicato dentro il
-file Excel dell'orario vuoto, allega il file al chatbot e incolla il testo generato dalla
-sezione C: otterrai l'orario compilato.
+Quando il personale ha compilato le indisponibilità, copiale nel blocco dedicato dentro il
+file Excel dell'orario vuoto, allega il file al chatbot e incolla il testo generato da
+«Indica le regole per compilare i turni o ottienile dai tuoi orari precedenti»: otterrai il file Excel dell'orario con i turni compilati.
 
 ![L'orario con i turni assegnati: nel weekend solo la GUARDIA, STANZA 31 sempre vuota](img/c1-orario-assegnato.png)
 
 **Dal mese successivo al primo:**
 
-1. Si rigenera il file dell'orario eseguendo di nuovo il programma della sezione A che hai
-   salvato, cambiando solo il nome del mese — è la prima riga del blocco DATI DA COMPILARE — e ci si
-   copiano dentro
-   le colonne delle indisponibilità.
+1. Si rigenera il file dell'orario eseguendo di nuovo il comando di
+   «Crea il file Excel con i turni vuoti», cambiando solo il nome del mese: è la prima riga
+   del blocco DATI DA COMPILARE.
 
-   ![Dove si cambia il mese nella scheda della sezione A](img/s1-dove-scrivere-il-mese.png)
+   ![Dove si cambia il mese nel primo riquadro](img/s1-dove-scrivere-il-mese.png)
 
-2. Se vuoi tenere conto dei turni assegnati nel mese precedente, riporta il carico del mese
+2. Quando il personale ha compilato le indisponibilità, copiale nel file Excel dell'orario
+   vuoto, allegalo al chatbot e incolla il testo di «Indica le regole per compilare i turni o ottienile dai tuoi orari precedenti»
+   che hai salvato. Se non lo trovi più, puoi ricompilare i riquadri come il mese
+   precedente.
+
+3. Se vuoi tenere conto dei turni assegnati nel mese precedente, riporta il carico del mese
    appena chiuso: apri il file del mese scorso, seleziona il blocco TURNI MESE CORRENTE,
    copialo e incollalo — con *incolla speciale > valori* — nel blocco TURNI MESE PRECEDENTE
    del file nuovo. I due blocchi hanno le stesse colonne nello stesso ordine, quindi è un
@@ -208,13 +208,9 @@ sezione C: otterrai l'orario compilato.
 
    ![I due blocchi di conteggio, mese corrente e mese precedente](img/a3-blocchi-conteggio.png)
 
-3. Quando il personale ha compilato le indisponibilità, copiale nel file Excel dell'orario
-   vuoto, allegalo al chatbot e incolla il testo della sezione C che hai salvato. Se non lo
-   trovi più, puoi ricompilare la scheda della sezione C come il mese precedente.
-
-L'*incolla speciale > valori* del punto 2 non è un dettaglio: con un incolla normale si
-copiano anche le formule, e il blocco del mese precedente comincia a ricalcolarsi sul mese
-in corso, mostrando due colonne di numeri identici.
+   L'*incolla speciale > valori* non è un dettaglio: con un incolla normale si copiano anche
+   le formule, e il blocco del mese precedente comincia a ricalcolarsi sul mese in corso,
+   mostrando due colonne di numeri identici.
 
 ---
 
@@ -223,8 +219,6 @@ in corso, mostrando due colonne di numeri identici.
 Tutti gli esempi di questa pagina raccontano **lo stesso reparto finto**, così che si
 possano confrontare fra loro. Qui sotto trovi com'è fatto, come si compilano le tre schede
 e che file ne esce.
-
-**Gli esempi sono finti. Non copiarli nella tua scheda.**
 
 ### Il reparto
 
@@ -334,7 +328,7 @@ Gn = guardia notte in ALTRA SEDE, blocca tutto il giorno stesso e tutto
 C = congresso, blocca tutto il giorno
 ```
 
-Nomi e codici sono identici a quelli della sezione A, parola per parola: è la condizione
+Nomi e codici sono identici a quelli del primo riquadro, parola per parola: è la condizione
 perché le colonne si incollino al posto giusto e perché nessun codice resti senza
 significato.
 
@@ -1229,8 +1223,8 @@ Consegnami il file .xlsx.
 ### Variante: file senza blocchi di conteggio
 
 Se il file dell'orario non ha i due blocchi di conteggio — per esempio è un modello tuo,
-non generato dal programma della sezione A — il saldo di partenza va passato a mano.
-Aggiungi in testa al testo della sezione C queste righe:
+non generato dal comando di «Crea il file Excel con i turni vuoti» — il saldo di partenza va
+passato a mano. Aggiungi in testa al testo di assegnazione queste righe:
 
 ```
 Qui sotto ti incollo il numero di turni che ciascuna persona ha svolto il mese scorso.
