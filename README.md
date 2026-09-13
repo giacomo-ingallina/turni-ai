@@ -1,14 +1,13 @@
-# Turni e orari con l'AI — istruzioni e prompt
+# Turni con l'AI
 
-> **[Apri la pagina per compilare le schede](https://giacomo-ingallina.github.io/turni-ai/)**
-> — le stesse istruzioni che leggi qui, con i riquadri da riempire e il tasto che genera il
-> testo da incollare nel chatbot.
+> **[Apri la pagina per compilare le schede](https://giacomo-ingallina.github.io/turni-ai/)** — le stesse istruzioni che
+> leggi qui, con i riquadri da riempire e il tasto che genera il testo da
+> incollare nel chatbot.
 
 ## Indice
 
-- [Introduzione](#introduzione)
-- [Come fare](#come-fare)
-- [Modello di turni](#modello-di-turni-utilizzato-come-esempio)
+- [Come fare](#come-fare) — i quattro passaggi, con i riquadri da compilare
+- [Esempio](#esempio) — un reparto finto, dalle schede al file finito
 - [Domande frequenti](#domande-frequenti)
 - [Script e prompt utilizzati](#script-e-prompt-utilizzati)
 
@@ -34,30 +33,19 @@ prevedibili sull'Excel creato.
 
 ## Come fare
 
+Sono quattro passaggi. I primi due creano i file Excel di partenza e si fanno una volta
+(l'orario ogni mese, le indisponibilità una volta l'anno); il terzo scrive le regole, una
+volta sola; il quarto è quello che ripeti ogni mese.
 
-Sono previsti tre approcci differenti. Clicca su quello che ti serve.
-
-| Situazione di partenza |
-|---|
-| [Non hai orari precedenti e non hai un Excel per l'orario già pronto](#non-hai-orari-precedenti) |
-| [Hai orari precedenti e vuoi un file Excel nuovo](#hai-orari-precedenti-e-vuoi-un-file-excel-nuovo) |
-| [Hai orari precedenti e vuoi mantenere il tuo file Excel modello di orario](#hai-orari-precedenti-e-vuoi-mantenere-il-tuo-file-excel-modello-di-orario) |
+**SE HAI GIÀ UN FILE EXCEL CON I TUOI TURNI E NON VUOI CAMBIARLO, I PRIMI DUE PASSAGGI NON
+TI SERVONO:** parti dal terzo, e al quarto allega il tuo file invece di quello creato qui.
 
 ---
 
-### Non hai orari precedenti
+### 1. Crea il file dell'orario, vuoto
 
-**Sequenza: A → B → C**
-
-| Sezione | A cosa serve | Quando si usa |
-|---|---|---|
-| **A** | Crea il file mensile dell'orario dei turni, vuoto | Ogni mese |
-| **B** | Crea il file per raccogliere le indisponibilità su 12 mesi | Una volta l'anno |
-| [**C**](#prompt-c--assegnazione-dei-turni) | Assegna in modo automatico le persone ai turni | Ogni mese |
-
-**1. Crea il file dell'orario.** Compila la sezione A del modulo, premi «Genera il
-programma» e incollalo nel chatbot chiedendogli di eseguirlo. La sezione A ti chiede quattro
-cose:
+Compila la **sezione A** del modulo, premi «Genera il programma» e incollalo nel chatbot
+chiedendogli di eseguirlo. Ti chiede quattro cose:
 
 1. mese e anno del file;
 2. le attività da coprire: per ognuna il nome (ambulatorio 23), quanti turni al giorno
@@ -129,24 +117,22 @@ si possono nascondere.
 
 ![I due blocchi di conteggio dei turni, mese corrente e mese precedente](img/a3-blocchi-conteggio.png)
 
-Salva il programma generato: lo puoi aprire con TextEdit su Mac o Blocco note su Windows.
+lo puoi aprire con TextEdit su Mac o Blocco note su Windows.
 Il mese successivo ti basta cambiare il nome del mese all'inizio ed eseguirlo di nuovo,
 senza passare dal modulo: la riga da cambiare è la prima del blocco DATI DA COMPILARE, in
 cima al programma.
 
-**2. Crea il file delle indisponibilità.** Ottenuto l'orario vuoto, ti serve il file da far
-compilare alle persone. Compila la sezione B e incolla il programma dove hai incollato il
-primo. La sezione B chiede:
+---
+
+### 2. Crea il file delle indisponibilità
+
+È il file che gira tra le persone, con un foglio per ogni mese: ognuno segna i propri giorni
+di assenza e tu poi copi le colonne dentro l'orario. Compila la **sezione B**, che chiede:
 
 1. mese e anno da cui partire;
 2. quanti mesi generare (di solito 12);
 3. i nomi delle persone, gli stessi della sezione A;
 4. i codici di indisponibilità, gli stessi della sezione A.
-
-**IMPORTANTE.** I codici di indisponibilità devono essere gli stessi identici in tutte le
-sezioni — per esempio `X` = indisponibile tutto il giorno, `Gn` = guardia notte. Se un
-codice esiste nel file delle indisponibilità ma non è dichiarato nel testo di assegnazione,
-il chatbot lo ignora e assegna qualcuno che non c'è.
 
 ![Un foglio del file delle indisponibilità, con la legenda e le istruzioni per chi compila](img/b1-file-indisponibilita.png)
 
@@ -154,8 +140,17 @@ Poi carica il file su Google Drive o dove preferisci, perché le persone possano
 proprie indisponibilità. Il servizio che scegli per condividerlo ti offre le protezioni
 necessarie — password, permessi di accesso — così che lo compili solo chi vuoi tu.
 
-**3. Scrivi le regole.** Compila la sezione C, che contiene le regole con cui l'AI deve
-assegnare i turni. Le domande sono sette:
+**IMPORTANTE.**  I codici di indisponibilità devono essere gli stessi identici in tutte le
+sezioni — per esempio `X` = indisponibile tutto il giorno, `Gn` = guardia notte. Se un
+codice esiste nel file delle indisponibilità ma non è dichiarato nel testo di assegnazione,
+il chatbot lo ignora e assegna qualcuno che non c'è.
+
+---
+
+### 3. Scrivi le regole di assegnazione
+
+Compila la **sezione C**, che contiene le regole con cui l'AI assegna i turni. Le domande
+sono sette:
 
 1. i codici di indisponibilità, gli stessi della sezione A;
 2. la priorità delle attività: quali devono essere sempre coperte e quali possono restare
@@ -168,7 +163,28 @@ assegnare i turni. Le domande sono sette:
 
 ![Le sette domande della sezione C nel modulo](img/s2-sezione-c-regole.png)
 
-**4. Genera l'orario.** Quando il personale ha compilato le indisponibilità, copiale nel blocco dedicato dentro il
+Si compila una volta sola: le risposte restano salvate e ogni mese reincolli lo stesso
+testo.
+
+**Se hai già degli orari dei mesi passati, non devi scriverle a mano.** In cima alla sezione
+C c'è un testo da copiare — il PROMPT 0 — che si invia al chatbot allegando quegli orari:
+lui li legge, ricava le regole che avete usato finora e ti restituisce le sette risposte già
+scritte. Le rileggi, le correggi dove serve, e le incolli nei riquadri. Bastano tre orari,
+meglio cinque o sei.
+
+![Un orario già compilato, del tipo che si allega al PROMPT 0](img/c1-orario-assegnato.png)
+
+La scheda che ottieni è una bozza ricavata da quello che si vede negli orari, non la verità
+sul tuo gruppo: leggi le sezioni CONTRADDIZIONI e NON DETERMINABILE della risposta prima di
+usarla.
+
+---
+
+### 4. Fai compilare l'orario
+
+Questo è il passaggio che ripeti ogni mese.
+
+ Quando il personale ha compilato le indisponibilità, copiale nel blocco dedicato dentro il
 file Excel dell'orario vuoto, allega il file al chatbot e incolla il testo generato dalla
 sezione C: otterrai l'orario compilato.
 
@@ -202,230 +218,15 @@ in corso, mostrando due colonne di numeri identici.
 
 ---
 
-### Hai orari precedenti e vuoi un file Excel nuovo
+## Esempio
 
-**Sequenza: A → B → 0 → C**
+Tutti gli esempi di questa pagina raccontano **lo stesso reparto finto**, così che si
+possano confrontare fra loro. Qui sotto trovi com'è fatto, come si compilano le tre schede
+e che file ne esce.
 
-| Sezione | A cosa serve | Quando si usa |
-|---|---|---|
-| **A** | Crea il file mensile dell'orario dei turni, vuoto | Ogni mese |
-| **B** | Crea il file per raccogliere le indisponibilità su 12 mesi | Una volta l'anno |
-| [**0**](#prompt-0--estrazione-delle-regole-dagli-orari-precedenti) | Ricava le regole da orari già fatti e le mette in una scheda | Una volta sola |
-| [**C**](#prompt-c--assegnazione-dei-turni) | Assegna in modo automatico le persone ai turni | Ogni mese |
+**Gli esempi sono finti. Non copiarli nella tua scheda.**
 
-**1. Crea il file dell'orario.** Compila la sezione A del modulo, premi «Genera il
-programma» e incollalo nel chatbot chiedendogli di eseguirlo. La sezione A ti chiede quattro
-cose:
-
-1. mese e anno del file;
-2. le attività da coprire: per ognuna il nome (ambulatorio 23), quanti turni al giorno
-   (2 turni) e come si chiamano (MAT e POM);
-3. i nomi delle persone che coprono i turni;
-4. i codici di indisponibilità che usi oltre a quelli di base (`X` = non disponibile tutto
-   il giorno, più uno per ogni parte della giornata: `Xm` la mattina, `Xp` il pomeriggio,
-   `Xn` la notte).
-
-**Come chiami i turni conta**, perché da lì discendono le regole, senza che tu debba
-dichiararle:
-
-| Nome del turno | Chi lo fa |
-|---|---|
-| `MAT` | resta libero il pomeriggio |
-| `POM` | resta libero la mattina |
-| `GIORNO` | non è libero per il resto della giornata |
-| `NOTTE` | non è libero quel giorno né il giorno dopo, perché smonta |
-
-Un turno con un nome diverso da questi quattro è trattato come una mezza giornata: chi lo
-fa resta libero per gli altri turni dello stesso giorno. Se invece occupa la persona per
-l'intera giornata, dichiaralo con una riga a parte insieme alle attività:
-
-```
-AMB SERALE - 1 turno: SERA
-SERA occupa tutta la giornata
-```
-
-e se blocca anche il giorno dopo, come una notte:
-
-```
-SERA occupa la giornata e quella dopo
-```
-
-Serve soprattutto per gli **orari su tre fasce esclusive**, dove nemmeno la mattina e il
-pomeriggio convivono: chi ha fatto il turno del mattino non lavora anche di pomeriggio.
-Si scrive così:
-
-```
-RADIOLOGIA A - 3 turni: MAT, POM, NOTTE
-RADIOLOGIA B - 3 turni: MAT, POM, NOTTE
-MAT occupa tutta la giornata
-POM occupa tutta la giornata
-```
-
-La notte non va dichiarata, perché il suo comportamento è già quello. Il nome nella riga di
-dichiarazione deve essere identico all'etichetta del turno, altrimenti il programma si ferma
-e te lo dice.
-
-Se nel tuo caso servissero regole ancora diverse, chiedile al chatbot dopo aver creato il
-file.
-
-La regola per capire come va indicato un impegno: **se lo decidi tu è un'attività, se te lo
-comunicano è un'indisponibilità.**
-
-Il file che ottieni contiene, da sinistra a destra: il calendario del mese con una colonna
-per ogni turno di ogni attività, ancora vuote; tre colonne di controllo che segnalano le
-sovrapposizioni ed elencano ogni giorno chi è disponibile e chi è libero; il blocco in cui
-incollare le indisponibilità; la legenda dei codici; due blocchi che contano i turni per
-persona e per attività, uno per il mese in corso e uno per quello precedente; e in fondo due
-aree di calcolo che fanno funzionare le colonne di controllo — quelle non vanno toccate, e
-si possono nascondere.
-
-![Il calendario del mese con le colonne dei turni, ancora vuote](img/a1-orario-vuoto-turni.png)
-
-![Le tre colonne di controllo: CONTROLLO, DISPONIBILI e LIBERI](img/a4-colonne-controllo.png)
-
-![Il blocco delle indisponibilità e la legenda dei codici](img/a2-blocco-disponibilita-legenda.png)
-
-![I due blocchi di conteggio dei turni, mese corrente e mese precedente](img/a3-blocchi-conteggio.png)
-
-Salva il programma generato: lo puoi aprire con TextEdit su Mac o Blocco note su Windows.
-Il mese successivo ti basta cambiare il nome del mese all'inizio ed eseguirlo di nuovo,
-senza passare dal modulo.
-
-**2. Crea il file delle indisponibilità.** Ottenuto l'orario vuoto, ti serve il file da far
-compilare alle persone. Compila la sezione B e incolla il programma dove hai incollato il
-primo. La sezione B chiede:
-
-1. mese e anno da cui partire;
-2. quanti mesi generare (di solito 12);
-3. i nomi delle persone, gli stessi della sezione A;
-4. i codici di indisponibilità, gli stessi della sezione A.
-
-**IMPORTANTE.** I codici di indisponibilità devono essere gli stessi identici in tutte le
-sezioni — per esempio `X` = indisponibile tutto il giorno, `Gn` = guardia notte. Se un
-codice esiste nel file delle indisponibilità ma non è dichiarato nel testo di assegnazione,
-il chatbot lo ignora e assegna qualcuno che non c'è.
-
-![Un foglio del file delle indisponibilità, con la legenda e le istruzioni per chi compila](img/b1-file-indisponibilita.png)
-
-Poi carica il file su Google Drive o dove preferisci, perché le persone possano inserire le
-proprie indisponibilità. Il servizio che scegli per condividerlo ti offre le protezioni
-necessarie — password, permessi di accesso — così che lo compili solo chi vuoi tu.
-
-**3. Fatti scrivere le regole dal chatbot.** Qui sta la differenza rispetto all'approccio
-precedente: non devi compilare a mano la sezione C, perché puoi ricavarla dagli orari che
-hai già.
-
-Copia il testo della sezione 0 — che non si compila — e invialo allegando quanti più orari
-passati possibile. Il chatbot li analizza e ti restituisce la scheda della sezione C già
-riempita. Tu la controlli, la correggi e la incolli.
-
-![Un orario già compilato, del tipo che si allega al PROMPT 0](img/c1-orario-assegnato.png)
-
-Le sette domande a cui risponde sono le stesse della sezione C:
-
-1. i codici di indisponibilità, gli stessi della sezione A;
-2. la priorità delle attività: quali devono essere sempre coperte e quali possono restare
-   vuote;
-3. la gerarchia tra le persone nel coprire le varie attività, vincolante o solo indicativa;
-4. i turni fissi ricorrenti: chi, quando, dove;
-5. le esclusioni e le incompatibilità;
-6. le attività o i giorni da lasciare vuoti, perché chiusi o perché li compili tu;
-7. i limiti al numero di turni per persona.
-
-**4. Genera l'orario.** Quando il personale ha compilato le indisponibilità, copiale nel blocco dedicato dentro il
-file Excel dell'orario vuoto, allega il file al chatbot e incolla il testo generato dalla
-sezione C: otterrai l'orario compilato.
-
-![L'orario con i turni assegnati: nel weekend solo la GUARDIA, STANZA 31 sempre vuota](img/c1-orario-assegnato.png)
-
-**Dal mese successivo al primo:**
-
-1. Si rigenera il file dell'orario eseguendo di nuovo il programma della sezione A, cambiando
-   solo il nome del mese nella prima riga dei dati, e ci si copiano dentro le colonne delle
-   indisponibilità.
-
-   ![Dove si cambia il mese nella scheda della sezione A](img/s1-dove-scrivere-il-mese.png)
-
-2. Se vuoi tenere conto dei turni del mese appena chiuso, riportane il carico con *incolla
-   speciale > valori*, dal blocco TURNI MESE CORRENTE del file vecchio al blocco TURNI MESE
-   PRECEDENTE di quello nuovo.
-
-3. Si incolla il testo della sezione C che hai salvato: il PROMPT 0 non va rifatto, perché
-   le regole non cambiano da un mese all'altro.
-
----
-
-### Hai orari precedenti e vuoi mantenere il tuo file Excel modello di orario
-
-**Sequenza: B → 0 → C**
-
-| Sezione | A cosa serve | Quando si usa |
-|---|---|---|
-| **B** | Crea il file per raccogliere le indisponibilità su 12 mesi | Una volta l'anno |
-| [**0**](#prompt-0--estrazione-delle-regole-dagli-orari-precedenti) | Ricava le regole da orari già fatti e le mette in una scheda | Una volta sola |
-| [**C**](#prompt-c--assegnazione-dei-turni) | Assegna in modo automatico le persone ai turni | Ogni mese |
-
-**1. Se ti serve, crea il file delle indisponibilità.** Se ne hai già uno tuo che funziona,
-salta questo passaggio — ma controlla che i codici con cui segnali le indisponibilità (per
-esempio `X` = indisponibile tutto il giorno, `Gn` = guardia notte) siano gli stessi che
-dichiarerai al punto 1 della sezione C. Altrimenti compila la sezione B, che chiede:
-
-1. mese e anno da cui partire;
-2. quanti mesi generare (di solito 12);
-3. i nomi delle persone, gli stessi del tuo orario;
-4. i codici di indisponibilità, gli stessi che usi nel tuo orario.
-
-**IMPORTANTE.** I codici di indisponibilità devono essere gli stessi identici in tutte le
-sezioni — per esempio `X` = indisponibile tutto il giorno, `Gn` = guardia notte. Se un
-codice esiste nel file delle indisponibilità ma non è dichiarato nel testo di assegnazione,
-il chatbot lo ignora e assegna qualcuno che non c'è.
-
-![Un foglio del file delle indisponibilità, con la legenda e le istruzioni per chi compila](img/b1-file-indisponibilita.png)
-
-Poi carica il file su Google Drive o dove preferisci, perché le persone possano inserire le
-proprie indisponibilità. Il servizio che scegli per condividerlo ti offre le protezioni
-necessarie — password, permessi di accesso — così che lo compili solo chi vuoi tu.
-
-**2. Fatti scrivere le regole dal chatbot.**
-
-Copia il testo della sezione 0 — che non si compila — e invialo allegando quanti più orari
-passati possibile. Il chatbot li analizza e ti restituisce la scheda della sezione C già
-riempita. Tu la controlli, la correggi e la incolli.
-
-![Un orario già compilato, del tipo che si allega al PROMPT 0](img/c1-orario-assegnato.png)
-
-Le sette domande a cui risponde sono le stesse della sezione C:
-
-1. i codici di indisponibilità, gli stessi della sezione A;
-2. la priorità delle attività: quali devono essere sempre coperte e quali possono restare
-   vuote;
-3. la gerarchia tra le persone nel coprire le varie attività, vincolante o solo indicativa;
-4. i turni fissi ricorrenti: chi, quando, dove;
-5. le esclusioni e le incompatibilità;
-6. le attività o i giorni da lasciare vuoti, perché chiusi o perché li compili tu;
-7. i limiti al numero di turni per persona.
-
-**3. Genera l'orario.** Inserite le indisponibilità nel tuo modello di orario, quello che
-vuoi mantenere, allegalo al chatbot e incolla il testo della sezione C: otterrai l'orario
-compilato.
-
-![L'orario con i turni assegnati](img/c1-orario-assegnato.png)
-
-**Dal mese successivo al primo** carichi il tuo modello di orario con le indisponibilità
-aggiornate e reincolli il testo della sezione C che hai salvato. Se vuoi che tenga conto dei
-turni del mese appena chiuso, aggiungi in testa al testo le righe della
-[variante](#variante-file-senza-blocchi-di-conteggio), che si trova alla fine del PROMPT C,
-in cui descrivi a parole i turni svolti dal personale.
-
----
-
-## Modello di turni utilizzato come esempio
-
-Tutti gli esempi di questa pagina raccontano **lo stesso reparto**, così che si possano
-confrontare tra loro e con le immagini qui sotto. Le schede compilate per esteso sono in
-fondo, in [Esempi compilati](#esempi-compilati).
-
-Il reparto di esempio è organizzato in questo modo:
+### Il reparto
 
 **Le 8 attività da coprire**
 
@@ -444,49 +245,57 @@ Il reparto di esempio è organizzato in questo modo:
 CONTI S, FERRARI, GRECO, SANNA, LI.
 
 **I 2 codici aggiuntivi**, oltre ai quattro di base (`X` = non disponibile tutto il giorno,
-`Xm` = non disponibile la mattina, `Xp` = non disponibile il pomeriggio, `Xn` = non
-disponibile la notte):
+`Xm` la mattina, `Xp` il pomeriggio, `Xn` la notte):
 
 - `Gn` = guardia notte in ALTRA SEDE, blocca tutto il giorno stesso e tutto il giorno
   successivo
 - `C` = congresso, blocca tutto il giorno
 
-**Gli esempi sono finti. Non copiarli nella tua scheda.**
+### Sezione A, riquadro per riquadro
 
-## Esempi compilati
-
-Qui trovi, in un posto solo, gli stessi esempi che compaiono dentro i quattro prompt: le
-schede già riempite sul reparto di esempio, con i file Excel che producono. Servono a vedere
-come si risponde prima di compilare la tua.
-
-### Sezione A — scheda compilata
+**1. Mese e anno del file**
 
 ```
-1) RISPOSTA: novembre 2026
-
-2) RISPOSTA: STANZA 23 — 2 turni: MAT, POM
-             STANZA 24 — 2 turni: MAT, POM
-             STANZA 25 — 2 turni: MAT, POM
-             STANZA 26 — 2 turni: MAT, POM
-             STANZA 43 — 1 turno: MAT
-             STANZA 31 — 1 turno: MAT
-             AMB ESTERNO — 1 turno: POM
-             GUARDIA — 3 turni: MAT, POM, NOTTE
-
-3) RISPOSTA: LEONI, ROSSI M, ROSSI L, GALLINA, RUSSO, VERDI, HU,
-             MARINI, CONTI A, CONTI S, FERRARI, GRECO, SANNA, LI
-
-4) RISPOSTA: Gn = guardia notte in ALTRA SEDE, blocca tutto il giorno
-                  stesso e tutto il giorno successivo. È una notte svolta
-                  da un'altra struttura, che mi arriva già decisa: non è
-                  la GUARDIA del punto 2, che è un turno interno che
-                  assegno io.
-             C = congresso, blocca tutto il giorno
-
+novembre 2026
 ```
 
-*Da questa scheda esce il file dell'orario vuoto: 30 righe, 14 colonne di turni, il blocco
-delle indisponibilità, i due blocchi di conteggio e la legenda.*
+**2. Attività da coprire**
+
+```
+STANZA 23 - 2 turni: MAT, POM
+STANZA 24 - 2 turni: MAT, POM
+STANZA 25 - 2 turni: MAT, POM
+STANZA 26 - 2 turni: MAT, POM
+STANZA 43 - 1 turno: MAT
+STANZA 31 - 1 turno: MAT
+AMB ESTERNO - 1 turno: POM
+GUARDIA - 3 turni: MAT, POM, NOTTE
+```
+
+**3. Nomi delle persone**
+
+```
+LEONI, ROSSI M, ROSSI L, GALLINA, RUSSO, VERDI, HU, MARINI, CONTI A,
+CONTI S, FERRARI, GRECO, SANNA, LI
+```
+
+**4. Codici di indisponibilità oltre a X, Xm, Xp, Xn**
+
+```
+Gn = guardia notte in ALTRA SEDE, blocca tutto il giorno stesso e tutto
+     il giorno successivo. È una notte svolta da un'altra struttura, che
+     mi arriva già decisa: non è la GUARDIA del punto 2, che è un turno
+     interno che assegno io.
+C = congresso, blocca tutto il giorno
+```
+
+Due cose da notare. Le attività hanno un numero di turni diverso l'una dall'altra: quattro
+con mattina e pomeriggio, due con la sola mattina, una con il solo pomeriggio, una con tre
+turni compresa la notte. E la guardia compare due volte, ed è voluto: `GUARDIA` al punto 2 è
+il turno interno che assegni tu, `Gn` al punto 4 è una notte svolta in un'altra sede, che ti
+arriva già decisa. Sono due cose distinte e non vanno unificate.
+
+**Il file che ne esce**, nelle sue quattro parti:
 
 ![Il calendario del mese con le colonne dei turni, ancora vuote](img/a1-orario-vuoto-turni.png)
 
@@ -496,118 +305,128 @@ delle indisponibilità, i due blocchi di conteggio e la legenda.*
 
 ![I due blocchi di conteggio, ancora a zero](img/a3-blocchi-conteggio.png)
 
-### Sezione B — scheda compilata
+### Sezione B, riquadro per riquadro
+
+**1. Mese e anno da cui partire**
 
 ```
-1) RISPOSTA: novembre 2026
-
-2) RISPOSTA: 12
-
-3) RISPOSTA: LEONI, ROSSI M, ROSSI L, GALLINA, RUSSO, VERDI, HU,
-             MARINI, CONTI A, CONTI S, FERRARI, GRECO, SANNA, LI
-
-4) RISPOSTA: Gn = guardia notte in ALTRA SEDE, blocca tutto il giorno
-                  stesso e tutto il giorno successivo. È una notte svolta
-                  da un'altra struttura, che mi arriva già decisa.
-             C = congresso, blocca tutto il giorno
-
+novembre 2026
 ```
 
-*Da questa scheda escono 12 fogli, uno per mese, con la tendina dei codici e i fogli
-protetti senza password.*
+**2. Quanti mesi**
+
+```
+12
+```
+
+**3. Nomi delle persone**
+
+```
+LEONI, ROSSI M, ROSSI L, GALLINA, RUSSO, VERDI, HU, MARINI, CONTI A,
+CONTI S, FERRARI, GRECO, SANNA, LI
+```
+
+**4. Codici di indisponibilità**
+
+```
+Gn = guardia notte in ALTRA SEDE, blocca tutto il giorno stesso e tutto
+     il giorno successivo
+C = congresso, blocca tutto il giorno
+```
+
+Nomi e codici sono identici a quelli della sezione A, parola per parola: è la condizione
+perché le colonne si incollino al posto giusto e perché nessun codice resti senza
+significato.
+
+**Il file che ne esce**, un foglio per ogni mese:
 
 ![Un foglio del file delle indisponibilità, con la legenda e le istruzioni per chi compila](img/b1-file-indisponibilita.png)
 
-### Sezione 0 — la scheda che restituisce
+### Sezione C, riquadro per riquadro
 
-Il PROMPT 0 non si compila: si allegano gli orari dei mesi passati e lui risponde con una
-scheda già riempita, che tu correggi e incolli nel PROMPT C. Quello che ti consegna assomiglia
-a questo, con i conteggi tra parentesi che dicono su quanti mesi si verifica ogni regola:
+**1. Codici usati oltre a X, Xm, Xp, Xn**
 
 ```
-2) RISPOSTA: GUARDIA sempre coperta in tutti e tre i turni (3/3)
-             STANZA 23 e STANZA 24 sempre coperte (3/3)
-             STANZA 43 e AMB ESTERNO spesso vuoti, in media 8 giorni
-             coperti su 30: sembrano facoltativi
-
-4) RISPOSTA: SANNA: ogni martedì e giovedì pomeriggio in AMB ESTERNO (3/3)
-             LI: ogni mercoledì mattina in STANZA 43 (3/3)
-             MARINI: compare SOLO il lunedì e il mercoledì, mai negli
-             altri giorni (3/3)
-
-5) RISPOSTA: ESCLUSIONE — GRECO va solo in STANZA 26, mai altrove (3/3)
-             ESCLUSIONE — LI e SANNA non compaiono mai in GUARDIA (3/3)
-             INCOMPATIBILITÀ — ROSSI L e ROSSI M non compaiono mai lo
-             stesso giorno tra STANZA 23 e STANZA 24 (3/3)
+Gn = guardia notte in ALTRA SEDE, blocca tutto il giorno stesso e tutto
+     il giorno successivo: non è la GUARDIA che assegni tu nelle colonne
+     dei turni.
+C = congresso, blocca tutto il giorno
 ```
 
-Insieme alla scheda ti consegna anche le osservazioni incerte, le contraddizioni tra un mese
-e l'altro, l'elenco di quello che non ha potuto dedurre e il carico storico per persona.
-
-![Un orario già compilato, del tipo che si allega al PROMPT 0](img/c1-orario-assegnato.png)
-
-### Sezione C — scheda compilata
+**2. Priorità delle attività**
 
 ```
-1) RISPOSTA: Gn = guardia notte in ALTRA SEDE, blocca tutto il giorno
-                  stesso e tutto il giorno successivo. È una notte svolta
-                  da un'altra struttura, che mi arriva già decisa: non è
-                  la GUARDIA che assegni tu nelle colonne dei turni.
-             C = congresso, blocca tutto il giorno
-
-2) RISPOSTA: GUARDIA sempre coperta, priorità assoluta
-             poi in quest'ordine: STANZA 23, STANZA 24, STANZA 25,
-             STANZA 26
-             STANZA 43, STANZA 31 e AMB ESTERNO solo se avanza qualcuno:
-             possono restare vuote e non vanno coperte forzando i turni
-
-3) RISPOSTA: PRIMA DISPONIBILE — per STANZA 23: 1° LEONI, 2° ROSSI M,
-                          3° FERRARI, 4° VERDI, 5° GALLINA
-             PRIMA DISPONIBILE — per GUARDIA: 1° ROSSI L, 2° ROSSI M,
-                          3° RUSSO, 4° HU, 5° CONTI A, 6° GRECO
-             A PARITÀ — per tutte le altre attività nessuna preferenza:
-                          conta solo l'equilibrio
-
-4) RISPOSTA: SANNA: ogni martedì e ogni giovedì pomeriggio in AMB ESTERNO
-             LI: ogni mercoledì mattina in STANZA 43
-             MARINI: lavora SOLO il lunedì e il mercoledì. Negli altri
-                          giorni non va assegnato a niente, nemmeno per
-                          coprire un'attività prioritaria: consideralo
-                          non disponibile
-
-5) RISPOSTA: ESCLUSIONE — LI non va mai in GUARDIA
-             ESCLUSIONE — SANNA non va mai in GUARDIA
-             ESCLUSIONE — GRECO va solo in STANZA 26, mai fuori
-             ESCLUSIONE — in STANZA 26 vanno solo GRECO e CONTI A,
-                          nessun altro
-             INCOMPATIBILITÀ — ROSSI L e ROSSI M mai in contemporanea
-                          tra STANZA 23 e STANZA 24 (è lo stesso locale;
-                          nelle altre stanze possono stare contemporaneamente)
-
-6) RISPOSTA: CHIUSI — sabato e domenica gli ambulatori sono chiusi:
-                          coprire SOLO la GUARDIA (MAT, POM e NOTTE),
-                          tutte le stanze e l'AMB ESTERNO restano vuoti
-             LI COMPILO IO — STANZA 31: lascia le celle vuote e non
-                          assegnare nessuno, nemmeno se avanza qualcuno
-
-7) RISPOSTA: MAI OLTRE — nessuno più di 4 turni di NOTTE nel mese
-                         (colonna NOTTE della GUARDIA)
-             POSSIBILMENTE ENTRO — nessuno più di 4 turni in GUARDIA,
-                         turno NOTTE nel mese
+SEMPRE COPERTA - GUARDIA, in tutti e tre i turni
+SEMPRE COPERTA - STANZA 23, STANZA 24, STANZA 25, STANZA 26
+PUÒ RESTARE VUOTA - STANZA 43, STANZA 31, AMB ESTERNO: coprirle solo se
+     avanza qualcuno, senza forzare i turni
 ```
 
-*Da questa scheda esce l'orario con i nomi assegnati: weekend con la sola GUARDIA, STANZA 31
-vuota, nessuno assegnato il giorno dopo una notte.*
+**3. Ordine tra le persone**
+
+```
+PRIMA DISPONIBILE - per STANZA 23: 1° LEONI, 2° ROSSI M, 3° FERRARI,
+     4° VERDI, 5° GALLINA
+PRIMA DISPONIBILE - per GUARDIA: 1° ROSSI L, 2° ROSSI M, 3° RUSSO,
+     4° HU, 5° CONTI A, 6° GRECO
+A PARITÀ - per tutte le altre attività nessuna preferenza: conta solo
+     l'equilibrio
+```
+
+**4. Turni fissi ricorrenti**
+
+```
+SANNA: ogni martedì e ogni giovedì pomeriggio in AMB ESTERNO
+LI: ogni mercoledì mattina in STANZA 43
+MARINI: lavora SOLO il lunedì e il mercoledì; negli altri giorni non va
+     assegnato a niente, nemmeno per coprire un'attività prioritaria
+```
+
+**5. Esclusioni e incompatibilità**
+
+```
+ESCLUSIONE - LI non va mai in GUARDIA
+ESCLUSIONE - SANNA non va mai in GUARDIA, turno NOTTE
+ESCLUSIONE - GRECO va solo in STANZA 26, mai fuori
+ESCLUSIONE - in STANZA 26 vanno solo GRECO e CONTI A, nessun altro
+INCOMPATIBILITÀ - ROSSI L e ROSSI M mai in contemporanea tra STANZA 23 e
+     STANZA 24: è lo stesso locale, nelle altre stanze possono stare
+     insieme
+```
+
+**6. Attività o giorni da lasciare vuoti**
+
+```
+CHIUSI - sabato e domenica gli ambulatori sono chiusi: coprire SOLO la
+     GUARDIA, tutte le stanze e l'AMB ESTERNO restano vuoti
+LI COMPILO IO - STANZA 31: lascia le celle vuote e non assegnare nessuno
+```
+
+**7. Limiti al numero di turni per persona**
+
+```
+MAI OLTRE - nessuno più di 4 turni di NOTTE nel mese
+```
+
+Quattro righe meritano attenzione. `SANNA non va mai in GUARDIA, turno NOTTE` la esclude
+dalla notte ma non dalla guardia di giorno: è la forma per limitare un'esclusione a un solo
+turno. `GRECO va solo in STANZA 26` e `in STANZA 26 vanno solo GRECO e CONTI A` dicono due
+cose diverse — la prima limita la persona, la seconda l'attività — e servono entrambe.
+`MARINI lavora SOLO il lunedì e il mercoledì` è scritto in forma azionabile: dire «di solito
+lavora il lunedì» non produrrebbe nessun effetto. E il punto 6 sul weekend non va dato per
+scontato: senza quella riga il chatbot copre tutte le attività anche sabato e domenica.
+
+**Il risultato**, con i nomi assegnati:
 
 ![L'orario con i turni assegnati: nel weekend solo la GUARDIA, STANZA 31 sempre vuota](img/c1-orario-assegnato.png)
 
-![Le indisponibilità incollate nel file dell'orario prima di lanciare il PROMPT C](img/c2-indisponibilita-inserite.png)
+![Le indisponibilità incollate nel file dell'orario prima di assegnare](img/c2-indisponibilita-inserite.png)
 
 ![Le colonne di controllo dopo l'assegnazione: nessuna X, e gli elenchi di chi resta libero](img/c4-colonne-controllo.png)
 
 ![I conteggi che si aggiornano da soli, per persona e per attività](img/c3-conteggi-compilati.png)
 
----
+![I due blocchi di conteggio, ancora a zero](img/a3-blocchi-conteggio.png)
 
 ## Domande frequenti
 
