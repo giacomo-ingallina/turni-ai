@@ -61,6 +61,31 @@ def leggi_mese(testo):
     return MESI[m.group(1)], int(m.group(2)), m.group(1)
 
 # ---------------------------------------------------------------- attività
+GIORNI_SETT = {"lunedì": 0, "lunedi": 0, "martedì": 1, "martedi": 1,
+               "mercoledì": 2, "mercoledi": 2, "giovedì": 3, "giovedi": 3,
+               "venerdì": 4, "venerdi": 4, "sabato": 5, "domenica": 6}
+
+# «GIORNO solo sabato e domenica»  -> vale per tutte le attività
+SOLO = re.compile(r"^\s*([A-Za-z0-9 ,ed]+?)\s+solo\s+(.+?)\s*\.?\s*$", re.I)
+# «GUARDIA, turno GIORNO: solo sabato e domenica»  -> vale per quella sola attività
+SOLO_ATT = re.compile(r"^\s*(.+?)\s*,\s*turn[oi]\s+(.+?)\s*:\s*solo\s+(.+?)\s*\.?\s*$",
+                      re.I)
+
+def leggi_giorni(testo):
+    """«sabato e domenica», «dal lunedì al venerdì», «nei giorni feriali»,
+    «nel weekend»: restituisce l'insieme dei giorni, 0 = lunedì."""
+    t = testo.lower()
+    if re.search(r"\bferial", t):
+        return {0, 1, 2, 3, 4}
+    if re.search(r"\bweekend|fine settimana|festiv", t):
+        return {5, 6}
+    m = re.search(r"\bdal\s+([a-zì]+)\s+al\s+([a-zì]+)", t)
+    if m and m.group(1) in GIORNI_SETT and m.group(2) in GIORNI_SETT:
+        a, b = GIORNI_SETT[m.group(1)], GIORNI_SETT[m.group(2)]
+        return set(range(a, b + 1)) if a <= b else set(range(a, 7)) | set(range(0, b + 1))
+    trovati = {GIORNI_SETT[g] for g in GIORNI_SETT if re.search(r"\b" + g + r"\b", t)}
+    return trovati or None
+
 OCCUPA = re.compile(
     r"^\s*([A-Za-z0-9 ]+?)\s+occupa\s+"
     r"(tutta la giornata|tutto il giorno|la giornata e quella dopo|"
@@ -72,9 +97,36 @@ def leggi_attivita(testo):
     «SERA occupa tutta la giornata» oppure «SERA occupa la giornata e quella dopo»."""
     fuori, avvisi = [], []
     esclusivi, prolungati = [], []
+    giorni, giorni_att = {}, {}
     for riga in _pulisci(testo).split("\n"):
         r = riga.strip().strip("-•").strip()
         if not r:
+            continue
+        m = SOLO_ATT.match(r)
+        if m:
+            gg = leggi_giorni(m.group(3))
+            if gg is None:
+                raise Problema(
+                    f"nella riga «{r}» non capisco in quali giorni. Scrivi per esempio "
+                    f"«GUARDIA, turno GIORNO: solo sabato e domenica».")
+            att = m.group(1).strip().upper()
+            for turno in re.split(r"[,;]| e ", m.group(2)):
+                turno = turno.strip().upper()
+                if turno:
+                    giorni_att[(att, turno)] = gg
+            continue
+        m = SOLO.match(r)
+        if m and " solo " in r.lower() and ":" not in r:
+            gg = leggi_giorni(m.group(2))
+            if gg is None:
+                raise Problema(
+                    f"nella riga «{r}» non capisco in quali giorni. Scrivi per esempio "
+                    f"«GIORNO solo sabato e domenica», «MAT e POM solo dal lunedì al "
+                    f"venerdì» oppure «SERA solo nel weekend».")
+            for turno in re.split(r"[,;]| e ", m.group(1)):
+                turno = turno.strip().upper()
+                if turno:
+                    giorni[turno] = gg
             continue
         m = OCCUPA.match(r)
         if m:
@@ -108,7 +160,19 @@ def leggi_attivita(testo):
         raise Problema("dichiari che " + ", ".join(ignoti) + " occupa tutta la giornata, "
                        "ma quel turno non compare in nessuna attività. Controlla come "
                        "l'hai scritto: deve essere identico all'etichetta del turno.")
-    return fuori, esclusivi, prolungati, avvisi
+    ignoti = [t for t in giorni if t not in tutti]
+    if ignoti:
+        raise Problema("dichiari i giorni di " + ", ".join(ignoti) + ", ma quel turno non "
+                       "compare in nessuna attività. Il nome deve essere identico "
+                       "all'etichetta del turno.")
+    coppie = {(n, t) for n, ts in fuori for t in ts}
+    sbagliate = [f"{a}, turno {t}" for (a, t) in giorni_att if (a, t) not in coppie]
+    if sbagliate:
+        nomi = ", ".join(n for n, _ in fuori)
+        raise Problema("queste dichiarazioni non corrispondono a nessuna attività con quel "
+                       "turno: " + "; ".join(sbagliate) + ". Le attività sono: " + nomi +
+                       ". Nome e turno devono essere scritti come nella riga dell'attività.")
+    return fuori, esclusivi, prolungati, giorni, giorni_att, avvisi
 
 # ---------------------------------------------------------------- persone
 def leggi_persone(testo):
@@ -201,7 +265,7 @@ def leggi_codici(testo, parti=None):
 try:
     NMESE, ANNO, _nome_mese = leggi_mese(MESE_E_ANNO)
     MESE = _nome_mese.upper()
-    ATTIVITA, _escl, _prol, _av1 = leggi_attivita(ATTIVITA_DA_COPRIRE)
+    ATTIVITA, _escl, _prol, _giorni, _giorni_att, _av1 = leggi_attivita(ATTIVITA_DA_COPRIRE)
     PERSONE = leggi_persone(NOMI_DELLE_PERSONE)
     _parti = []
     for _, _ts in ATTIVITA:
@@ -267,6 +331,23 @@ for c, _, q in CODICI_IN_PIU:
 #   NOTTE ....... occupa la giornata e anche quella dopo, perché si smonta
 # Ogni altro turno è una mezza giornata, a meno che tu non lo dichiari fra le
 # attività con una riga «NOME occupa tutta la giornata» o «... e quella dopo».
+# i turni attivi solo in certi giorni della settimana: fuori da quei giorni la
+# cella non va usata, e nessuno risulta libero per quel turno
+GIORNI_PARTE = {p: _giorni.get(p) for p in PARTI}
+GIORNI_ATT = dict(_giorni_att)
+
+def attiva(parte, giorno_sett, attivita=None):
+    """La regola dell'attività, se c'è, ha la precedenza su quella generale."""
+    if attivita is not None and (attivita, parte) in GIORNI_ATT:
+        return giorno_sett in GIORNI_ATT[(attivita, parte)]
+    gg = GIORNI_PARTE.get(parte)
+    return gg is None or giorno_sett in gg
+
+def parti_attive(giorno_sett):
+    """Una parte della giornata conta se almeno un'attività la usa quel giorno."""
+    return [p for p in PARTI
+            if any(attiva(p, giorno_sett, n) for n, ts in ATTIVITA if p in ts)]
+
 ESCL = [p for p in PARTI if p in ("GIORNO", "NOTTE") or p in _escl]
 DOPO_TURNO = [p for p in PARTI if p == "NOTTE" or p in _prol]
 
@@ -278,6 +359,7 @@ gr   = PatternFill("solid", fgColor="D9D9D9")
 corr = PatternFill("solid", fgColor="E2EFDA")
 prec = PatternFill("solid", fgColor="FCE4D6")
 app  = PatternFill("solid", fgColor="F2F2F2")
+spento = PatternFill("solid", fgColor="BFBFBF")     # turno che quel giorno non c'è
 mid  = Alignment(horizontal="center", vertical="center", wrap_text=False)
 sx   = Alignment(horizontal="left",   vertical="center", wrap_text=False)
 bordo = Border(*[Side(style="thin", color="BFBFBF")] * 4)
@@ -388,23 +470,24 @@ def pezzo(i, r, con_turni):
     if con_turni and r > R0:
         for e in DOPO_TURNO:
             smonto += f'*{libero(e, r - 1)}'
+    attive = parti_attive(calendar.weekday(ANNO, NMESE, r - R0 + 1))
     pezzi = []
-    for parte in PARTI:
+    for parte in attive:
         t = f'({cod}<>"{COD_PARTE[parte]}")'
         for x in EXTRA[parte]:
             t += f'*({cod}<>"{x}")'
         if con_turni:
             # non assegnato in questa parte, e in nessuna parte esclusiva;
             # se la parte è essa stessa esclusiva, in nessuna parte affatto
-            da_escludere = PARTI if parte in ESCL else \
-                           [parte] + [e for e in ESCL if e != parte]
+            da_escludere = attive if parte in ESCL else \
+                           [parte] + [e for e in ESCL if e != parte and e in attive]
             for e in da_escludere:
                 t += f'*{libero(e)}'
             t += smonto
         pezzi.append(t)
     tot = "0+" + "+".join(f"({x})" for x in pezzi)
     suff = "".join(f'&IF({x},"{SUF_PARTE[p]}","")'
-                   for p, x in zip(PARTI, pezzi))
+                   for p, x in zip(attive, pezzi))
     return (f'=IF({interi}>0,"",'
             f'IF({tot}=0,"",'
             f'IF({tot}={len(pezzi)},{nome}&", ",'
@@ -439,9 +522,18 @@ for r in (1, 2, 3):
         if r == 3: cel.fill = gr; cel.border = bordo
 for i in range(NG):
     r = R0 + i; fine = calendar.weekday(ANNO, NMESE, i + 1) >= 5
+    gs = calendar.weekday(ANNO, NMESE, i + 1)
     for c in list(range(1, C_LIB + 1)) + list(range(C_GG, P1 + 1)):
         cel = ws.cell(row=r, column=c); cel.border = bordo; cel.alignment = mid; cel.font = f_n
         if fine: cel.fill = we
+    # i turni che quel giorno non esistono: cella barrata in grigio
+    for nome_att, turni_att in ATTIVITA:
+        a, b = mappa[nome_att]
+        for k, t_ in enumerate(turni_att):
+            if not attiva(t_, gs, nome_att):
+                cel = ws.cell(row=r, column=a + k)
+                cel.fill = spento
+                cel.value = None
     for c in (1, 2, C_GG, C_DD):
         if not fine: ws.cell(row=r, column=c).fill = gr
     for c in range(A_D, ULT + 1):
@@ -490,6 +582,12 @@ if len(aiuto) > 250:
             ". Il significato di ciascuno è nella legenda, a destra del foglio."
 dv.prompt = aiuto
 ws.add_data_validation(dv); dv.add(f"{LP0}{R0}:{LP1}{R1}")
+
+if any(GIORNI_PARTE.get(p) for p in PARTI) or GIORNI_ATT:
+    _righe_nota = 4 + len(LEGENDA) + 1
+    ws.cell(row=_righe_nota, column=C_LEG,
+            value="Le celle grigio scuro sono turni che quel giorno non esistono: "
+                  "non vanno compilate.").font = Font(name=CAL, size=10, italic=True)
 
 ws.freeze_panes = "C4"
 ws.protection.sheet = False

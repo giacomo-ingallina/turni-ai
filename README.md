@@ -84,9 +84,38 @@ MAT occupa tutta la giornata
 POM occupa tutta la giornata
 ```
 
-La notte non va dichiarata, perché il suo comportamento è già quello. Il nome nella riga di
-dichiarazione deve essere identico all'etichetta del turno, altrimenti il programma si ferma
-e te lo dice.
+La notte non va dichiarata, perché il suo comportamento è già quello.
+
+**Un turno può anche esistere solo in certi giorni della settimana.** Capita con la guardia:
+dal lunedì al venerdì è divisa in mattina, pomeriggio e notte, mentre nel weekend è su due
+turni soli, giornata e notte. E capita con un ambulatorio aperto anche il sabato mattina.
+Si dichiara attività per attività, così due attività possono avere calendari diversi:
+
+```
+AMB 24 - 2 turni: MAT, POM
+AMB 24, turno MAT: solo dal lunedì al sabato
+AMB 24, turno POM: solo dal lunedì al venerdì
+GUARDIA - 4 turni: MAT, POM, GIORNO, NOTTE
+GUARDIA, turni MAT e POM: solo dal lunedì al venerdì
+GUARDIA, turno GIORNO: solo sabato e domenica
+```
+
+Il sabato, in questo esempio, l'ambulatorio lavora di mattina e la guardia è sulla giornata
+intera: due turni chiamati entrambi `MAT`, uno attivo e uno no, nello stesso giorno.
+
+Se invece la regola vale per tutte le attività, basta la forma corta senza il nome:
+
+```
+GIORNO solo sabato e domenica
+```
+
+Nel file le colonne ci sono tutte, ma **le celle dei giorni in cui quel turno non esiste sono
+grigio scuro**: non vanno compilate, e nessuno risulta libero per un turno che quel giorno
+non c'è. I giorni si scrivono come viene: «sabato e domenica», «dal lunedì al sabato», «nei
+giorni feriali», «nel weekend».
+
+Il nome nella riga di dichiarazione deve essere identico all'etichetta del turno, altrimenti
+il programma si ferma e te lo dice.
 
 Se nel tuo caso servissero regole ancora diverse, chiedile al chatbot dopo aver creato il
 file.
@@ -118,7 +147,7 @@ DATI DA COMPILARE, in cima al comando.
 
 ---
 
-### 2. Crea il file Excel per raccogliere le indisponibilità del personale
+### 2. Crea il file Excel per raccogliere le indisponibilità
 
 Genera il file Excel con un foglio per ogni mese, da caricare online — per esempio su Google
 Drive — così che tutti possano inserire le proprie indisponibilità: ognuno compila la propria
@@ -144,7 +173,7 @@ il chatbot lo ignora e assegna qualcuno che non c'è.
 
 ---
 
-### 3. Indica le regole per compilare i turni o ottienile dai tuoi orari precedenti
+### 3. Indica le regole per compilare i turni
 
 Qui scrivi le regole con cui l'AI assegna i turni. Le domande sono sette:
 
@@ -178,11 +207,12 @@ usarla.
 
 ### 4. Fai compilare i turni dell'orario
 
-Questo è il passaggio che ripeti ogni mese.
+1. Quando il personale ha compilato le indisponibilità, copia le loro colonne nel blocco
+   dedicato dentro il file Excel dell'orario vuoto.
+2. Allega quel file al chatbot.
+3. Incolla il testo generato da «Indica le regole per compilare i turni».
 
-Quando il personale ha compilato le indisponibilità, copiale nel blocco dedicato dentro il
-file Excel dell'orario vuoto, allega il file al chatbot e incolla il testo generato da
-«Indica le regole per compilare i turni o ottienile dai tuoi orari precedenti»: otterrai il file Excel dell'orario con i turni compilati.
+Otterrai il file Excel dell'orario con i turni compilati.
 
 ![L'orario con i turni assegnati: nel weekend solo la GUARDIA, STANZA 31 sempre vuota](img/c1-orario-assegnato.png)
 
@@ -195,7 +225,7 @@ file Excel dell'orario vuoto, allega il file al chatbot e incolla il testo gener
    ![Dove si cambia il mese nel primo riquadro](img/s1-dove-scrivere-il-mese.png)
 
 2. Quando il personale ha compilato le indisponibilità, copiale nel file Excel dell'orario
-   vuoto, allegalo al chatbot e incolla il testo di «Indica le regole per compilare i turni o ottienile dai tuoi orari precedenti»
+   vuoto, allegalo al chatbot e incolla il testo di «Indica le regole per compilare i turni»
    che hai salvato. Se non lo trovi più, puoi ricompilare i riquadri come il mese
    precedente.
 
