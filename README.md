@@ -207,10 +207,10 @@ usarla.
 
 ### 4. Fai compilare i turni dell'orario
 
-1. Quando il personale ha compilato le indisponibilità, copia le loro colonne nel blocco
-   dedicato dentro il file Excel dell'orario vuoto.
-2. Allega quel file al chatbot.
-3. Incolla il testo generato da «Indica le regole per compilare i turni».
+1. Quando il personale ha compilato le indisponibilità, copia le colonne delle
+   indisponibilità nel blocco dedicato dentro il file Excel dell'orario vuoto.
+2. Allega il file con le indisponibilità inserite al chatbot — Claude, ChatGPT o Gemini.
+3. Incolla nel chatbot il comando generato da «Indica le regole per compilare i turni».
 
 Otterrai il file Excel dell'orario con i turni compilati.
 
