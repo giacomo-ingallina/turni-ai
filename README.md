@@ -15,23 +15,40 @@
 
 ## Introduzione
 
-I chatbot come Claude, ChatGPT e GEMINI, anche nelle versioni gratuite, possono essere utilizzati per organizzare e assegnare i
-turni di un orario per i più vari tipi di attività: un reparto ospedaliero con ambulatori,
-un centro sportivo, una scuola, un negozio, o anche una suddivisione di nonni e babysitter
-nella gestione dei nipoti.
+I chatbot come Claude, ChatGPT e Gemini, anche nelle versioni gratuite, possono essere
+utilizzati per organizzare e assegnare i turni di un orario per i più vari tipi di attività:
+un reparto ospedaliero con ambulatori, un centro sportivo, una scuola, un negozio, o anche
+una suddivisione di nonni e babysitter nella gestione dei nipoti.
 
-Tuttavia, scrivere in modo efficace le istruzioni per il chatbot, chiamate **prompt**, può
-essere lungo e complicato.
+Scrivere in modo efficace le istruzioni per il chatbot, chiamate **prompt**, può essere
+lungo e complicato.
 
-Questa pagina è pensata per facilitare questo processo: è sufficiente inserire a parole poche caratteristiche dell’orario desiderato (nomi del personale, indisponibilità, attività da assegnare e regole da seguire nella compilazione dei turni) per creare script e istruzioni pronte da copiare nei chatbot e ottenere il modello excel di orario compilato secondo le regole indicate e le indisponibilità segnalate.
+Questa pagina è pensata per facilitare questo processo: è sufficiente inserire a parole poche
+caratteristiche dell'orario desiderato — nomi del personale, indisponibilità, attività da
+assegnare e regole da seguire nella compilazione dei turni — per creare comandi pronti da
+copiare nei chatbot e ottenere l'orario con i turni compilati secondo l'organizzazione, le
+regole e le indisponibilità indicate.
 
 Se ti servissero caratteristiche non previste da queste istruzioni, potrai aggiungerle
 dialogando con il chatbot una volta creato l'orario, oppure inserire manualmente i turni non
 prevedibili sull'Excel creato.
 
----
-
 ## Come fare
+
+<table>
+<tr>
+<td width="25%"><img src="img/f1-scegli.svg" alt="Uno schermo con quattro riquadri e il puntatore del mouse"></td>
+<td width="25%"><img src="img/f2-compila.svg" alt="Campi di testo compilati, con il cursore che scrive"></td>
+<td width="25%"><img src="img/f3-genera.svg" alt="Il tasto sotto i campi, premuto, con la conferma «copiato»"></td>
+<td width="25%"><img src="img/f4-chatbot.svg" alt="Il comando incollato in un chatbot e il file scaricato"></td>
+</tr>
+<tr>
+<td><b>1</b> Scegli tra i quattro riquadri qui sotto la funzione che ti serve</td>
+<td><b>2</b> Compila i campi per personalizzare l'orario</td>
+<td><b>3</b> Premi il tasto sotto i campi: il comando è pronto e già copiato</td>
+<td><b>4</b> Apri il tuo chatbot — Claude, ChatGPT o Gemini — incolla il comando e scarica il file con l'orario</td>
+</tr>
+</table>
 
 ### 1. Crea il file Excel con i turni vuoti
 
@@ -205,10 +222,13 @@ usarla.
 
 ---
 
-### 4. Fai compilare i turni dell'orario
+### 4 Fai compilare i turni dell'orario
 
 1. Quando il personale ha compilato le indisponibilità, copia le colonne delle
    indisponibilità nel blocco dedicato dentro il file Excel dell'orario vuoto.
+
+   ![Il blocco dell'orario in cui si incollano le indisponibilità](img/c2-indisponibilita-inserite.png)
+
 2. Allega il file con le indisponibilità inserite al chatbot — Claude, ChatGPT o Gemini.
 3. Incolla nel chatbot il comando generato da «Indica le regole per compilare i turni».
 
