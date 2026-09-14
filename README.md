@@ -37,15 +37,15 @@ prevedibili sull'Excel creato.
 
 <table>
 <tr>
-<td width="25%"><img src="img/f1-scegli.svg" alt="Uno schermo con quattro riquadri e il puntatore del mouse"></td>
-<td width="25%"><img src="img/f2-compila.svg" alt="Campi di testo compilati, con il cursore che scrive"></td>
-<td width="25%"><img src="img/f3-genera.svg" alt="Il tasto sotto i campi, premuto, con la conferma «copiato»"></td>
-<td width="25%"><img src="img/f4-chatbot.svg" alt="Il comando incollato in un chatbot e il file scaricato"></td>
+<td width="25%"><img src="img/m1-scegli.svg" alt="Uno schermo con i quattro riquadri e il puntatore del mouse"></td>
+<td width="25%"><img src="img/m2-compila.svg" alt="I campi del modulo, uno compilato e uno con il cursore che scrive"></td>
+<td width="25%"><img src="img/m3-genera.svg" alt="Il tasto con il puntatore sopra e la conferma «copiato»"></td>
+<td width="25%"><img src="img/m4-chatbot.svg" alt="Il comando incollato in un chatbot e il file scaricato"></td>
 </tr>
 <tr>
 <td><b>1</b> Scegli tra i quattro riquadri qui sotto la funzione che ti serve</td>
 <td><b>2</b> Compila i campi per personalizzare l'orario</td>
-<td><b>3</b> Premi il tasto sotto i campi: il comando è pronto e già copiato</td>
+<td><b>3</b> Premi il tasto: il comando è pronto e già copiato</td>
 <td><b>4</b> Apri il tuo chatbot — Claude, ChatGPT o Gemini — incolla il comando e scarica il file con l'orario</td>
 </tr>
 </table>

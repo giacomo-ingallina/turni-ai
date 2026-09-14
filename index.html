@@ -54,23 +54,19 @@ h1{
 .indice a{display:block;padding:13px 4px;color:var(--timbro);font-weight:600;
   font-size:19px;text-decoration:none}
 .indice a:hover{background:var(--carta-alt);text-decoration:underline}
-.passi{display:flex;flex-wrap:wrap;gap:16px;margin:8px 0 40px}
+.passi{display:flex;gap:18px;margin:8px 0 44px;flex-wrap:wrap}
+.passo{flex:1 1 0;min-width:180px;margin:0}
+.passo img{width:100%;height:auto;display:block;margin-bottom:10px}
+.passo .che{display:block;font-weight:600;font-size:16px;line-height:1.35}
+.passo .che b{color:var(--timbro);font-family:"IBM Plex Mono",monospace;margin-right:5px}
 .passo-finale{margin-top:64px;border-top:1px solid var(--riga);padding-top:10px}
-.flusso{display:flex;gap:10px;align-items:flex-start;margin:6px 0 44px;flex-wrap:wrap}
-.flusso figure{flex:1 1 200px;min-width:0;margin:0;text-align:left}
-.flusso img{width:100%;border:1px solid var(--riga);border-radius:2px;display:block;
-  background:#fff}
-.flusso figcaption{font-size:15.5px;line-height:1.35;margin-top:10px}
-.flusso figcaption b{color:var(--timbro);font-family:"IBM Plex Mono",monospace;
-  margin-right:5px}
-.passo{flex:1 1 calc(50% - 8px);min-width:0;overflow-wrap:break-word;text-decoration:none;color:inherit;
+.passo{flex:1 1 calc(25% - 12px);min-width:0;overflow-wrap:break-word;text-decoration:none;color:inherit;
   border:1px solid var(--riga);border-radius:2px;background:#fff;padding:12px;
   transition:border-color .15s, box-shadow .15s, transform .15s}
 .passo:hover{border-color:var(--inchiostro);box-shadow:4px 4px 0 var(--timbro);
   transform:translate(-1px,-1px)}
-.passo img{width:100%;height:120px;object-fit:cover;object-position:left top;
-  border:1px solid var(--riga);display:block;margin-bottom:10px}
-.passo .che{display:block;font-weight:600;font-size:20px;line-height:1.3}
+.passo img{width:100%;height:auto;display:block;margin-bottom:8px}
+.passo .che{display:block;font-weight:600;font-size:16px;line-height:1.3}
 .passo .che b{color:var(--timbro);font-family:"IBM Plex Mono",monospace;margin-right:6px}
 .spiegazione{border:1px solid var(--riga);border-radius:2px;background:var(--carta);
   padding:0 18px;margin:0 0 26px}
@@ -254,10 +250,14 @@ footer{margin-top:56px;border-top:1px solid var(--riga);padding-top:18px;
   font-size:14px;color:var(--tenue)}
 footer a{color:var(--timbro)}
 
+@media (max-width:1000px){
+  .passo{flex:1 1 40%}
+}
 @media (max-width:760px){
   .modulo{padding:18px}
   .apertura{gap:24px}
   .indice{flex:1 1 100%}
+  .passo{flex:1 1 100%}
 }
 @media (prefers-reduced-motion:reduce){
   *{transition:none !important}
@@ -303,64 +303,30 @@ creato.</p>
 
 <section class="istruzioni" id="come-fare">
   <h2>Come fare</h2>
-  <table>
-<tr>
-<td width="25%"><img src="img/f1-scegli.svg" alt="Uno schermo con quattro riquadri e il puntatore del mouse"></td>
-<td width="25%"><img src="img/f2-compila.svg" alt="Campi di testo compilati, con il cursore che scrive"></td>
-<td width="25%"><img src="img/f3-genera.svg" alt="Il tasto sotto i campi, premuto, con la conferma «copiato»"></td>
-<td width="25%"><img src="img/f4-chatbot.svg" alt="Il comando incollato in un chatbot e il file scaricato"></td>
-</tr>
-<tr>
-<td><b>1</b> Scegli tra i quattro riquadri qui sotto la funzione che ti serve</td>
-<td><b>2</b> Compila i campi per personalizzare l'orario</td>
-<td><b>3</b> Premi il tasto sotto i campi: il comando è pronto e già copiato</td>
-<td><b>4</b> Apri il tuo chatbot — Claude, ChatGPT o Gemini — incolla il comando e scarica il file con l'orario</td>
-</tr>
-</table>
+  
 
 </section>
 
-<div class="flusso">
-  <figure>
-    <img src="img/f1-scegli.svg" alt="Uno schermo con quattro riquadri e il puntatore del mouse">
-    <figcaption><b>1</b> Scegli tra i quattro riquadri qui sotto la funzione che ti serve</figcaption>
+<div class="passi">
+  <figure class="passo">
+    <img src="img/m1-scegli.svg" alt="Uno schermo con i quattro riquadri e il puntatore del mouse su uno di essi">
+    <span class="che"><b>1</b> Scegli tra i quattro riquadri qui sotto la funzione che ti serve</span>
   </figure>
-  <figure>
-    <img src="img/f2-compila.svg" alt="Campi di testo compilati, con il cursore che scrive">
-    <figcaption><b>2</b> Compila i campi per personalizzare l'orario</figcaption>
+  <figure class="passo">
+    <img src="img/m2-compila.svg" alt="I campi del modulo, uno compilato e uno con il cursore che scrive">
+    <span class="che"><b>2</b> Compila i campi per personalizzare l'orario</span>
   </figure>
-  <figure>
-    <img src="img/f3-genera.svg" alt="Il tasto sotto i campi, premuto, con la conferma «copiato»">
-    <figcaption><b>3</b> Premi il tasto sotto i campi: il comando è pronto e già copiato</figcaption>
+  <figure class="passo">
+    <img src="img/m3-genera.svg" alt="Il tasto sotto i campi con il puntatore sopra e la conferma «copiato»">
+    <span class="che"><b>3</b> Premi il tasto: il comando è pronto e già copiato</span>
   </figure>
-  <figure>
-    <img src="img/f4-chatbot.svg" alt="Il comando incollato in un chatbot e il file scaricato">
-    <figcaption><b>4</b> Apri il tuo chatbot — Claude, ChatGPT o Gemini — incolla il comando e scarica il file con l'orario</figcaption>
+  <figure class="passo">
+    <img src="img/m4-chatbot.svg" alt="Il comando incollato in un chatbot, con il tasto invia e il file scaricato">
+    <span class="che"><b>4</b> Apri il tuo chatbot — Claude, ChatGPT o Gemini — incolla il comando e scarica il file con l'orario</span>
   </figure>
 </div>
 
-<div class="passi">
-  <a class="passo vai" href="#compila" data-sezione="A">
-    <img src="img/a1-orario-vuoto-turni.png" alt="">
-    
-    <span class="che"><b>1</b> Crea il file Excel con i turni vuoti</span>
-  </a>
-  <a class="passo vai" href="#compila" data-sezione="B">
-    <img src="img/b1-file-indisponibilita.png" alt="">
-    
-    <span class="che"><b>2</b> Crea il file Excel per raccogliere le indisponibilità</span>
-  </a>
-  <a class="passo vai" href="#compila" data-sezione="C">
-    <img src="img/s2-sezione-c-regole.png" alt="">
-    
-    <span class="che"><b>3</b> Indica le regole per compilare i turni</span>
-  </a>
-  <a class="passo" href="#passo-4">
-    <img src="img/c1-orario-assegnato.png" alt="">
-    
-    <span class="che"><b>4</b> Fai compilare i turni dell'orario</span>
-  </a>
-</div>
+
 
 
 <div class="scelta" id="compila" role="tablist" aria-label="Scegli la sezione"></div>
