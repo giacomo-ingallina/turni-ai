@@ -43,10 +43,10 @@ prevedibili sull'Excel creato.
 <td width="25%"><img src="img/m4-chatbot.svg" alt="Il comando incollato in un chatbot e il file scaricato"></td>
 </tr>
 <tr>
-<td><b>1</b> Scegli tra i quattro riquadri qui sotto la funzione che ti serve</td>
-<td><b>2</b> Compila i campi per personalizzare l'orario</td>
-<td><b>3</b> Premi il tasto: il comando è pronto e già copiato</td>
-<td><b>4</b> Apri il tuo chatbot — Claude, ChatGPT o Gemini — incolla il comando e scarica il file con l'orario</td>
+<td>Scegli tra i quattro riquadri qui sotto la funzione che ti serve</td>
+<td>Compila i campi per personalizzare l'orario</td>
+<td>Premi il tasto: il comando è pronto e già copiato</td>
+<td>Apri il tuo chatbot — Claude, ChatGPT o Gemini — incolla il comando e scarica il file con l'orario</td>
 </tr>
 </table>
 

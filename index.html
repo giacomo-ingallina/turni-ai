@@ -54,15 +54,31 @@ h1{
 .indice a{display:block;padding:13px 4px;color:var(--timbro);font-weight:600;
   font-size:19px;text-decoration:none}
 .indice a:hover{background:var(--carta-alt);text-decoration:underline}
-.passi{display:flex;gap:18px;margin:8px 0 44px;flex-wrap:wrap}
-.passo{flex:1 1 0;min-width:180px;margin:0}
-.passo img{width:100%;height:auto;display:block;margin-bottom:10px}
-.passo .che{display:block;font-weight:600;font-size:16px;line-height:1.35}
-.passo .che b{color:var(--timbro);font-family:"IBM Plex Mono",monospace;margin-right:5px}
+.flusso{display:flex;gap:6px;align-items:flex-start;margin:8px 0 40px;flex-wrap:wrap}
+.flusso figure{flex:1 1 0;min-width:170px;margin:0}
+.flusso img{width:100%;height:auto;display:block;margin-bottom:8px}
+.flusso figcaption{font-size:15px;line-height:1.35;color:var(--inchiostro)}
+.freccia{flex:0 0 28px;color:var(--timbro);align-self:center;margin-top:-32px}
+
+.passi{margin:0 0 44px;font-size:0}
+.passo{display:inline-block;width:48.4%;vertical-align:top;box-sizing:border-box;
+  text-decoration:none;color:inherit;font-size:1rem;
+  border:1px solid var(--riga);border-radius:2px;background:#fff;padding:12px;
+  margin:0 3% 16px 0;
+  transition:border-color .15s, box-shadow .15s, transform .15s}
+.passo:nth-child(2n){margin-right:0}
+.passo:hover{border-color:var(--inchiostro);box-shadow:4px 4px 0 var(--timbro);
+  transform:translate(-1px,-1px)}
+.passo .foto{display:block;height:124px;overflow:hidden;border:1px solid var(--riga);
+  margin-bottom:10px;background:#fff}
+.passo .foto img{width:100%;display:block}
+.passo .che{display:block;font-weight:600;font-size:19px;line-height:1.3}
+.passo .che b{color:var(--timbro);font-family:"IBM Plex Mono",monospace;margin-right:6px}
 .passo-finale{margin-top:64px;border-top:1px solid var(--riga);padding-top:10px}
 .passo{flex:1 1 calc(25% - 12px);min-width:0;overflow-wrap:break-word;text-decoration:none;color:inherit;
   border:1px solid var(--riga);border-radius:2px;background:#fff;padding:12px;
   transition:border-color .15s, box-shadow .15s, transform .15s}
+.passo:nth-child(2n){margin-right:0}
 .passo:hover{border-color:var(--inchiostro);box-shadow:4px 4px 0 var(--timbro);
   transform:translate(-1px,-1px)}
 .passo img{width:100%;height:auto;display:block;margin-bottom:8px}
@@ -251,13 +267,15 @@ footer{margin-top:56px;border-top:1px solid var(--riga);padding-top:18px;
 footer a{color:var(--timbro)}
 
 @media (max-width:1000px){
-  .passo{flex:1 1 40%}
+  .flusso figure{flex:1 1 40%}
+  .freccia{display:none}
 }
 @media (max-width:760px){
   .modulo{padding:18px}
   .apertura{gap:24px}
   .indice{flex:1 1 100%}
-  .passo{flex:1 1 100%}
+  .flusso figure{flex:1 1 100%}
+  .passo{width:100%;margin-right:0}
 }
 @media (prefers-reduced-motion:reduce){
   *{transition:none !important}
@@ -307,23 +325,45 @@ creato.</p>
 
 </section>
 
-<div class="passi">
-  <figure class="passo">
+<div class="flusso">
+  <figure>
     <img src="img/m1-scegli.svg" alt="Uno schermo con i quattro riquadri e il puntatore del mouse su uno di essi">
-    <span class="che"><b>1</b> Scegli tra i quattro riquadri qui sotto la funzione che ti serve</span>
+    <figcaption>Scegli tra i quattro riquadri qui sotto la funzione che ti serve</figcaption>
   </figure>
-  <figure class="passo">
+  <span class="freccia" aria-hidden="true"><svg viewBox="0 0 28 16" width="28" height="16"><path d="M1 8 H22 M17 3 L23 8 L17 13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+  <figure>
     <img src="img/m2-compila.svg" alt="I campi del modulo, uno compilato e uno con il cursore che scrive">
-    <span class="che"><b>2</b> Compila i campi per personalizzare l'orario</span>
+    <figcaption>Compila i campi per personalizzare l'orario</figcaption>
   </figure>
-  <figure class="passo">
+  <span class="freccia" aria-hidden="true"><svg viewBox="0 0 28 16" width="28" height="16"><path d="M1 8 H22 M17 3 L23 8 L17 13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+  <figure>
     <img src="img/m3-genera.svg" alt="Il tasto sotto i campi con il puntatore sopra e la conferma «copiato»">
-    <span class="che"><b>3</b> Premi il tasto: il comando è pronto e già copiato</span>
+    <figcaption>Premi il tasto: il comando è pronto e già copiato</figcaption>
   </figure>
-  <figure class="passo">
+  <span class="freccia" aria-hidden="true"><svg viewBox="0 0 28 16" width="28" height="16"><path d="M1 8 H22 M17 3 L23 8 L17 13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+  <figure>
     <img src="img/m4-chatbot.svg" alt="Il comando incollato in un chatbot, con il tasto invia e il file scaricato">
-    <span class="che"><b>4</b> Apri il tuo chatbot — Claude, ChatGPT o Gemini — incolla il comando e scarica il file con l'orario</span>
+    <figcaption>Apri il tuo chatbot — Claude, ChatGPT o Gemini — incolla il comando e scarica il file con l'orario</figcaption>
   </figure>
+</div>
+
+<div class="passi">
+  <a class="passo vai" href="#compila" data-sezione="A">
+    <span class="foto"><img src="img/a1-orario-vuoto-turni.png" alt=""></span>
+    <span class="che"><b>1</b> Crea il file Excel con i turni vuoti</span>
+  </a>
+  <a class="passo vai" href="#compila" data-sezione="B">
+    <span class="foto"><img src="img/b1-file-indisponibilita.png" alt=""></span>
+    <span class="che"><b>2</b> Crea il file Excel per raccogliere le indisponibilità</span>
+  </a>
+  <a class="passo vai" href="#compila" data-sezione="C">
+    <span class="foto"><img src="img/s2-sezione-c-regole.png" alt=""></span>
+    <span class="che"><b>3</b> Indica le regole per compilare i turni</span>
+  </a>
+  <a class="passo" href="#passo-4">
+    <span class="foto"><img src="img/c1-orario-assegnato.png" alt=""></span>
+    <span class="che"><b>4</b> Fai compilare i turni dell'orario</span>
+  </a>
 </div>
 
 
