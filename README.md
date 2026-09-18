@@ -8,6 +8,7 @@
 
 - [Come fare](#come-fare) — i quattro passaggi, con i riquadri da compilare
 - [Esempio](#esempio) — un reparto finto, dalle schede al file finito
+- [Privacy](#privacy) — come evitare di caricare i nomi veri
 - [Domande frequenti](#domande-frequenti)
 - [Script e prompt utilizzati](#script-e-prompt-utilizzati)
 
@@ -45,7 +46,7 @@ prevedibili sull'Excel creato.
 <tr>
 <td>Scegli tra i quattro riquadri qui sotto la funzione che ti serve</td>
 <td>Compila i campi per personalizzare l'orario</td>
-<td>Premi il tasto: il comando è pronto e già copiato</td>
+<td>Premi il tasto rosso: il comando è pronto e già copiato</td>
 <td>Apri il tuo chatbot — Claude, ChatGPT o Gemini — incolla il comando e scarica il file con l'orario</td>
 </tr>
 </table>
@@ -472,12 +473,52 @@ scontato: senza quella riga il chatbot copre tutte le attività anche sabato e d
 
 ![I due blocchi di conteggio, ancora a zero](img/a3-blocchi-conteggio.png)
 
+## Privacy
+
+Se per motivi di privacy non vuoi caricare in una chat i nomi veri delle persone, puoi
+sostituirli con un codice: le iniziali, oppure una sigla progressiva che inventi tu — P01,
+P02, P03 e così via. I comandi funzionano allo stesso modo, perché per il chatbot i nomi
+sono soltanto etichette: quello che conta è che la stessa persona porti sempre la stessa
+sigla in tutti i comandi e in tutti i file.
+
+**Poi i nomi veri li rimetti tu, sul tuo computer, nel file Excel che hai scaricato.** Non
+serve farlo a mano cella per cella: apri il file, premi **Ctrl+H** su Windows o **Cmd+H** su
+Mac, e nella finestra *Sostituisci* scrivi la sigla nel primo campo e il nome vero nel
+secondo, poi premi **Sostituisci tutto**. Ripeti per ogni persona: sono tanti passaggi
+quante sono le persone, ma ognuno sistema tutte le celle di quella persona in una volta
+sola, comprese le colonne dei conteggi.
+
+Tieni la tabella che associa sigla e nome in un file separato, sul tuo computer, che non
+carichi da nessuna parte.
+
+Tre avvertenze:
+
+- **La matricola non è un buon codice**, perché è essa stessa un dato identificativo e
+  compare in altri documenti aziendali. Una sigla inventata da te protegge di più.
+- **Il file delle indisponibilità circola tra le persone**, e lì i nomi veri servono:
+  altrimenti nessuno trova la propria colonna. La conversione in sigle la fai tu quando copi
+  le colonne dentro il file dell'orario.
+- **I motivi delle assenze possono essere dati delicati.** I codici usati qui dicono
+  soltanto *quando* una persona non c'è, non *perché*: conviene tenerli così ed evitare
+  codici come «malattia» o «visita medica». Se ti serve annotare il motivo, scrivilo sul tuo
+  file e non in quello che carichi.
+
+**Il tasto «Svuota il modulo».** Le risposte che scrivi nei riquadri restano salvate nella
+memoria del browser di questo computer, così il mese successivo le ritrovi già compilate e
+non devi riscriverle. Non vengono inviate a nessuno e non escono da qui. Se però stai usando
+un computer condiviso, o se hai finito e non vuoi lasciare in giro nomi e regole del tuo
+gruppo, premi **Svuota il modulo**: cancella tutte le risposte di tutte le sezioni, e la
+volta dopo ripartirai dai campi vuoti.
+
+Infine, prima di caricare qualsiasi cosa, verifica le regole del tuo ente sull'uso di
+strumenti AI esterni: molte organizzazioni hanno una policy, e alcune mettono a disposizione
+strumenti interni da usare al posto di quelli pubblici.
+
 ## Domande frequenti
 
 - [Attività o indisponibilità?](#attività-o-indisponibilità)
 - [Il turno di notte occupa due giorni](#il-turno-di-notte-occupa-due-giorni)
 - [Il chatbot dice di aver esaurito la disponibilità](#il-chatbot-dice-di-aver-esaurito-la-disponibilità)
-- [Privacy: si possono evitare i nomi veri?](#privacy-si-possono-evitare-i-nomi-veri)
 
 ## Attività o indisponibilità?
 
@@ -574,39 +615,10 @@ scritta come si aspetta, e la spiegazione è nella riga successiva.
 
 **Una nota sulla privacy.** Colab è un servizio Google, e il programma contiene i nomi delle
 persone. Se è un problema, usa delle sigle come spiegato
-[qui sotto](#privacy-si-possono-evitare-i-nomi-veri) e rimetti i nomi veri in Excel alla
+[Privacy](#privacy) e rimetti i nomi veri in Excel alla
 fine.
 
 [Torna alle domande frequenti](#domande-frequenti)
-
-## Privacy: si possono evitare i nomi veri?
-
-Sì. Se non vuoi caricare nel chatbot i nomi delle persone, sostituiscili con un codice: le
-iniziali, la matricola, o una sigla progressiva che inventi tu (P01, P02, P03...). I prompt
-funzionano identici, perché per il chatbot i nomi sono soltanto etichette.
-
-Poi, sul tuo computer, rimetti i nomi veri nel file Excel finale con **Sostituisci tutto**
-(Ctrl+H su Windows, Cmd+H su macOS). Tieni la tabella che associa codice e nome in un file
-separato, che non carichi mai da nessuna parte.
-
-Tre avvertenze:
-
-- **La matricola è essa stessa un dato identificativo**, e di solito compare in altri
-  documenti aziendali. Una sigla progressiva inventata da te protegge di più.
-- **Il file delle indisponibilità circola tra le persone**, e lì i nomi veri servono:
-  altrimenti nessuno trova la propria colonna. La conversione in sigle la fai tu quando
-  copi le colonne dentro il file dell'orario.
-- **I motivi delle assenze possono essere dati delicati.** I codici di questi prompt dicono
-  soltanto *quando* una persona non c'è, non *perché*: conviene tenerli così ed evitare di
-  introdurre codici come "malattia" o "visita medica". Se ti serve annotare il motivo,
-  scrivilo sul tuo file e non in quello che carichi.
-
-Infine, prima di caricare qualsiasi cosa, verifica le regole del tuo ente sull'uso di
-strumenti AI esterni: molte organizzazioni hanno una policy, e alcune mettono a
-disposizione strumenti interni da usare al posto di quelli pubblici.
-
-[Torna alle domande frequenti](#domande-frequenti)
-
 
 ---
 

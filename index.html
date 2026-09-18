@@ -15,6 +15,8 @@
   --riga:#C7D0C8;
   --timbro:#4A3A8C;
   --marca:#EFE07A;
+  --arancio:#D97B29;
+  --rosso:#C23B22;
   --tenue:#68776F;
   --ok:#1F6B4A;
 }
@@ -58,7 +60,7 @@ h1{
 .flusso figure{flex:1 1 0;min-width:170px;margin:0}
 .flusso img{width:100%;height:auto;display:block;margin-bottom:8px}
 .flusso figcaption{font-size:15px;line-height:1.35;color:var(--inchiostro)}
-.freccia{flex:0 0 28px;color:var(--timbro);align-self:center;margin-top:-32px}
+.freccia{flex:0 0 28px;color:var(--arancio);align-self:center;margin-top:-32px}
 
 .passi{margin:0 0 44px;font-size:0}
 .passo{display:inline-block;width:48.4%;vertical-align:top;box-sizing:border-box;
@@ -74,7 +76,8 @@ h1{
 .passo .foto img{width:100%;display:block}
 .passo .che{display:block;font-weight:600;font-size:19px;line-height:1.3}
 .passo .che b{color:var(--timbro);font-family:"IBM Plex Mono",monospace;margin-right:6px}
-.passo-finale{margin-top:64px;border-top:1px solid var(--riga);padding-top:10px}
+.stacco{height:96px}
+.passo-finale{margin-top:0;border-top:1px solid var(--riga);padding-top:18px}
 .passo{flex:1 1 calc(25% - 12px);min-width:0;overflow-wrap:break-word;text-decoration:none;color:inherit;
   border:1px solid var(--riga);border-radius:2px;background:#fff;padding:12px;
   transition:border-color .15s, box-shadow .15s, transform .15s}
@@ -188,12 +191,13 @@ input[type=text]:focus,textarea:focus{
 .azioni{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:26px}
 .bottone{
   font:inherit;font-weight:600;cursor:pointer;border-radius:2px;
-  padding:12px 22px;border:1px solid var(--inchiostro);
-  background:var(--inchiostro);color:var(--carta);
+  padding:12px 22px;border:1px solid var(--rosso);
+  background:var(--rosso);color:#fff;
   transition:transform .12s, box-shadow .12s;
 }
 .bottone:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--timbro)}
-.bottone.secondario{background:transparent;color:var(--inchiostro)}
+.bottone.secondario{background:transparent;color:var(--inchiostro);
+  border-color:var(--inchiostro)}
 .bottone:focus-visible{outline:2px solid var(--timbro);outline-offset:2px}
 .stato{font-size:14px;color:var(--tenue)}
 
@@ -313,6 +317,7 @@ creato.</p>
     <ul>
       <li><a href="#come-fare">Come fare</a></li>
       <li><a href="#esempio">Esempio</a></li>
+      <li><a href="#privacy">Privacy</a></li>
       <li><a href="#domande-frequenti">Domande frequenti</a></li>
       <li><a href="#script-e-prompt-utilizzati">Script e prompt utilizzati</a></li>
     </ul>
@@ -338,7 +343,7 @@ creato.</p>
   <span class="freccia" aria-hidden="true"><svg viewBox="0 0 28 16" width="28" height="16"><path d="M1 8 H22 M17 3 L23 8 L17 13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
   <figure>
     <img src="img/m3-genera.svg" alt="Il tasto sotto i campi con il puntatore sopra e la conferma «copiato»">
-    <figcaption>Premi il tasto: il comando è pronto e già copiato</figcaption>
+    <figcaption>Premi il tasto rosso: il comando è pronto e già copiato</figcaption>
   </figure>
   <span class="freccia" aria-hidden="true"><svg viewBox="0 0 28 16" width="28" height="16"><path d="M1 8 H22 M17 3 L23 8 L17 13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
   <figure>
@@ -400,7 +405,7 @@ creato.</p>
   </section>
   <form id="modulo" autocomplete="off"></form>
   <div class="azioni">
-    <button class="bottone" id="genera" type="button">Genera</button>
+    <button class="bottone" id="genera" type="button">Genera il comando pronto da incollare</button>
     <button class="bottone secondario" id="svuota" type="button">Svuota il modulo</button>
     <span class="stato" id="stato"></span>
   </div>
@@ -415,6 +420,7 @@ creato.</p>
   <p class="zampa" id="zampa"></p>
 </section>
 
+<div class="stacco" aria-hidden="true"></div>
 <section class="istruzioni passo-finale" id="passo-4">
   <h2>4 Fai compilare i turni dell'orario</h2>
   <ol type="1">
@@ -637,6 +643,50 @@ alt="Le colonne di controllo dopo l&#39;assegnazione: nessuna X, e gli elenchi d
 alt="I conteggi che si aggiornano da soli, per persona e per attività" /></p>
 <p><img src="img/a3-blocchi-conteggio.png"
 alt="I due blocchi di conteggio, ancora a zero" /></p>
+<h2 id="privacy">Privacy</h2>
+<p>Se per motivi di privacy non vuoi caricare in una chat i nomi veri
+delle persone, puoi sostituirli con un codice: le iniziali, oppure una
+sigla progressiva che inventi tu — P01, P02, P03 e così via. I comandi
+funzionano allo stesso modo, perché per il chatbot i nomi sono soltanto
+etichette: quello che conta è che la stessa persona porti sempre la
+stessa sigla in tutti i comandi e in tutti i file.</p>
+<p><strong>Poi i nomi veri li rimetti tu, sul tuo computer, nel file
+Excel che hai scaricato.</strong> Non serve farlo a mano cella per
+cella: apri il file, premi <strong>Ctrl+H</strong> su Windows o
+<strong>Cmd+H</strong> su Mac, e nella finestra <em>Sostituisci</em>
+scrivi la sigla nel primo campo e il nome vero nel secondo, poi premi
+<strong>Sostituisci tutto</strong>. Ripeti per ogni persona: sono tanti
+passaggi quante sono le persone, ma ognuno sistema tutte le celle di
+quella persona in una volta sola, comprese le colonne dei conteggi.</p>
+<p>Tieni la tabella che associa sigla e nome in un file separato, sul
+tuo computer, che non carichi da nessuna parte.</p>
+<p>Tre avvertenze:</p>
+<ul>
+<li><strong>La matricola non è un buon codice</strong>, perché è essa
+stessa un dato identificativo e compare in altri documenti aziendali.
+Una sigla inventata da te protegge di più.</li>
+<li><strong>Il file delle indisponibilità circola tra le
+persone</strong>, e lì i nomi veri servono: altrimenti nessuno trova la
+propria colonna. La conversione in sigle la fai tu quando copi le
+colonne dentro il file dell'orario.</li>
+<li><strong>I motivi delle assenze possono essere dati
+delicati.</strong> I codici usati qui dicono soltanto <em>quando</em>
+una persona non c'è, non <em>perché</em>: conviene tenerli così ed
+evitare codici come «malattia» o «visita medica». Se ti serve annotare
+il motivo, scrivilo sul tuo file e non in quello che carichi.</li>
+</ul>
+<p><strong>Il tasto «Svuota il modulo».</strong> Le risposte che scrivi
+nei riquadri restano salvate nella memoria del browser di questo
+computer, così il mese successivo le ritrovi già compilate e non devi
+riscriverle. Non vengono inviate a nessuno e non escono da qui. Se però
+stai usando un computer condiviso, o se hai finito e non vuoi lasciare
+in giro nomi e regole del tuo gruppo, premi <strong>Svuota il
+modulo</strong>: cancella tutte le risposte di tutte le sezioni, e la
+volta dopo ripartirai dai campi vuoti.</p>
+<p>Infine, prima di caricare qualsiasi cosa, verifica le regole del tuo
+ente sull'uso di strumenti AI esterni: molte organizzazioni hanno una
+policy, e alcune mettono a disposizione strumenti interni da usare al
+posto di quelli pubblici.</p>
 <h2 id="domande-frequenti">Domande frequenti</h2>
 <ul>
 <li><a href="#attivita-o-indisponibilita">Attività o
@@ -645,8 +695,6 @@ indisponibilità?</a></li>
 occupa due giorni</a></li>
 <li><a href="#il-chatbot-dice-di-aver-esaurito-la-disponibilita">Il
 chatbot dice di aver esaurito la disponibilità</a></li>
-<li><a href="#privacy-si-possono-evitare-i-nomi-veri">Privacy: si
-possono evitare i nomi veri?</a></li>
 </ul>
 <h2 id="attivita-o-indisponibilita">Attività o indisponibilità?</h2>
 <p>Nel reparto di esempio la guardia compare due volte, e non è un
@@ -771,40 +819,8 @@ non è scritta come si aspetta, e la spiegazione è nella riga
 successiva.</p>
 <p><strong>Una nota sulla privacy.</strong> Colab è un servizio Google,
 e il programma contiene i nomi delle persone. Se è un problema, usa
-delle sigle come spiegato <a
-href="#privacy-si-possono-evitare-i-nomi-veri">qui sotto</a> e rimetti i
+delle sigle come spiegato <a href="#privacy">Privacy</a> e rimetti i
 nomi veri in Excel alla fine.</p>
-<p><a href="#domande-frequenti">Torna alle domande frequenti</a></p>
-<h2 id="privacy-si-possono-evitare-i-nomi-veri">Privacy: si possono
-evitare i nomi veri?</h2>
-<p>Sì. Se non vuoi caricare nel chatbot i nomi delle persone,
-sostituiscili con un codice: le iniziali, la matricola, o una sigla
-progressiva che inventi tu (P01, P02, P03...). I prompt funzionano
-identici, perché per il chatbot i nomi sono soltanto etichette.</p>
-<p>Poi, sul tuo computer, rimetti i nomi veri nel file Excel finale con
-<strong>Sostituisci tutto</strong> (Ctrl+H su Windows, Cmd+H su macOS).
-Tieni la tabella che associa codice e nome in un file separato, che non
-carichi mai da nessuna parte.</p>
-<p>Tre avvertenze:</p>
-<ul>
-<li><strong>La matricola è essa stessa un dato identificativo</strong>,
-e di solito compare in altri documenti aziendali. Una sigla progressiva
-inventata da te protegge di più.</li>
-<li><strong>Il file delle indisponibilità circola tra le
-persone</strong>, e lì i nomi veri servono: altrimenti nessuno trova la
-propria colonna. La conversione in sigle la fai tu quando copi le
-colonne dentro il file dell'orario.</li>
-<li><strong>I motivi delle assenze possono essere dati
-delicati.</strong> I codici di questi prompt dicono soltanto
-<em>quando</em> una persona non c'è, non <em>perché</em>: conviene
-tenerli così ed evitare di introdurre codici come "malattia" o "visita
-medica". Se ti serve annotare il motivo, scrivilo sul tuo file e non in
-quello che carichi.</li>
-</ul>
-<p>Infine, prima di caricare qualsiasi cosa, verifica le regole del tuo
-ente sull'uso di strumenti AI esterni: molte organizzazioni hanno una
-policy, e alcune mettono a disposizione strumenti interni da usare al
-posto di quelli pubblici.</p>
 <p><a href="#domande-frequenti">Torna alle domande frequenti</a></p>
 <hr />
 <hr />
@@ -1544,7 +1560,7 @@ function disegna(){
     (d.nota ? '<p class="nota">' + d.nota + '</p>' : '');
   document.getElementById("importa").hidden = !d.importa;
   document.getElementById("genera").textContent =
-    D.prog[attivo] ? "Genera il comando pronto da incollare" : "Genera il prompt";
+    "Genera il comando pronto da incollare";
   const rev = document.getElementById("revisione");
   if (d.importa && ultimaRisposta0) {
     const sez = estraiSezioni(ultimaRisposta0);
