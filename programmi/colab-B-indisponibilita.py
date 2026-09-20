@@ -271,7 +271,7 @@ for _ in range(QUANTI_MESI):
     N0, N1 = r_tab + 1, r_tab + len(PERSONE)
     for i, p in enumerate(PERSONE):
         a = ws.cell(row=N0 + i, column=C_LEG, value=p)
-        a.font = f_b; a.alignment = sx; a.border = bordo; a.fill = gr
+        a.font = f_n; a.alignment = sx; a.border = bordo; a.fill = gr
         b = ws.cell(row=N0 + i, column=C_LEG + 1)
         b.font = f_n; b.alignment = sx; b.border = bordo; b.fill = comp
     R_FONDO = N1
