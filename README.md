@@ -958,13 +958,28 @@ CHIUDI LA RISPOSTA CON QUESTA RIGA, scritta esattamente così:
 Ti allego il file di turnistica con le indisponibilità già inserite. Devi assegnare le
 persone ai turni, scrivendo i nomi nelle celle delle attività.
 
-I codici di base nel blocco disponibilità sono sempre questi: X = non disponibile tutto il
-giorno, Xm = non disponibile la mattina, Xp = non disponibile il pomeriggio, Xn = non
-disponibile la notte.
+I codici di base nel blocco disponibilità sono sempre questi cinque:
+  X  = non disponibile tutto il giorno
+  Xm = non disponibile la mattina, e quindi nemmeno in un turno GIORNO
+  Xp = non disponibile il pomeriggio, e quindi nemmeno in un turno GIORNO
+  Xg = non disponibile di giorno, cioè mattina e pomeriggio: la notte resta disponibile
+  Xn = non disponibile la notte
 
-Qualsiasi codice presente rende la persona NON assegnabile nella parte di giornata che
-blocca: non ci sono codici puramente informativi. Un codice aggiuntivo come "corso la
-mattina" equivale quindi a Xm, con in più il motivo.
+Ogni codice rende la persona NON assegnabile in qualcosa: non ci sono codici puramente
+informativi. Ma ci sono due tipi di codice, e vanno trattati in modo diverso.
+
+I cinque codici di base bloccano una PARTE DELLA GIORNATA, come scritto qui sopra.
+
+I codici dichiarati al punto 1 della scheda bloccano invece UNA SOLA ATTIVITÀ, nel giorno
+in cui sono scritti. Chi li ha resta assegnabile a tutte le altre attività di quel giorno,
+in tutti i turni: l'unica cosa che non può fare è l'attività nominata nel codice. Per
+esempio, un codice descritto come "indisponibile per il turno GUARDIA quel giorno" toglie
+quella persona dalla GUARDIA di quel giorno e da nient'altro.
+
+Le colonne DISPONIBILI e LIBERI non vedono questo secondo tipo di codice, ed è voluto: chi
+lo ha compare fra i disponibili come tutti gli altri, perché per ogni altra attività lo è
+davvero. Quel vincolo lo applichi solo tu, leggendo il blocco delle indisponibilità. Non
+segnalarmelo come incoerenza del file.
 
 Tutti i dati che ti servono sono nella SCHEDA qui sotto. Se una regola è ambigua o entra
 in conflitto con un'altra in un modo che la scala dei conflitti non risolve, FERMATI e
@@ -1003,8 +1018,11 @@ POSSIBILMENTE ENTRO. Vanno scritte esattamente così, perché è da lì che si
 capisce di che tipo di regola si tratta. Il resto della riga è testo libero:
 basta che sia chiaro.
 
-1) Codici usati oltre a X, Xm, Xp, Xn: per ognuno il significato e
-   quale parte della giornata blocca. (Se non ce ne sono scrivi: nessuno)
+1) Codici usati oltre ai cinque di base: per ognuno il significato e QUALE ATTIVITÀ
+   blocca nel giorno in cui è scritto. Il nome dell'attività è scritto dentro la
+   descrizione e coincide con una delle attività delle colonne dei turni.
+   Questi codici non bloccano orari: per quelli bastano i cinque di base.
+   (Se non ce ne sono scrivi: nessuno)
    RISPOSTA:
 
 2) Priorità delle attività, dalla più alta alla più bassa: quali devono
@@ -1252,6 +1270,10 @@ aggiornano da sole quando scrivi i nomi nelle celle dei turni.
 1. Ricalcola il foglio: zero errori di formula.
 2. La colonna CONTROLLO non segnala nessuna X su nessun giorno.
 3. Nessuna persona è assegnata in un turno in cui risulta indisponibile.
+3ter. Per ogni codice del punto 1, elencami i giorni in cui compare, con il nome di chi
+   l'ha scritto, e dimmi quante volte quella persona risulta assegnata all'attività
+   bloccata proprio in quei giorni: deve essere zero. Dimmi anche a che cosa l'hai
+   assegnata invece, così vedo che non è sparita dal resto dell'orario.
 3bis. Chi fa la notte non compare in nessun altro turno di quel giorno, e non compare in
    nessun turno del giorno dopo. Vale sia per la NOTTE che hai assegnato tu, sia per i
    codici notturni dichiarati al punto 1. Elencami tutte le notti con la data e le due

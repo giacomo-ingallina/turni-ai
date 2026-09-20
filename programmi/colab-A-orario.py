@@ -26,12 +26,13 @@ LEONI, ROSSI M, ROSSI L, GALLINA, RUSSO, VERDI, HU,
 MARINI, CONTI A, CONTI S, FERRARI, GRECO, SANNA, LI
 """
 
-# Per ogni codice: sigla, significato, e che cosa blocca. Scrivi «nessuno»
-# se non ne servono altri oltre a X, Xm, Xp, Xn.
+# CODICI PER UNA SINGOLA ATTIVITÀ — facoltativo. I cinque codici di
+# indisponibilità sono fissi (X, Xm, Xp, Xg, Xn) e non si cambiano. Qui si
+# aggiungono solo codici che bloccano UNA ATTIVITÀ nel giorno in cui sono
+# scritti: dentro la descrizione deve comparire il nome di un'attività
+# dichiarata qui sopra, scritto come lì. «nessuno» se non ne servono.
 CODICI_IN_PIU_TESTO = """
-Gn = guardia notte in ALTRA SEDE, blocca tutto il giorno stesso e tutto il
-     giorno successivo. È una notte svolta da un'altra struttura.
-C = congresso, blocca tutto il giorno
+noG = indisponibile per il turno GUARDIA quel giorno
 """
 
 
@@ -186,34 +187,15 @@ def leggi_persone(testo):
     return nomi
 
 # ---------------------------------------------------------------- codici
-DURATE_BASE = [
-    ("giorno+dopo", r"giorno\s+success|giorno\s+dopo|due\s+giorni"),
-    ("mattina",     r"\bmattin"),
-    ("pomeriggio",  r"\bpomerigg"),
-    ("notte",       r"\bnott"),
-    ("giorno",      r"tutto\s+il\s+giorno|intera\s+giornata|tutta\s+la\s+giornata"),
-]
-PAROLE = {"MAT": "la mattina", "POM": "il pomeriggio", "NOTTE": "la notte"}
-
-def durate_per(parti):
-    """Alle quattro durate di base aggiunge i turni con un nome tutto loro,
-    per esempio SERA: così «blocca la sera» viene riconosciuto."""
-    fuori = list(DURATE_BASE)
-    for p in parti or []:
-        if p.upper() in ("MAT", "POM", "NOTTE", "GIORNO"):
-            continue
-        radice = re.escape(p.lower()[:max(3, len(p) - 1)])
-        fuori.insert(1, ("parte:" + p.upper(), r"\b" + radice))
-    return fuori
-
-def leggi_codici(testo, parti=None):
+def leggi_codici(testo, attivita=None):
+    """I codici in più bloccano UNA ATTIVITA' nel giorno in cui sono scritti.
+    Non bloccano parti della giornata: per quelle ci sono X, Xm, Xp, Xg, Xn."""
     t = _pulisci(testo).strip()
     if not t or t.lower() in ("nessuno", "nessun", "no", "-"):
         return [], []
-    # una voce comincia quando una riga inizia con «SIGLA =» oppure «SIGLA :»
     voci, corrente = [], None
     for riga in t.split("\n"):
-        m = re.match(r"\s*([A-Za-z][A-Za-z0-9]{0,3})\s*[=:]\s*(.*)$", riga)
+        m = re.match(r"\s*([A-Za-z][A-Za-z0-9]{0,4})\s*[=:]\s*(.*)$", riga)
         if m:
             if corrente: voci.append(corrente)
             corrente = [m.group(1), m.group(2).strip()]
@@ -222,56 +204,74 @@ def leggi_codici(testo, parti=None):
     if corrente: voci.append(corrente)
     if not voci:
         raise Problema("non riconosco nessun codice. Scrivili così, uno per riga: "
-                       "Gn = guardia notte, blocca tutto il giorno stesso e "
-                       "tutto il giorno successivo")
-
-    DURATE = durate_per(parti)
+                       "noG = indisponibile per il turno GUARDIA quel giorno")
+    nomi_att = [n for n, _ in (attivita or [])]
     fuori, avvisi = [], []
     for sigla, descr in voci:
         d = re.sub(r"\s+", " ", descr).strip().rstrip(".")
-        basso = d.lower()
-        # si guarda solo la parte che segue «blocca», se c'è: il resto è il motivo
-        pezzo = basso.split("blocca", 1)[1] if "blocca" in basso else basso
-        durata = None
-        for nome, schema in DURATE:
-            if re.search(schema, pezzo):
-                durata = nome
+        trovata = None
+        for n in sorted(nomi_att, key=len, reverse=True):
+            if re.search(r"(?<![A-Za-z0-9])" + re.escape(n) + r"(?![A-Za-z0-9])",
+                         d, re.IGNORECASE):
+                trovata = n
                 break
-        if durata is None:
+        if trovata is None:
             raise Problema(
-                f"del codice «{sigla}» non capisco che cosa blocca. Aggiungi alla "
-                f"descrizione una di queste espressioni: "
-                + ", ".join("«blocca " + PAROLE.get(p, "la " + p.lower()) + "»"
-                            for p in (parti or ["MAT", "POM", "NOTTE"]))
-                + ", «blocca tutto il giorno», «blocca tutto il giorno stesso e tutto "
-                  "il giorno successivo».")
-        # ambiguità: più indicazioni diverse nella stessa descrizione
-        trovate = [n for n, s in DURATE if re.search(s, pezzo)]
-        if len(trovate) > 1 and not (trovate[0] == "giorno+dopo" and set(trovate) <= {"giorno+dopo", "giorno", "notte"}):
-            avvisi.append(f"«{sigla}»: la descrizione contiene più indicazioni "
-                          f"({', '.join(trovate)}). Ho usato «{durata}».")
-        fuori.append((sigla, d, durata))
+                f"del codice «{sigla}» non capisco quale attività blocca. Nella "
+                f"descrizione deve comparire il nome di una delle attività, scritto "
+                f"identico: " + ", ".join(nomi_att) + ". Per esempio: "
+                f"«{sigla} = indisponibile per il turno GUARDIA quel giorno».")
+        if re.search(r"\bblocca\b.*\b(mattin|pomerigg|nott|tutto il giorno|"
+                     r"giorno success|giorno dopo)", d.lower()):
+            raise Problema(
+                f"il codice «{sigla}» sembra voler bloccare una parte della giornata. "
+                f"Per quelle ci sono già i codici fissi X, Xm, Xp, Xg, Xn, che non "
+                f"si possono cambiare: i codici in più bloccano una attività, non un "
+                f"orario. Una notte fatta altrove si segna con due X, sul giorno e su "
+                f"quello dopo.")
+        fuori.append((sigla, d, "turno:" + trovata))
     sigle = [s for s, _, _ in fuori]
     doppie = {s for s in sigle if sigle.count(s) > 1}
     if doppie:
         raise Problema("questi codici compaiono due volte: " + ", ".join(sorted(doppie)))
-    scontro = set(sigle) & {"X", "Xm", "Xp", "Xn"}
+    scontro = set(sigle) & {"X", "Xm", "Xp", "Xg", "Xn"}
     if scontro:
         raise Problema("questi codici esistono già di base e non vanno ridichiarati: "
                        + ", ".join(sorted(scontro)))
+    doppio_att = {}
+    for sg, _, q in fuori:
+        doppio_att.setdefault(q[6:], []).append(sg)
+    for att, sg in doppio_att.items():
+        if len(sg) > 1:
+            avvisi.append(f"i codici {', '.join(sg)} bloccano la stessa attività "
+                          f"({att}): controlla che sia voluto.")
     return fuori, avvisi
-
 
 try:
     NMESE, ANNO, _nome_mese = leggi_mese(MESE_E_ANNO)
     MESE = _nome_mese.upper()
     ATTIVITA, _escl, _prol, _giorni, _giorni_att, _av1 = leggi_attivita(ATTIVITA_DA_COPRIRE)
     PERSONE = leggi_persone(NOMI_DELLE_PERSONE)
-    _parti = []
-    for _, _ts in ATTIVITA:
+    _ammesse = ["MAT", "POM", "GIORNO", "NOTTE"]
+    _ignoti = []
+    for _n, _ts in ATTIVITA:
         for _t in _ts:
-            if _t not in _parti: _parti.append(_t)
-    CODICI_IN_PIU, _av2 = leggi_codici(CODICI_IN_PIU_TESTO, _parti)
+            if _t not in _ammesse and _t not in _ignoti: _ignoti.append(_t)
+    if _ignoti:
+        raise Problema(
+            "questi turni non esistono: " + ", ".join(_ignoti) + ". I turni sono "
+            "quattro e non si possono cambiare: MAT (resta libero il pomeriggio), "
+            "POM (resta libero la mattina), GIORNO (occupa tutta la giornata), "
+            "NOTTE (occupa quel giorno e anche quello dopo, perche' si smonta). "
+            "Se un'attività è aperta solo in certi giorni, scrivilo con una riga "
+            "a parte, per esempio «AMB ESTERNO, turno POM: solo dal lunedì al venerdì».")
+    if _escl or _prol:
+        raise Problema(
+            "non serve più dichiarare che un turno occupa tutta la giornata: lo dice "
+            "già il suo nome. Usa GIORNO per un turno che occupa l'intera giornata e "
+            "NOTTE per uno che occupa anche il giorno dopo, e togli la riga «"
+            + (_escl + _prol)[0] + " occupa ...».")
+    CODICI_IN_PIU, _av2 = leggi_codici(CODICI_IN_PIU_TESTO, ATTIVITA)
     # il nome del file segue il mese: così cambiando il mese non si sovrascrive
     # per sbaglio l'orario precedente
     NOME_FILE = f"Turni_{_nome_mese.capitalize()}_{ANNO}.xlsx"
@@ -291,46 +291,37 @@ NG = calendar.monthrange(ANNO, NMESE)[1]
 R0, R1 = 4, 4 + NG - 1
 
 # Parti della giornata: sono le etichette dei turni, nell'ordine in cui
-# compaiono nelle attività. Per ognuna si ricava una sigla (Xm, Xp, Xn ...)
-# e un suffisso (_m, _p, _n ...), allungando le lettere se due si somigliano.
+# compaiono nelle attività. Sono quattro e sempre le stesse — MAT, POM,
+# GIORNO, NOTTE — e a ognuna corrisponde un suffisso (_m, _p, _g, _n).
 PARTI = []
 for _, _ts in ATTIVITA:
     for _t in _ts:
         if _t not in PARTI: PARTI.append(_t)
 
-def _sigle(parti):
-    n = 1
-    while True:
-        prov = {p: p[:n].lower() for p in parti}
-        if len(set(prov.values())) == len(parti) or n >= max(len(p) for p in parti):
-            return prov
-        n += 1
-LETTERE = _sigle(PARTI)
-COD_PARTE = {p: "X" + LETTERE[p] for p in PARTI}      # Xm, Xp, Xn ...
-SUF_PARTE = {p: "_" + LETTERE[p] for p in PARTI}      # _m, _p, _n ...
-NOMI_PARTE = {"MAT": "la mattina", "MATTINA": "la mattina", "POM": "il pomeriggio",
-              "POMERIGGIO": "il pomeriggio", "SERA": "la sera", "NOTTE": "la notte",
-              "PRANZO": "a pranzo", "GIORNO": "di giorno"}
-
-BASE = [("X", "non disponibile tutto il giorno", "giorno")]
-for p in PARTI:
-    BASE.append((COD_PARTE[p], "non disponibile " + NOMI_PARTE.get(p, "in " + p),
-                 "parte:" + p))
+PARTI_AMMESSE = ["MAT", "POM", "GIORNO", "NOTTE"]
+SUF_PARTE = {"MAT": "_m", "POM": "_p", "GIORNO": "_g", "NOTTE": "_n"}
+# I cinque codici sono fissi e non dipendono dai turni dichiarati.
+BASE = [("X",  "non disponibile tutto il giorno", "giorno"),
+        ("Xm", "non disponibile la mattina",      "parte:MAT"),
+        ("Xp", "non disponibile il pomeriggio",   "parte:POM"),
+        ("Xg", "non disponibile di giorno, cioè mattina e pomeriggio: "
+               "la notte resta disponibile",      "parte:GIORNO"),
+        ("Xn", "non disponibile la notte",        "parte:NOTTE")]
+# Quali codici rendono impossibile ciascun turno. GIORNO copre mattina e
+# pomeriggio, quindi lo bloccano Xm, Xp e Xg; Xg blocca anche MAT e POM.
+BLOCCA = {"MAT":    ["Xm", "Xg"],
+          "POM":    ["Xp", "Xg"],
+          "GIORNO": ["Xm", "Xp", "Xg"],
+          "NOTTE":  ["Xn"]}
 LEGENDA = BASE + CODICI_IN_PIU
 CODICI = [c for c, _, _ in LEGENDA]
-INTERI = [c for c, _, q in LEGENDA if q in ("giorno", "giorno+dopo")]
-DOPO   = [c for c, _, q in LEGENDA if q == "giorno+dopo"]
-ALIAS  = {"mattina": "MAT", "pomeriggio": "POM", "notte": "NOTTE"}
-EXTRA  = {p: [] for p in PARTI}
-for c, _, q in CODICI_IN_PIU:
-    parte = q[6:] if q.startswith("parte:") else ALIAS.get(q)
-    if parte in EXTRA: EXTRA[parte].append(c)
+INTERI = ["X"]          # blocca l'intera giornata
+DOPO   = []             # nessun codice si estende al giorno dopo
+
 # Le regole discendono dal nome del turno, senza doverle dichiarare:
 #   MAT / POM ... mezze giornate, convivono fra loro
 #   GIORNO ...... occupa l'intera giornata: chi lo fa non è libero per niente
 #   NOTTE ....... occupa la giornata e anche quella dopo, perché si smonta
-# Ogni altro turno è una mezza giornata, a meno che tu non lo dichiari fra le
-# attività con una riga «NOME occupa tutta la giornata» o «... e quella dopo».
 # i turni attivi solo in certi giorni della settimana: fuori da quei giorni la
 # cella non va usata, e nessuno risulta libero per quel turno
 GIORNI_PARTE = {p: _giorni.get(p) for p in PARTI}
@@ -473,9 +464,7 @@ def pezzo(i, r, con_turni):
     attive = parti_attive(calendar.weekday(ANNO, NMESE, r - R0 + 1))
     pezzi = []
     for parte in attive:
-        t = f'({cod}<>"{COD_PARTE[parte]}")'
-        for x in EXTRA[parte]:
-            t += f'*({cod}<>"{x}")'
+        t = "*".join(f'({cod}<>"{x}")' for x in BLOCCA[parte])
         if con_turni:
             # non assegnato in questa parte, e in nessuna parte esclusiva;
             # se la parte è essa stessa esclusiva, in nessuna parte affatto

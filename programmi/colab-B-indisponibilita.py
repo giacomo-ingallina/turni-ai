@@ -7,23 +7,40 @@
 # ----------------------- DATI DA COMPILARE ---------------------------
 # Si scrivono a parole, come nelle schede.
 
-MESE_E_ANNO_DI_PARTENZA = """novembre 2026"""
+MESE_E_ANNO_DI_PARTENZA = """ottobre 2027"""
 QUANTI_MESI = 12
 
 NOMI_DELLE_PERSONE = """
-LEONI, ROSSI M, ROSSI L, GALLINA, RUSSO, VERDI, HU,
-MARINI, CONTI A, CONTI S, FERRARI, GRECO, SANNA, LI
+ANCONA F, BARKI, BIONDI, BOGNONI, COLOMBI, CONVERSANO, CUNSOLO, FIORE,
+INGALLINA, MARGONATO, MUSCI, PACI, STELLA
 """
 
-# Gli stessi codici usati nel file dell'orario. «nessuno» se non ce ne sono.
+# CODICI PER UNA SINGOLA ATTIVITÀ — facoltativo
+#
+# I codici di indisponibilità sono cinque e non si cambiano:
+#   X  = non disponibile tutto il giorno
+#   Xm = non disponibile la mattina
+#   Xp = non disponibile il pomeriggio
+#   Xg = non disponibile di giorno, cioè mattina e pomeriggio: la notte no
+#   Xn = non disponibile la notte
+#
+# Qui si aggiungono codici di un altro tipo: non bloccano un orario, ma UNA
+# SOLA ATTIVITÀ, nel giorno in cui vengono scritti. Chi li usa resta
+# disponibile per tutto il resto di quella giornata.
+# Uno per riga, nella forma  sigla = descrizione:
+#
+#   noG = indisponibile per il turno GUARDIA quel giorno
+#
+# IMPORTANTE: dentro la descrizione deve comparire il nome di un'attività
+# dichiarata in «Crea il file Excel con i turni vuoti», scritto come lì
+# (GUARDIA, non GUARDIE né «la guardia»). È da quel nome che si capisce che
+# cosa bloccare: se non corrisponde a nessuna attività il codice non funziona,
+# e lo script dell'orario si ferma e te lo dice.
+#
+# Scrivi «nessuno» se non ti servono.
 CODICI_IN_PIU_TESTO = """
-Gn = guardia notte in ALTRA SEDE, blocca tutto il giorno stesso e tutto il
-     giorno successivo. È una notte svolta da un'altra struttura.
-C = congresso, blocca tutto il giorno
+noG = indisponibile per il turno GUARDIA quel giorno
 """
-
-# Le parti della giornata dell'orario, nello stesso ordine del file dei turni.
-PARTI_DELLA_GIORNATA_TESTO = """MAT, POM, NOTTE"""
 
 
 # --------------------- FINE DATI DA COMPILARE ------------------------
@@ -51,35 +68,6 @@ def leggi_mese(testo):
                        f"Scrivili così: novembre 2026")
     return MESI[m.group(1)], int(m.group(2)), m.group(1)
 
-# ---------------------------------------------------------------- attività
-def leggi_attivita(testo):
-    """Una attività per riga: NOME - 2 turni: MAT, POM"""
-    fuori, avvisi = [], []
-    for riga in _pulisci(testo).split("\n"):
-        r = riga.strip().strip("-•").strip()
-        if not r:
-            continue
-        # tutto quello che sta dopo i due punti sono le etichette dei turni
-        if ":" not in r:
-            raise Problema(f"nella riga «{r}» non trovo i due punti. "
-                           f"Scrivila così: STANZA 23 - 2 turni: MAT, POM")
-        testa, coda = r.split(":", 1)
-        turni = [x.strip().upper() for x in re.split(r"[,;/]| e ", coda) if x.strip()]
-        if not turni:
-            raise Problema(f"nella riga «{r}» non trovo i nomi dei turni")
-        # il nome è quello che precede il trattino, o l'indicazione «N turni»
-        nome = re.split(r"\s*-\s*|\s+\d+\s*turn", testa)[0].strip()
-        if not nome:
-            raise Problema(f"nella riga «{r}» non trovo il nome dell'attività")
-        dichiarati = re.search(r"(\d+)\s*turn", testa)
-        if dichiarati and int(dichiarati.group(1)) != len(turni):
-            avvisi.append(f"«{nome}»: dichiari {dichiarati.group(1)} turni ma ne elenchi "
-                          f"{len(turni)} ({', '.join(turni)}). Uso quelli elencati.")
-        fuori.append((nome.upper(), turni))
-    if not fuori:
-        raise Problema("non ho trovato nessuna attività")
-    return fuori, avvisi
-
 # ---------------------------------------------------------------- persone
 def leggi_persone(testo):
     nomi = [n.strip() for n in re.split(r"[,;\n]", _pulisci(testo)) if n.strip()]
@@ -92,34 +80,23 @@ def leggi_persone(testo):
     return nomi
 
 # ---------------------------------------------------------------- codici
-DURATE_BASE = [
-    ("giorno+dopo", r"giorno\s+success|giorno\s+dopo|due\s+giorni"),
-    ("mattina",     r"\bmattin"),
-    ("pomeriggio",  r"\bpomerigg"),
-    ("notte",       r"\bnott"),
-    ("giorno",      r"tutto\s+il\s+giorno|intera\s+giornata|tutta\s+la\s+giornata"),
-]
-PAROLE = {"MAT": "la mattina", "POM": "il pomeriggio", "NOTTE": "la notte"}
+# I cinque codici di base sono fissi: non dipendono da come è fatto l'orario
+# e non si possono cambiare. I codici in più bloccano una attività, mai una
+# parte della giornata.
+BASE = [("X",  "non disponibile tutto il giorno"),
+        ("Xm", "non disponibile la mattina"),
+        ("Xp", "non disponibile il pomeriggio"),
+        ("Xg", "non disponibile di giorno, cioè mattina e pomeriggio: "
+               "la notte resta disponibile"),
+        ("Xn", "non disponibile la notte")]
 
-def durate_per(parti):
-    """Alle quattro durate di base aggiunge i turni con un nome tutto loro,
-    per esempio SERA: così «blocca la sera» viene riconosciuto."""
-    fuori = list(DURATE_BASE)
-    for p in parti or []:
-        if p.upper() in ("MAT", "POM", "NOTTE", "GIORNO"):
-            continue
-        radice = re.escape(p.lower()[:max(3, len(p) - 1)])
-        fuori.insert(1, ("parte:" + p.upper(), r"\b" + radice))
-    return fuori
-
-def leggi_codici(testo, parti=None):
+def leggi_codici(testo):
     t = _pulisci(testo).strip()
     if not t or t.lower() in ("nessuno", "nessun", "no", "-"):
         return [], []
-    # una voce comincia quando una riga inizia con «SIGLA =» oppure «SIGLA :»
     voci, corrente = [], None
     for riga in t.split("\n"):
-        m = re.match(r"\s*([A-Za-z][A-Za-z0-9]{0,3})\s*[=:]\s*(.*)$", riga)
+        m = re.match(r"\s*([A-Za-z][A-Za-z0-9]{0,4})\s*[=:]\s*(.*)$", riga)
         if m:
             if corrente: voci.append(corrente)
             corrente = [m.group(1), m.group(2).strip()]
@@ -128,40 +105,28 @@ def leggi_codici(testo, parti=None):
     if corrente: voci.append(corrente)
     if not voci:
         raise Problema("non riconosco nessun codice. Scrivili così, uno per riga: "
-                       "Gn = guardia notte, blocca tutto il giorno stesso e "
-                       "tutto il giorno successivo")
-
-    DURATE = durate_per(parti)
+                       "noG = indisponibile per il turno GUARDIA quel giorno")
     fuori, avvisi = [], []
     for sigla, descr in voci:
         d = re.sub(r"\s+", " ", descr).strip().rstrip(".")
-        basso = d.lower()
-        # si guarda solo la parte che segue «blocca», se c'è: il resto è il motivo
-        pezzo = basso.split("blocca", 1)[1] if "blocca" in basso else basso
-        durata = None
-        for nome, schema in DURATE:
-            if re.search(schema, pezzo):
-                durata = nome
-                break
-        if durata is None:
+        if not d:
+            raise Problema(f"il codice «{sigla}» non ha una descrizione. Scrivi che "
+                           f"cosa blocca: «{sigla} = indisponibile per il turno "
+                           f"GUARDIA quel giorno».")
+        if re.search(r"\b(mattin|pomerigg|nott|tutto il giorno|intera giornata|"
+                     r"giorno success|giorno dopo)", d.lower()):
             raise Problema(
-                f"del codice «{sigla}» non capisco che cosa blocca. Aggiungi alla "
-                f"descrizione una di queste espressioni: "
-                + ", ".join("«blocca " + PAROLE.get(p, "la " + p.lower()) + "»"
-                            for p in (parti or ["MAT", "POM", "NOTTE"]))
-                + ", «blocca tutto il giorno», «blocca tutto il giorno stesso e tutto "
-                  "il giorno successivo».")
-        # ambiguità: più indicazioni diverse nella stessa descrizione
-        trovate = [n for n, s in DURATE if re.search(s, pezzo)]
-        if len(trovate) > 1 and not (trovate[0] == "giorno+dopo" and set(trovate) <= {"giorno+dopo", "giorno", "notte"}):
-            avvisi.append(f"«{sigla}»: la descrizione contiene più indicazioni "
-                          f"({', '.join(trovate)}). Ho usato «{durata}».")
-        fuori.append((sigla, d, durata))
-    sigle = [s for s, _, _ in fuori]
+                f"il codice «{sigla}» sembra bloccare una parte della giornata. Per "
+                f"quelle ci sono già i codici fissi X, Xm, Xp, Xg, Xn, che non si "
+                f"cambiano: i codici in più bloccano UNA ATTIVITÀ, non un orario. "
+                f"Una notte svolta altrove si segna con due X, sul giorno in cui "
+                f"comincia e su quello dopo.")
+        fuori.append((sigla, d))
+    sigle = [s for s, _ in fuori]
     doppie = {s for s in sigle if sigle.count(s) > 1}
     if doppie:
         raise Problema("questi codici compaiono due volte: " + ", ".join(sorted(doppie)))
-    scontro = set(sigle) & {"X", "Xm", "Xp", "Xn"}
+    scontro = set(sigle) & {c for c, _ in BASE}
     if scontro:
         raise Problema("questi codici esistono già di base e non vanno ridichiarati: "
                        + ", ".join(sorted(scontro)))
@@ -172,19 +137,15 @@ try:
     _nm, ANNO, _nome_mese = leggi_mese(MESE_E_ANNO_DI_PARTENZA)
     MESE = _nome_mese.upper()
     PERSONE = leggi_persone(NOMI_DELLE_PERSONE)
-    PARTI_DELLA_GIORNATA = [x.strip().upper() for x in
-                            re.split(r"[,;\n]", PARTI_DELLA_GIORNATA_TESTO) if x.strip()]
-    CODICI_IN_PIU, _av = leggi_codici(CODICI_IN_PIU_TESTO, PARTI_DELLA_GIORNATA)
+    CODICI_IN_PIU, _av = leggi_codici(CODICI_IN_PIU_TESTO)
     NOME_FILE = f"Indisponibilita_da_{_nome_mese.capitalize()}_{ANNO}.xlsx"
-    if not PARTI_DELLA_GIORNATA:
-        raise Problema("non ho trovato le parti della giornata")
 except Problema as _e:
     print("NON POSSO PROCEDERE:", _e)
     raise SystemExit
 for _a in _av:
     print("Avviso:", _a)
 
-import calendar, re
+import calendar
 from openpyxl import Workbook, load_workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side, Protection
 from openpyxl.utils import get_column_letter
@@ -194,25 +155,8 @@ NOMI = ["", "Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno",
         "Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"]
 GG = ["lunedì","martedì","mercoledì","giovedì","venerdì","sabato","domenica"]
 
-def _sigle(parti):
-    n = 1
-    while True:
-        prov = {p: p[:n].lower() for p in parti}
-        if len(set(prov.values())) == len(parti) or n >= max(len(p) for p in parti):
-            return prov
-        n += 1
-LETTERE = _sigle(PARTI_DELLA_GIORNATA)
-NOMI_PARTE = {"MAT": "la mattina", "MATTINA": "la mattina", "POM": "il pomeriggio",
-              "POMERIGGIO": "il pomeriggio", "SERA": "la sera", "NOTTE": "la notte",
-              "PRANZO": "a pranzo", "GIORNO": "di giorno"}
-BASE = [("X", "non disponibile tutto il giorno", "giorno")]
-for _p in PARTI_DELLA_GIORNATA:
-    BASE.append(("X" + LETTERE[_p],
-                 "non disponibile " + NOMI_PARTE.get(_p, "in " + _p),
-                 "parte:" + _p))
 LEGENDA = BASE + CODICI_IN_PIU
-CODICI = [c for c, _, _ in LEGENDA]
-PROLUNGATI = [c for c, _, q in LEGENDA if q == "giorno+dopo"]
+CODICI = [c for c, _ in LEGENDA]
 
 ISTRUZIONI = [
     "1. Cerca il foglio del mese giusto (in basso) e la colonna con il tuo nome.",
@@ -220,19 +164,33 @@ ISTRUZIONI = [
     "3. I giorni in cui sei disponibile vanno lasciati VUOTI.",
     "",
     "Esempi:",
-    "  se il giorno 3 sei assente solo la mattina, scrivi Xm sulla riga del giorno 3",
-    "  se il giorno 10 sei assente tutto il giorno, scrivi X sulla riga del giorno 10",
+    "  il giorno 3 sei assente solo la mattina: Xm sulla riga del 3",
+    "  il giorno 10 sei assente tutto il giorno: X sulla riga del 10",
+    "  il giorno 12 sei assente di giorno ma la notte puoi: Xg sulla riga del 12",
+    "",
+    "Una notte svolta altrove occupa due giornate: si segna con due X,",
+    "una sul giorno in cui comincia e una sul giorno dopo, quando smonti.",
 ]
-for c in PROLUNGATI:
+if CODICI_IN_PIU:
     ISTRUZIONI += ["",
-        f"ATTENZIONE al codice {c}: blocca anche il giorno successivo.",
-        f"  Va segnato SOLO sul giorno in cui comincia. Se sei in turno il giorno 4,",
-        f"  scrivi {c} sulla riga del 4 e NON scrivere niente sulla riga del 5:",
-        "  il blocco del giorno dopo è già compreso nel significato del codice."]
+        "I codici " + ", ".join(c for c, _ in CODICI_IN_PIU) + " sono diversi dagli",
+        "altri: non bloccano una parte della giornata, ma una sola attività in",
+        "quel giorno. Chi li usa resta disponibile per tutto il resto."]
+
+NOTE_PREMESSA = [
+    "Spazio libero, facoltativo: si può lasciare vuoto.",
+    "Serve a chi prepara l'orario, per le ultime correzioni a mano.",
+    "Non viene incollato nel file dei turni e non lo legge nessun programma:",
+    "quello che conta per l'assegnazione sono i codici, non queste righe.",
+    "Il file gira tra i colleghi, quindi lo leggono tutti: scrivi solo",
+    "quello che ti va di far sapere, e non serve dire il motivo di un'assenza.",
+    "Esempi: «il 10 ho messo Xm ma riesco ad arrivare per le 11»,",
+    "«il 14 ho un impegno leggero, se serve posso dare una mano».",
+]
 
 # Excel ammette al massimo 255 caratteri nel messaggio di aiuto della tendina:
 # oltre quel limite considera il file danneggiato e lo ripara all'apertura.
-AIUTO = " | ".join(f"{c} = {s}" for c, s, _ in LEGENDA)
+AIUTO = " | ".join(f"{c} = {s}" for c, s in LEGENDA)
 if len(AIUTO) > 250:
     AIUTO = ("Codici ammessi: " + ", ".join(CODICI) +
              ". Il significato di ciascuno è nella legenda, a destra del foglio.")
@@ -240,6 +198,7 @@ if len(AIUTO) > 250:
 CAL = "Calibri"
 f_n = Font(name=CAL, size=11); f_b = Font(name=CAL, size=11, bold=True)
 f_p = Font(name=CAL, size=10)
+f_i = Font(name=CAL, size=10, italic=True)
 we   = PatternFill("solid", fgColor="DDEBF7")
 gr   = PatternFill("solid", fgColor="D9D9D9")
 comp = PatternFill("solid", fgColor="FFF2CC")
@@ -282,13 +241,14 @@ for _ in range(QUANTI_MESI):
             cel.fill = gr if c <= 2 else (we if fine else comp)
             if fine and c <= 2: cel.fill = we
 
+    # ------------------------------------------------ legenda e istruzioni
     ws.cell(row=2, column=C_LEG, value="LEGENDA DEI CODICI").font = f_b
     ws.merge_cells(start_row=2, start_column=C_LEG, end_row=2, end_column=C_LEG + 1)
     ws.cell(row=3, column=C_LEG, value="CODICE").font = f_b
     ws.cell(row=3, column=C_LEG + 1, value="SIGNIFICATO").font = f_b
     for c in (C_LEG, C_LEG + 1):
         ws.cell(row=3, column=c).fill = gr; ws.cell(row=3, column=c).border = bordo
-    for i, (c, sig, _) in enumerate(LEGENDA):
+    for i, (c, sig) in enumerate(LEGENDA):
         a = ws.cell(row=4 + i, column=C_LEG, value=c); a.font = f_b
         a.alignment = mid; a.border = bordo
         b = ws.cell(row=4 + i, column=C_LEG + 1, value=sig); b.font = f_n
@@ -298,15 +258,34 @@ for _ in range(QUANTI_MESI):
     for i, riga in enumerate(ISTRUZIONI):
         ws.cell(row=r_ist + 1 + i, column=C_LEG, value=riga).font = f_p
 
+    # ------------------------------------------------------- blocco note
+    r_note = r_ist + len(ISTRUZIONI) + 3
+    ws.cell(row=r_note, column=C_LEG, value="NOTE — facoltative").font = f_b
+    for i, riga in enumerate(NOTE_PREMESSA):
+        ws.cell(row=r_note + 1 + i, column=C_LEG, value=riga).font = f_i
+    r_tab = r_note + len(NOTE_PREMESSA) + 2
+    ws.cell(row=r_tab, column=C_LEG, value="PERSONA").font = f_b
+    ws.cell(row=r_tab, column=C_LEG + 1, value="NOTA").font = f_b
+    for c in (C_LEG, C_LEG + 1):
+        ws.cell(row=r_tab, column=c).fill = gr; ws.cell(row=r_tab, column=c).border = bordo
+    N0, N1 = r_tab + 1, r_tab + len(PERSONE)
+    for i, p in enumerate(PERSONE):
+        a = ws.cell(row=N0 + i, column=C_LEG, value=p)
+        a.font = f_b; a.alignment = sx; a.border = bordo; a.fill = gr
+        b = ws.cell(row=N0 + i, column=C_LEG + 1)
+        b.font = f_n; b.alignment = sx; b.border = bordo; b.fill = comp
+    R_FONDO = N1
+
     def largh(testi, extra=2, minimo=6):
         return max(minimo, max((len(str(t)) for t in testi), default=0) + extra)
     ws.column_dimensions["A"].width = largh(GG)
     ws.column_dimensions["B"].width = 6
     for i, p in enumerate(PERSONE):
         ws.column_dimensions[get_column_letter(P0 + i)].width = largh([p])
-    ws.column_dimensions[get_column_letter(C_LEG)].width = largh(["CODICE"] + CODICI)
-    ws.column_dimensions[get_column_letter(C_LEG + 1)].width = largh(
-        [s for _, s, _ in LEGENDA] + ISTRUZIONI)
+    ws.column_dimensions[get_column_letter(C_LEG)].width = largh(
+        ["CODICE", "PERSONA"] + CODICI + list(PERSONE) + ISTRUZIONI + NOTE_PREMESSA)
+    ws.column_dimensions[get_column_letter(C_LEG + 1)].width = max(
+        40, largh([s for _, s in LEGENDA]))
     ws.freeze_panes = "C4"
 
     dv = DataValidation(type="list", formula1='"' + ",".join(CODICI) + '"',
@@ -317,14 +296,16 @@ for _ in range(QUANTI_MESI):
     dv.prompt = AIUTO
     ws.add_data_validation(dv); dv.add(f"{LP0}{R0}:{LP1}{R1}")
 
-    # protezione: si blocca tutto tranne l'area da compilare
-    for row in ws.iter_rows(min_row=1, max_row=r_ist + len(ISTRUZIONI) + 2,
+    # protezione: si blocca tutto tranne le due aree da compilare
+    for row in ws.iter_rows(min_row=1, max_row=R_FONDO + 2,
                             min_col=1, max_col=C_LEG + 1):
         for cel in row:
             cel.protection = Protection(locked=True)
     for r in range(R0, R1 + 1):
         for c in range(P0, P1 + 1):
             ws.cell(row=r, column=c).protection = Protection(locked=False)
+    for r in range(N0, N1 + 1):
+        ws.cell(row=r, column=C_LEG + 1).protection = Protection(locked=False)
     ws.protection.sheet = True
     # le quattro azioni che devono restare PERMESSE (False = non vietata)
     ws.protection.selectLockedCells = False
@@ -338,17 +319,11 @@ for _ in range(QUANTI_MESI):
 wb.save(NOME_FILE)
 
 # ---------------- pulizia di una parte che fa "riparare" il file --------------
-# openpyxl scrive dentro il file una sezione accessoria (docProps/custom.xml)
-# lasciata vuota. Excel la considera un difetto e all'apertura avvisa che il file
-# è danneggiato e lo ripara. Non tocca le formule, ma spaventa e basta.
-# Qui la si toglie insieme ai due riferimenti che la richiamano.
-import zipfile, os, re
+import zipfile, os
 def _togli_custom_props(percorso):
     tmp = percorso + ".tmp"
     with zipfile.ZipFile(percorso) as z:
         dati = {n: z.read(n) for n in z.namelist()}
-    tolto = False
-    # 1) sezione accessoria vuota: fa comparire l'avviso di riparazione
     if "docProps/custom.xml" in dati:
         del dati["docProps/custom.xml"]
         dati["_rels/.rels"] = re.sub(
@@ -357,10 +332,6 @@ def _togli_custom_props(percorso):
         dati["[Content_Types].xml"] = re.sub(
             r'<Override[^>]*docProps/custom\.xml[^>]*/>', '',
             dati["[Content_Types].xml"].decode()).encode()
-        tolto = True
-    # 2) i giorni della settimana, scritti accanto alla formula. openpyxl lascia
-    #    lì un valore vuoto ed Excel mostra quello invece di calcolare: la cella
-    #    appare bianca se il calcolo è impostato su manuale.
     for nome in list(dati):
         if not nome.startswith("xl/worksheets/sheet"):
             continue
@@ -377,11 +348,6 @@ def _togli_custom_props(percorso):
                     lambda x, g=g: x.group(1) + ' t="str"' + x.group(3) + "<v>" + g + "</v>",
                     testo, count=1, flags=re.S)
         dati[nome] = testo.encode()
-    # 3) il modo di calcolo: automatico, e NIENTE ricalcolo forzato all'apertura.
-    #    Con fullCalcOnLoad Excel butta via i valori memorizzati per ricalcolare;
-    #    se il calcolo è impostato su manuale non ricalcola, e le celle restano
-    #    vuote. Meglio lasciargli i valori che ci sono e chiedere il calcolo
-    #    automatico, che vale poi per le modifiche successive.
     wbx = dati["xl/workbook.xml"].decode()
     wbx = re.sub(r"<calcPr[^>]*/>", '<calcPr calcId="191029" calcMode="auto" '
                  'fullCalcOnLoad="0" forceFullCalc="0"/>', wbx)
@@ -393,8 +359,7 @@ def _togli_custom_props(percorso):
         for n, d in dati.items():
             z.writestr(n, d)
     os.replace(tmp, percorso)
-    return tolto
-_pulito = _togli_custom_props(NOME_FILE)
+_togli_custom_props(NOME_FILE)
 
 # ------------------------- VERIFICHE ---------------------------------
 v = load_workbook(NOME_FILE)
@@ -403,11 +368,10 @@ def esito(t, ok, extra=""):
 
 print("=== VERIFICHE SUL FILE SALVATO ===")
 print("  file:", NOME_FILE)
-print("  OK   file ripulito: nessun valore memorizzato vuoto accanto alle formule,")
-print("       così Excel le calcola all'apertura invece di mostrarle vuote")
 esito(f"fogli creati: {len(v.sheetnames)}", len(v.sheetnames) == QUANTI_MESI,
       v.sheetnames[0] + " … " + v.sheetnames[-1])
 righe_ok, primo_ok, nomi_ok, prot_ok, opz_ok, dv_ok, pwd_ok = ([] for _ in range(7))
+note_ok = []
 rif = None
 for nome in v.sheetnames:
     w = v[nome]; a, m = w["B1"].value, w["A2"].value
@@ -420,18 +384,26 @@ for nome in v.sheetnames:
     if rif is None: rif = n
     nomi_ok.append(n == rif)
     p = w.protection
-    prot_ok.append(p.sheet)
-    pwd_ok.append(p.password is None)
+    prot_ok.append(p.sheet); pwd_ok.append(p.password is None)
     opz_ok.append(not p.selectLockedCells and not p.selectUnlockedCells
                   and not p.formatColumns and not p.formatRows)
     d = list(w.data_validations.dataValidation)
     dv_ok.append(len(d) == 1 and d[0].formula1 == '"' + ",".join(CODICI) + '"')
-    esito(f"{nome}: {ng} giorni, primo = {calendar.day_name[calendar.weekday(a,m,1)]}",
-          righe_ok[-1] and primo_ok[-1]) if nome in (v.sheetnames[0], v.sheetnames[-1]) else None
+    # blocco note: una riga per persona, cella della nota sbloccata
+    trovati, sbloccate = [], True
+    for rr in range(1, w.max_row + 1):
+        if w.cell(row=rr, column=C_LEG).value == "PERSONA":
+            for i2 in range(len(PERSONE)):
+                trovati.append(w.cell(row=rr + 1 + i2, column=C_LEG).value)
+                if w.cell(row=rr + 1 + i2, column=C_LEG + 1).protection.locked:
+                    sbloccate = False
+            break
+    note_ok.append(trovati == PERSONE and sbloccate)
 esito("tutti i mesi hanno il numero di giorni giusto", all(righe_ok))
 esito("giorno della settimana calcolato con formula in tutti i fogli", all(primo_ok))
 esito("nomi delle persone identici e nella stessa posizione", all(nomi_ok))
 esito(f"tendina con i soli codici {', '.join(CODICI)}", all(dv_ok))
+esito("blocco note: una riga per persona, spazio sbloccato", all(note_ok))
 esito("protezione attiva su tutti i fogli", all(prot_ok))
 esito("nessuna password su nessun foglio", all(pwd_ok))
 esito("permesso selezionare, compilare, allargare colonne e righe", all(opz_ok))
@@ -440,20 +412,20 @@ esito("celle da compilare sbloccate",
       not w0.cell(row=4, column=P0).protection.locked)
 esito("celle di giorno e data bloccate", w0["A4"].protection.locked)
 esito("nessuna attività o turno nel file",
-      all(w.cell(row=3, column=c).value in (None, "GIORNO", "DATA") or
-          w.cell(row=3, column=c).value in PERSONE or c >= C_LEG
-          for w in [w0] for c in range(1, C_LEG + 2)))
-d0 = list(w.data_validations.dataValidation)[0] if list(w.data_validations.dataValidation) else None
+      all(w0.cell(row=3, column=c).value in (None, "GIORNO", "DATA") or
+          w0.cell(row=3, column=c).value in PERSONE or c >= C_LEG
+          for c in range(1, C_LEG + 2)))
+d0 = list(w0.data_validations.dataValidation)[0]
 esito(f"messaggio di aiuto entro i 255 caratteri di Excel: {len(d0.prompt or '')}",
-      d0 is not None and len(d0.prompt or "") <= 255)
+      len(d0.prompt or "") <= 255)
 esito(f"messaggio di errore entro i 255 caratteri: {len(d0.error or '')}",
-      d0 is not None and len(d0.error or "") <= 255)
+      len(d0.error or "") <= 255)
 esito("nessun testo a capo",
-      not any(c.alignment.wrap_text for w in [w0] for row in w.iter_rows() for c in row))
+      not any(c.alignment.wrap_text for row in w0.iter_rows() for c in row))
 
 print()
-print("APRI IL FILE E PROVA QUESTO: clicca su una cella sotto un nome e scrivi.")
-print("Se non riesci nemmeno a selezionarla, le opzioni della protezione sono sbagliate.")
+print("APRI IL FILE E PROVA QUESTO: clicca su una cella sotto un nome e scrivi,")
+print("poi prova a scrivere una nota nella colonna NOTA, in basso a destra.")
 
 try:
     from google.colab import files
