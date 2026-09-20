@@ -26,10 +26,13 @@ LEONI, ROSSI M, ROSSI L, GALLINA, RUSSO, VERDI, HU,
 MARINI, CONTI A, CONTI S, FERRARI, GRECO, SANNA, LI
 """
 
-# CODICI PER UNA SINGOLA ATTIVITÀ — facoltativo. I cinque codici di
-# indisponibilità sono fissi (X, Xm, Xp, Xg, Xn) e non si cambiano. Qui si
-# aggiungono solo codici che bloccano UNA ATTIVITÀ nel giorno in cui sono
-# scritti: dentro la descrizione deve comparire il nome di un'attività
+# CODICI PER UNA SINGOLA ATTIVITÀ — facoltativo.
+# Qui questi codici servono a due cose sole: finire nella legenda del file e
+# far controllare che il nome dell'attività sia scritto giusto. Non entrano in
+# nessuna formula e non rendono nessuno indisponibile: quel vincolo lo applica
+# il chatbot in fase di assegnazione, leggendo la scheda del PROMPT C.
+# I cinque codici di indisponibilità sono fissi (X, Xm, Xp, Xg, Xn) e non si
+# cambiano. Dentro la descrizione deve comparire il nome di un'attività
 # dichiarata qui sopra, scritto come lì. «nessuno» se non ne servono.
 CODICI_IN_PIU_TESTO = """
 noG = indisponibile per il turno GUARDIA quel giorno
@@ -94,8 +97,9 @@ OCCUPA = re.compile(
 
 def leggi_attivita(testo):
     """Una attività per riga: NOME - 2 turni: MAT, POM
-    Una riga può invece dichiarare come si comporta un turno:
-    «SERA occupa tutta la giornata» oppure «SERA occupa la giornata e quella dopo»."""
+    Una riga può invece dire in quali giorni della settimana esiste un turno:
+    «MAT e POM solo dal lunedì al venerdì», oppure, per una sola attività,
+    «GUARDIA, turno GIORNO: solo sabato e domenica»."""
     fuori, avvisi = [], []
     esclusivi, prolungati = [], []
     giorni, giorni_att = {}, {}
@@ -123,7 +127,7 @@ def leggi_attivita(testo):
                 raise Problema(
                     f"nella riga «{r}» non capisco in quali giorni. Scrivi per esempio "
                     f"«GIORNO solo sabato e domenica», «MAT e POM solo dal lunedì al "
-                    f"venerdì» oppure «SERA solo nel weekend».")
+                    f"venerdì» oppure «NOTTE solo nel weekend».")
             for turno in re.split(r"[,;]| e ", m.group(1)):
                 turno = turno.strip().upper()
                 if turno:

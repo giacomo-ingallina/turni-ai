@@ -76,33 +76,8 @@ dichiararle:
 | `GIORNO` | non è libero per il resto della giornata |
 | `NOTTE` | non è libero quel giorno né il giorno dopo, perché smonta |
 
-Un turno con un nome diverso da questi quattro è trattato come una mezza giornata: chi lo
-fa resta libero per gli altri turni dello stesso giorno. Se invece occupa la persona per
-l'intera giornata, dichiaralo con una riga a parte insieme alle attività:
-
-```
-AMB SERALE - 1 turno: SERA
-SERA occupa tutta la giornata
-```
-
-e se blocca anche il giorno dopo, come una notte:
-
-```
-SERA occupa la giornata e quella dopo
-```
-
-Serve soprattutto per gli **orari su tre fasce esclusive**, dove nemmeno la mattina e il
-pomeriggio convivono: chi ha fatto il turno del mattino non lavora anche di pomeriggio.
-Si scrive così:
-
-```
-RADIOLOGIA A - 3 turni: MAT, POM, NOTTE
-RADIOLOGIA B - 3 turni: MAT, POM, NOTTE
-MAT occupa tutta la giornata
-POM occupa tutta la giornata
-```
-
-La notte non va dichiarata, perché il suo comportamento è già quello.
+Non ci sono altri nomi di turno: se ne scrivi uno diverso da questi quattro il programma
+si ferma e te lo dice.
 
 **Un turno può anche esistere solo in certi giorni della settimana.** Capita con la guardia:
 dal lunedì al venerdì è divisa in mattina, pomeriggio e notte, mentre nel weekend è su due
