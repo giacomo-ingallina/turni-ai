@@ -496,8 +496,11 @@ for i in range(NG):
     ws.cell(row=r, column=1, value='=CHOOSE(WEEKDAY(DATE($B$1,$A$2,B%d),2),"%s")'
             % (r, '","'.join(GG)))
     ws.cell(row=r, column=2, value=g)
+    # «Chiuso» non è una persona: può comparire in più celle dello stesso
+    # turno senza che sia una sovrapposizione, quindi il controllo la salta.
     ws.cell(row=r, column=C_CTRL, value=(
         f'=IF(SUMPRODUCT((${LT0}$3:${LT1}$3<>"")*(${LT0}{r}:${LT1}{r}<>"")*'
+        f'(LEFT(${LT0}{r}:${LT1}{r},6)<>"chiuso")*'
         f'(COUNTIFS(${LT0}{r}:${LT1}{r},${LT0}{r}:${LT1}{r},'
         f'${LT0}$3:${LT1}$3,${LT0}$3:${LT1}$3)>1))>0,"X","")'))
     ws.cell(row=r, column=C_GG, value=f"=A{r}")

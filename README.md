@@ -160,7 +160,7 @@ proprie indisponibilità. Il servizio che scegli per condividerlo ti offre le pr
 necessarie — password, permessi di accesso — così che lo compili solo chi vuoi tu.
 
 **IMPORTANTE.**  I codici di indisponibilità devono essere gli stessi identici in tutte le
-sezioni — per esempio `X` = indisponibile tutto il giorno, `Gn` = guardia notte. Se un
+passi — per esempio `noG` = indisponibile per il turno GUARDIA quel giorno. Se un
 codice esiste nel file delle indisponibilità ma non è dichiarato nel testo di assegnazione,
 il chatbot lo ignora e assegna qualcuno che non c'è.
 
@@ -267,9 +267,7 @@ CONTI S, FERRARI, GRECO, SANNA, LI.
 **I 2 codici aggiuntivi**, oltre ai quattro di base (`X` = non disponibile tutto il giorno,
 `Xm` la mattina, `Xp` il pomeriggio, `Xn` la notte):
 
-- `Gn` = guardia notte in ALTRA SEDE, blocca tutto il giorno stesso e tutto il giorno
-  successivo
-- `C` = congresso, blocca tutto il giorno
+- `noG` = indisponibile per il turno GUARDIA quel giorno, disponibile per tutto il resto
 
 ### Sezione A, riquadro per riquadro
 
@@ -302,18 +300,10 @@ CONTI S, FERRARI, GRECO, SANNA, LI
 **4. Codici di indisponibilità oltre a X, Xm, Xp, Xn**
 
 ```
-Gn = guardia notte in ALTRA SEDE, blocca tutto il giorno stesso e tutto
-     il giorno successivo. È una notte svolta da un'altra struttura, che
-     mi arriva già decisa: non è la GUARDIA del punto 2, che è un turno
-     interno che assegno io.
-C = congresso, blocca tutto il giorno
+noG = indisponibile per il turno GUARDIA quel giorno
 ```
 
-Due cose da notare. Le attività hanno un numero di turni diverso l'una dall'altra: quattro
-con mattina e pomeriggio, due con la sola mattina, una con il solo pomeriggio, una con tre
-turni compresa la notte. E la guardia compare due volte, ed è voluto: `GUARDIA` al punto 2 è
-il turno interno che assegni tu, `Gn` al punto 4 è una notte svolta in un'altra sede, che ti
-arriva già decisa. Sono due cose distinte e non vanno unificate.
+Due cose da notare. Le attività hanno un numero di turni diverso l'una dall'altra. E il codice `noG` non blocca un orario ma una sola attività: chi lo scrive il 14 ottobre quel giorno la guardia non la fa, ma per tutto il resto resta disponibile.
 
 **Il file che ne esce**, nelle sue quattro parti:
 
@@ -349,9 +339,7 @@ CONTI S, FERRARI, GRECO, SANNA, LI
 **4. Codici di indisponibilità**
 
 ```
-Gn = guardia notte in ALTRA SEDE, blocca tutto il giorno stesso e tutto
-     il giorno successivo
-C = congresso, blocca tutto il giorno
+noG = indisponibile per il turno GUARDIA quel giorno
 ```
 
 Nomi e codici sono identici a quelli del primo riquadro, parola per parola: è la condizione
@@ -367,10 +355,7 @@ significato.
 **1. Codici usati oltre a X, Xm, Xp, Xn**
 
 ```
-Gn = guardia notte in ALTRA SEDE, blocca tutto il giorno stesso e tutto
-     il giorno successivo: non è la GUARDIA che assegni tu nelle colonne
-     dei turni.
-C = congresso, blocca tutto il giorno
+noG = indisponibile per il turno GUARDIA quel giorno
 ```
 
 **2. Priorità delle attività**
@@ -485,73 +470,29 @@ un computer condiviso, o se hai finito e non vuoi lasciare in giro nomi e regole
 gruppo, premi **Svuota il modulo**: cancella tutte le risposte di tutte le sezioni, e la
 volta dopo ripartirai dai campi vuoti.
 
-Infine, prima di caricare qualsiasi cosa, verifica le regole del tuo ente sull'uso di
-strumenti AI esterni: molte organizzazioni hanno una policy, e alcune mettono a disposizione
-strumenti interni da usare al posto di quelli pubblici.
-
 ## Domande frequenti
 
-- [Attività o indisponibilità?](#attività-o-indisponibilità)
 - [Il turno di notte occupa due giorni](#il-turno-di-notte-occupa-due-giorni)
 - [Il chatbot dice di aver esaurito la disponibilità](#il-chatbot-dice-di-aver-esaurito-la-disponibilità)
-
-## Attività o indisponibilità?
-
-Nel reparto di esempio la guardia compare due volte, e non è un errore: sono due cose
-diverse che capita spesso di avere insieme.
-
-| | GUARDIA | Gn |
-|---|---|---|
-| Cos'è | il turno di guardia del reparto | una notte svolta in un'altra sede |
-| Chi decide | tu, assegnando | qualcun altro; ti arriva già fatta |
-| Dove va nella scheda | tra le **attività** | tra i **codici** |
-| Chi la scrive nel file | il chatbot, nelle colonne dei turni | le persone, nella colonna indisponibilità |
-
-La regola per capire dove va un impegno qualsiasi: **se lo decidi tu è un'attività, se te lo
-comunicano è un codice di indisponibilità.**
-
-Quello che non si può fare è mettere **la stessa** guardia in tutti e due i punti: verrebbe
-contata due volte, una come turno da coprire e una come assenza. Se nel tuo gruppo la
-guardia è una sola, sta in un posto solo — quale dei due dipende da chi la decide.
-
-Se invece sei come il reparto di esempio, con due guardie diverse, aggiungi al tuo prompt
-una riga che lo dica subito dopo la scheda, altrimenti un chatbot attento si ferma e ti
-chiede se non ti sei sbagliato:
-
-> Nel mio gruppo esistono DUE guardie diverse, ed è voluto: GUARDIA è un turno interno che
-> assegni tu, Gn è una notte svolta in un'altra sede che mi arriva già decisa. Non
-> unificarle e non spostare l'una nel punto dell'altra.
-
-Nomina i codici in modo che la differenza si veda anche a distanza di mesi: `Gn = guardia
-notte altra sede` si capisce, `Gn = guardia notte` no — chi legge il file si chiede quale
-delle due.
-
-[Torna alle domande frequenti](#domande-frequenti)
 
 ## Il turno di notte occupa due giorni
 
 Chi monta di notte non lavora quel giorno — né la mattina né il pomeriggio — e non lavora il
-giorno dopo, quando smonta. Una notte costa quindi **due giornate** alla persona che la fa.
-Vale per entrambe le guardie, e in nessuno dei due casi lo scrive qualcuno a mano:
-
-- **GUARDIA**, il turno che assegni tu: hai messo RUSSO nella colonna NOTTE del 5 novembre,
-  e il PROMPT C sa che RUSSO non va messo negli ambulatori del 5 né in niente il 6;
-- **Gn**, la notte in altra sede: RUSSO scrive `Gn` sulla riga del 5 e basta. Il codice
-  significa già "tutto il 5 e tutto il 6", perché è così che l'hai descritto al punto 4.
+giorno dopo, quando smonta. Una notte costa quindi **due giornate** alla persona che la fa,
+e non lo scrive nessuno a mano: basta che tu abbia chiamato `NOTTE` quel turno. Se metti
+RUSSO nella colonna NOTTE del 5 novembre, il testo della sezione 3 sa che RUSSO non va messo
+negli ambulatori del 5 né in niente il 6.
 
 Conviene tenerne conto quando si guarda la capienza: 30 notti in un mese sono 60 mezze
 giornate che spariscono dalla disponibilità.
 
-È anche il motivo per cui i codici vanno descritti per intero. `Gn = guardia notte` non dice
-al chatbot quanto dura il blocco; `Gn = guardia notte in altra sede, blocca tutto il giorno
-stesso e tutto il giorno successivo` sì. Un codice deve reggersi da solo, senza rimandare a
-un altro punto della scheda: chi lo legge — il chatbot, ma anche un collega tra sei mesi —
-deve capire cos'è e quanto dura leggendo solo quella riga.
+La colonna LIBERI se ne accorge da sola: chi è messo nella colonna NOTTE del 5 sparisce dai
+liberi sia il 5 sia il 6. La colonna DISPONIBILI invece guarda solo i codici e non le
+assegnazioni — è la sua funzione, dire chi c'è quel giorno — quindi lì il 6 la persona
+compare ancora.
 
-La colonna LIBERI se ne accorge da sola in entrambi i casi: chi ha `Gn` il 5, e chi è messo
-nella colonna NOTTE del 5, sparisce dai liberi sia il 5 sia il 6. La colonna DISPONIBILI
-invece guarda solo i codici e non le assegnazioni — è la sua funzione, dire chi c'è quel
-giorno — quindi lì il 6 la persona compare ancora.
+Se una notte viene svolta altrove e ti arriva già decisa, non serve un codice apposta: chi
+la fa segna `X` sul giorno in cui comincia e `X` sul giorno dopo, e il blocco è completo.
 
 Un limite che resta: il primo giorno del mese non ha un ieri. Se qualcuno era di notte il 31
 del mese scorso, quello devi ricordartelo tu.
@@ -580,7 +521,8 @@ questo tipo e non richiede di installare niente:
 3. premi il tasto ▶ a sinistra e aspetta qualche secondo;
 4. in fondo compaiono i controlli sul file e parte il download.
 
-Per le sezioni 0 e C il chatbot serve davvero, perché lì il lavoro è di lettura e di
+Per «3 Indica le regole per compilare i turni» e «4 Fai compilare i turni dell'orario» il
+chatbot serve davvero, perché lì il lavoro è di lettura e di
 giudizio: se sei bloccato, l'unica strada è cambiare piattaforma o aspettare.
 
 **Se il programma si ferma con un errore** in Colab, copia l'ultima riga rossa e incollala
@@ -732,11 +674,9 @@ NON usarli e non cercarli nei miei file)
 
   A. SCHEDA
 
-  1) RISPOSTA: Gn = guardia notte, blocca tutto il giorno stesso e tutto
-               il giorno successivo (da confermare: nel file non c'è un
-               turno di notte, quindi non può bloccare solo la notte)
-               C = compare 14 volte, sempre su giornate intere: blocca
-               tutto il giorno (da confermare, il significato non si ricava)
+  1) RISPOSTA: noG = compare 9 volte, sempre su giornate in cui la persona
+               lavora comunque altrove: sembra un codice che blocca la sola
+               GUARDIA (da confermare, il significato non si ricava dai file)
   2) RISPOSTA: SEMPRE COPERTA — GUARDIA, in tutti e tre i turni (3/3)
                SEMPRE COPERTA — STANZA 23, STANZA 24 (3/3)
                SEMPRE COPERTA — STANZA 25, STANZA 26 (3/3 la mattina,
@@ -1000,8 +940,11 @@ basta che sia chiaro.
    (Se non ce ne sono scrivi: nessuno)
    RISPOSTA:
 
-2) Priorità delle attività, dalla più alta alla più bassa: quali devono
-   essere sempre coperte e quali si possono lasciare vuote. Puoi scriverlo
+2) Priorità delle attività, DALLA PIÙ ALTA ALLA PIÙ BASSA: quali devono
+   essere sempre coperte e quali si possono lasciare vuote. L'ordine in cui
+   sono scritte conta: nei giorni in cui le persone non bastano per tutte,
+   copri prima quelle che stanno più in alto, e vale anche dentro la stessa
+   riga quando ne elenco più di una. Puoi scriverlo
    a parole tue, oppure marcare ogni riga con SEMPRE COPERTA,
    COPRIRE SE POSSIBILE o PUÒ RESTARE VUOTA: sono le stesse tre categorie
    che usa il prompt di estrazione, così una scheda ricavata da lì si
@@ -1077,11 +1020,9 @@ basta che sia chiaro.
 ESEMPIO DI SCHEDA COMPILATA, TUTTI I PUNTI
 (ti mostra come si risponde: NON usare questi dati)
 
-1) RISPOSTA: Gn = guardia notte in ALTRA SEDE, blocca tutto il giorno
-                  stesso e tutto il giorno successivo. È una notte svolta
-                  da un'altra struttura, che mi arriva già decisa: non è
-                  la GUARDIA che assegni tu nelle colonne dei turni.
-             C = congresso, blocca tutto il giorno
+1) RISPOSTA: noG = indisponibile per il turno GUARDIA quel giorno: chi lo
+                   scrive quel giorno la guardia non la fa, ma per tutto il
+                   resto è disponibile
 
 2) RISPOSTA: GUARDIA sempre coperta, priorità assoluta
              poi in quest'ordine: STANZA 23, STANZA 24, STANZA 25,
@@ -1117,7 +1058,8 @@ ESEMPIO DI SCHEDA COMPILATA, TUTTI I PUNTI
 Come leggere l'esempio, punto per punto:
 - il punto 1 riporta gli stessi codici dichiarati quando è stato generato il file: se qui
   ne manca uno, quel codice viene ignorato e la persona risulta assegnabile quando non lo è.
-  Qui la GUARDIA non compare, ed è giusto: è un'attività, non un codice, e sta al punto 2;
+  La GUARDIA come attività sta al punto 2: qui compare solo dentro la descrizione di noG,
+  per dire quale attività quel codice blocca;
 - il punto 2 distingue le attività che non possono mai restare scoperte da quelle che sì:
   è la distinzione su cui si regge tutta la scala dei conflitti. Dire esplicitamente che
   STANZA 43, STANZA 31 e AMB ESTERNO possono restare vuote evita che il chatbot le copra
@@ -1154,16 +1096,6 @@ Come leggere l'esempio, punto per punto:
 - il punto 7 usa una riga per limite, e ogni riga comincia con una delle due parole
   chiave. Un limite senza parola chiave non si sa se sia invalicabile o no.
 
-Una guardia interna e una guardia in altra sede sono due cose distinte, da non confondere
-né sommare: la prima compare ai punti 2, 3, 5 e 7, perché è un turno che assegni e su cui
-servono ordine, esclusioni e limiti; la seconda solo al punto 1, perché è già decisa
-altrove. Se nel tuo gruppo la guardia è una sola, compare in un posto solo: ai punti 2-3-5-7
-se la assegni tu, al punto 1 se te la comunicano.
-
-Il giorno di recupero dopo la notte c'è in entrambi i casi, ma nel primo discende dal turno
-che hai assegnato e nel secondo dalla durata dichiarata nel codice — in nessuno dei due va
-scritto a mano nel file.
-
 Se un punto non ti riguarda, scrivi "nessuno". Se non sai cosa rispondere, scrivi
 "non so": è previsto, e mi verrà chiesto.
 
@@ -1171,18 +1103,12 @@ Se un punto non ti riguarda, scrivi "nessuno". Se non sai cosa rispondere, scriv
 
 Una notte blocca **il giorno in cui comincia e tutto il giorno successivo**: chi monta di
 notte non fa nient'altro quel giorno, e il giorno dopo smonta e recupera. Nessuna formula
-del file lo controlla: lo applichi tu, in assegnazione. Due casi, stessa regola:
+del file lo controlla: lo applichi tu, in assegnazione. Chi assegni alla NOTTE il giorno N
+non va messo in nessun altro turno del giorno N — niente ambulatori quella mattina o quel
+pomeriggio — e in nessun turno del giorno N+1.
 
-1. la notte è un turno del file — chi assegni alla NOTTE il giorno N non va messo in nessun
-   altro turno del giorno N (niente ambulatori quella mattina o quel pomeriggio) e in
-   nessun turno del giorno N+1;
-2. la notte arriva come codice — se al punto 1 ho descritto un codice come "blocca tutto il
-   giorno stesso e tutto il giorno successivo", quel codice è scritto SOLO sulla riga in cui
-   la notte comincia: il blocco del giorno N ce l'hai davanti, quello del giorno N+1
-   estendilo tu, senza aspettarti un secondo codice.
-
-Vale per qualunque codice a effetto prolungato: leggi il punto 1 alla lettera e applica la
-durata che c'è scritta. Sta al livello 2 della scala dei conflitti qui sotto.
+Una notte svolta altrove mi arriva già decisa e non ha un codice suo: chi la fa segna X sul
+giorno in cui comincia e X sul giorno dopo, quindi la vedi già come indisponibilità.
 
 Le colonne DISPONIBILI e LIBERI non tengono conto di questa regola e il giorno dopo una
 notte mostrano la persona come libera: è atteso, non segnalarmelo come errore. Segnalami
@@ -1211,7 +1137,8 @@ Quando due regole si contraddicono, applica questa scala, dall'alto verso il bas
   1. Indisponibilità della persona — non violabile mai, per nessun motivo.
   2. Turni fissi e regole del punto 5 (esclusioni e incompatibilità), e limiti MAI OLTRE
      del punto 7.
-  3. Copertura delle attività a priorità più alta (punto 2): se dopo la selezione normale
+  3. Copertura delle attività a priorità più alta (punto 2), nell'ordine in cui sono
+     elencate lì: se dopo la selezione normale
      resta una mezza giornata scoperta su un'attività prioritaria, allarga la ricerca —
      anche alle persone normalmente escluse da quell'attività, e anche superando i limiti
      POSSIBILMENTE ENTRO — pur di coprirla. Non superare mai un limite MAI OLTRE.
@@ -1227,6 +1154,11 @@ e segnalamela nel riepilogo finale, spiegando perché (indisponibilità diffusa,
 MAI OLTRE raggiunto, incompatibilità).
 
 ## FORMATTAZIONE
+
+Le celle dei turni in cui c'è GIÀ SCRITTO QUALCOSA non si toccano: sono assegnazioni che
+ho già fatto io, o diciture come «Chiuso». Non sovrascriverle, non spostarle e non
+cancellarle, nemmeno se ti sembrano sbagliate o se ti servirebbe quella persona altrove:
+al massimo segnalamele alla fine. Tu riempi le celle vuote.
 
 Scrivi SOLO i valori nelle celle dei turni. Non modificare font, colori, bordi o
 riempimenti già presenti nel file: la formattazione originale deve restare identica.
@@ -1250,8 +1182,7 @@ aggiornano da sole quando scrivi i nomi nelle celle dei turni.
    bloccata proprio in quei giorni: deve essere zero. Dimmi anche a che cosa l'hai
    assegnata invece, così vedo che non è sparita dal resto dell'orario.
 3bis. Chi fa la notte non compare in nessun altro turno di quel giorno, e non compare in
-   nessun turno del giorno dopo. Vale sia per la NOTTE che hai assegnato tu, sia per i
-   codici notturni dichiarati al punto 1. Elencami tutte le notti con la data e le due
+   nessun turno del giorno dopo. Elencami tutte le notti con la data e le due
    giornate che hanno bloccato, così controllo anch'io: è la regola che le formule del
    file non vedono.
 4. Le attività a priorità massima sono coperte in ogni mezza giornata; elencami le
