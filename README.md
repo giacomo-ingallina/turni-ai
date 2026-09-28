@@ -598,7 +598,7 @@ destra c'è il pulsante per copiarli. I dati da cambiare sono tutti in cima, nel
 > Non produce orari: produce la scheda da usare nel modulo 3.
 >
 > **Cosa fartene del risultato.** La risposta si chiude con un blocco intitolato
-> SCHEDA PER IL PROMPT C: copialo e incollalo nella pagina di compilazione, nel campo
+> tutta la risposta e incollala nella pagina di compilazione, nel campo
 > «Risposta del PROMPT 0» del modulo 3. I sette riquadri si riempiono da soli e li
 > correggi lì. Prima di usarla leggi le sezioni CONTRADDIZIONI e NON DETERMINABILE: sono le
 > cose che il chatbot non ha potuto dedurre e che devi decidere tu. La scheda corretta
@@ -878,11 +878,13 @@ sezioni B, C e D, che leggo a parte.
 
 CHIUDI LA RISPOSTA CON QUESTA RIGA, scritta esattamente così:
 
-  "Copia il blocco SCHEDA PER IL PROMPT C qui sopra e incollalo nella pagina
-   di compilazione, nel campo che chiede la risposta del PROMPT 0: i sette
-   riquadri del modulo 3 si riempiranno da soli e potrai correggerli lì.
-   Prima di usarla, controlla le sezioni CONTRADDIZIONI e NON DETERMINABILE:
-   quello che c'è scritto lì non l'ho potuto dedurre e va deciso da te."
+  "Copia TUTTA questa risposta, dall'inizio alla fine, e incollala nella
+   pagina di compilazione, nel campo che chiede la risposta del PROMPT 0:
+   i sette riquadri del modulo 3 si riempiranno da soli, e sopra ti
+   compariranno le sezioni OSSERVAZIONI INCERTE, CONTRADDIZIONI, NOMI SENZA
+   COLONNA e NON DETERMINABILE, da leggere prima di usare la scheda. Se
+   incolli solo il blocco finale i riquadri si riempiono lo stesso, ma quelle
+   sezioni non le vedi."
 ```
 
 ---
