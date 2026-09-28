@@ -259,17 +259,17 @@ e che file ne esce.
 | STANZA 43 | solo MAT |
 | STANZA 31 | solo MAT |
 | AMB ESTERNO | solo POM |
-| GUARDIA | MAT, POM, NOTTE |
+| GUARDIA | MAT, POM, GIORNO, NOTTE |
 
 **Le 14 persone:** LEONI, ROSSI M, ROSSI L, GALLINA, RUSSO, VERDI, HU, MARINI, CONTI A,
 CONTI S, FERRARI, GRECO, SANNA, LI.
 
-**I 2 codici aggiuntivi**, oltre ai quattro di base (`X` = non disponibile tutto il giorno,
-`Xm` la mattina, `Xp` il pomeriggio, `Xn` la notte):
+**Il codice aggiuntivo**, oltre ai cinque di base (`X` = non disponibile tutto il giorno,
+`Xm` la mattina, `Xp` il pomeriggio, `Xg` di giorno, `Xn` la notte):
 
 - `noG` = indisponibile per il turno GUARDIA quel giorno, disponibile per tutto il resto
 
-### Sezione A, riquadro per riquadro
+### Modulo 1, riquadro per riquadro
 
 **1. Mese e anno del file**
 
@@ -287,8 +287,21 @@ STANZA 26 - 2 turni: MAT, POM
 STANZA 43 - 1 turno: MAT
 STANZA 31 - 1 turno: MAT
 AMB ESTERNO - 1 turno: POM
-GUARDIA - 3 turni: MAT, POM, NOTTE
+GUARDIA - 4 turni: MAT, POM, GIORNO, NOTTE
+
+MAT e POM solo dal lunedì al venerdì
+STANZA 24, turno MAT: solo dal lunedì al sabato
+STANZA 31, turno MAT: solo il martedì e il mercoledì
+GUARDIA, turni MAT e POM: solo dal lunedì al venerdì
+GUARDIA, turno GIORNO: solo sabato e domenica
 ```
+
+Le righe sotto lo spazio bianco dicono quando le attività sono aperte. La prima vale per
+tutte: mattina e pomeriggio solo nei giorni feriali, quindi nel weekend gli ambulatori sono
+chiusi. Le altre riguardano una sola attività e **vincono su quella generale**: la STANZA 24
+resta aperta anche il sabato mattina, la STANZA 31 apre solo il martedì e il mercoledì, e la
+guardia cambia forma nel weekend — mattina e pomeriggio dal lunedì al venerdì, giornata
+intera il sabato e la domenica.
 
 **3. Nomi delle persone**
 
@@ -297,7 +310,7 @@ LEONI, ROSSI M, ROSSI L, GALLINA, RUSSO, VERDI, HU, MARINI, CONTI A,
 CONTI S, FERRARI, GRECO, SANNA, LI
 ```
 
-**4. Codici di indisponibilità oltre a X, Xm, Xp, Xn**
+**4. Codici per indicare l'indisponibilità a una singola attività**
 
 ```
 noG = indisponibile per il turno GUARDIA quel giorno
@@ -315,7 +328,7 @@ Due cose da notare. Le attività hanno un numero di turni diverso l'una dall'alt
 
 ![I due blocchi di conteggio, ancora a zero](img/a3-blocchi-conteggio.png)
 
-### Sezione B, riquadro per riquadro
+### Modulo 2, riquadro per riquadro
 
 **1. Mese e anno da cui partire**
 
@@ -336,7 +349,7 @@ LEONI, ROSSI M, ROSSI L, GALLINA, RUSSO, VERDI, HU, MARINI, CONTI A,
 CONTI S, FERRARI, GRECO, SANNA, LI
 ```
 
-**4. Codici di indisponibilità**
+**4. Codici per indicare l'indisponibilità a una singola attività**
 
 ```
 noG = indisponibile per il turno GUARDIA quel giorno
@@ -350,9 +363,9 @@ significato.
 
 ![Un foglio del file delle indisponibilità, con la legenda e le istruzioni per chi compila](img/b1-file-indisponibilita.png)
 
-### Sezione C, riquadro per riquadro
+### Modulo 3, riquadro per riquadro
 
-**1. Codici usati oltre a X, Xm, Xp, Xn**
+**1. Codici per indicare l'indisponibilità a una singola attività**
 
 ```
 noG = indisponibile per il turno GUARDIA quel giorno
@@ -361,10 +374,9 @@ noG = indisponibile per il turno GUARDIA quel giorno
 **2. Priorità delle attività**
 
 ```
-SEMPRE COPERTA - GUARDIA, in tutti e tre i turni
-SEMPRE COPERTA - STANZA 23, STANZA 24, STANZA 25, STANZA 26
-PUÒ RESTARE VUOTA - STANZA 43, STANZA 31, AMB ESTERNO: coprirle solo se
-     avanza qualcuno, senza forzare i turni
+SEMPRE COPERTA - GUARDIA, STANZA 23, STANZA 24
+COPRIRE SE POSSIBILE - STANZA 25
+PUÒ RESTARE VUOTA - STANZA 43
 ```
 
 **3. Ordine tra le persone**
@@ -374,8 +386,7 @@ PRIMA DISPONIBILE - per STANZA 23: 1° LEONI, 2° ROSSI M, 3° FERRARI,
      4° VERDI, 5° GALLINA
 PRIMA DISPONIBILE - per GUARDIA: 1° ROSSI L, 2° ROSSI M, 3° RUSSO,
      4° HU, 5° CONTI A, 6° GRECO
-A PARITÀ - per tutte le altre attività nessuna preferenza: conta solo
-     l'equilibrio
+A PARITÀ - per tutte le altre attività nessuna preferenza
 ```
 
 **4. Turni fissi ricorrenti**
@@ -399,12 +410,20 @@ INCOMPATIBILITÀ - ROSSI L e ROSSI M mai in contemporanea tra STANZA 23 e
      insieme
 ```
 
-**6. Attività o giorni da lasciare vuoti**
+**6. Attività o giorni da lasciare vuoti perché chiusi oppure da compilare a mano**
+
+```
+LI COMPILO IO - STANZA 31: lascia le celle vuote e non assegnare nessuno
+```
+
+Qui il weekend non compare, ed è giusto: nell'esempio gli ambulatori sono già stati
+dichiarati chiusi il sabato e la domenica quando è stato creato il file, con la riga «MAT e
+POM solo dal lunedì al venerdì», e le celle di quei giorni sono grigie. Se invece nel file
+dell'orario le attività risultano aperte anche nel weekend, la chiusura va scritta qui:
 
 ```
 CHIUSI - sabato e domenica gli ambulatori sono chiusi: coprire SOLO la
      GUARDIA, tutte le stanze e l'AMB ESTERNO restano vuoti
-LI COMPILO IO - STANZA 31: lascia le celle vuote e non assegnare nessuno
 ```
 
 **7. Limiti al numero di turni per persona**
@@ -418,10 +437,10 @@ dalla notte ma non dalla guardia di giorno: è la forma per limitare un'esclusio
 turno. `GRECO va solo in STANZA 26` e `in STANZA 26 vanno solo GRECO e CONTI A` dicono due
 cose diverse — la prima limita la persona, la seconda l'attività — e servono entrambe.
 `MARINI lavora SOLO il lunedì e il mercoledì` è scritto in forma azionabile: dire «di solito
-lavora il lunedì» non produrrebbe nessun effetto. E il punto 6 sul weekend non va dato per
-scontato: senza quella riga il chatbot copre tutte le attività anche sabato e domenica.
+lavora il lunedì» non produrrebbe nessun effetto. E le righe sui giorni della settimana, nel primo riquadro, valgono più di una riga al
+punto 6: rendono le celle inagibili invece di limitarsi a chiederne il rispetto.
 
-**Il risultato**, con i nomi assegnati:
+**Ecco il risultato, con i nomi assegnati:**
 
 ![L'orario con i turni assegnati: nel weekend solo la GUARDIA, STANZA 31 sempre vuota](img/c1-orario-assegnato.png)
 
@@ -480,14 +499,14 @@ volta dopo ripartirai dai campi vuoti.
 Chi monta di notte non lavora quel giorno — né la mattina né il pomeriggio — e non lavora il
 giorno dopo, quando smonta. Una notte costa quindi **due giornate** alla persona che la fa,
 e non lo scrive nessuno a mano: basta che tu abbia chiamato `NOTTE` quel turno. Se metti
-RUSSO nella colonna NOTTE del 5 novembre, il testo della sezione 3 sa che RUSSO non va messo
+RUSSO nella colonna NOTTE del 5 novembre, il testo del modulo 3 sa che RUSSO non va messo
 negli ambulatori del 5 né in niente il 6.
 
 Conviene tenerne conto quando si guarda la capienza: 30 notti in un mese sono 60 mezze
 giornate che spariscono dalla disponibilità.
 
 La colonna LIBERI se ne accorge da sola: chi è messo nella colonna NOTTE del 5 sparisce dai
-liberi sia il 5 sia il 6. La colonna DISPONIBILI invece guarda solo i codici e non le
+liberi sia il 5 sia il 6. La colonna DISPONIBILI invece guarda solo le indisponibilità e non le
 assegnazioni — è la sua funzione, dire chi c'è quel giorno — quindi lì il 6 la persona
 compare ancora.
 
@@ -510,7 +529,7 @@ uno si blocca, apri un altro e riprendi da dove eri: i testi che incolli sono gl
 non dipendono da quale chatbot li riceve. Conviene tenere aperti due account fin
 dall'inizio, così non ti fermi a metà.
 
-**Per le sezioni A e B, salta il chatbot.** Quelle due producono un programma, e un
+**Per i moduli 1 e 2, salta il chatbot.** Quelle due producono un programma, e un
 programma lo puoi eseguire da solo su **Google Colab**, che è gratuito, non ha limiti di
 questo tipo e non richiede di installare niente:
 
@@ -554,11 +573,11 @@ di usare il modulo: le righe da riempire sono quelle che cominciano con `RISPOST
 vuoi adattare il metodo a un caso che qui non è previsto, perché è da questi testi che si
 parte per modificarlo.
 
-Sono quattro, nell'ordine in cui si usano: i due **script** delle sezioni A e B, che creano i
-file Excel, e i due **prompt** delle sezioni 0 e C, che sono istruzioni a parole per il
+Sono quattro, nell'ordine in cui si usano: i due **script** dei moduli 1 e 2, che creano i
+file Excel, e i due **prompt** — il PROMPT 0 e quello del modulo 3 — che sono istruzioni a parole per il
 chatbot.
 
-## Gli script delle sezioni A e B
+## Gli script dei moduli 1 e 2
 
 Sono due programmi Python. Non sono riportati qui perché ne esiste già una copia nel
 progetto, ed è quella la versione buona: incollarli anche in questa pagina significherebbe
@@ -576,11 +595,11 @@ destra c'è il pulsante per copiarli. I dati da cambiare sono tutti in cima, nel
 ## PROMPT 0 — Estrazione delle regole dagli orari precedenti
 
 > Da usare una volta sola, all'inizio, da chi ha almeno 3 orari già compilati.
-> Non produce orari: produce la scheda da usare nel PROMPT C.
+> Non produce orari: produce la scheda da usare nel modulo 3.
 >
 > **Cosa fartene del risultato.** La risposta si chiude con un blocco intitolato
 > SCHEDA PER IL PROMPT C: copialo e incollalo nella pagina di compilazione, nel campo
-> «Risposta del PROMPT 0» della sezione C. I sette riquadri si riempiono da soli e li
+> «Risposta del PROMPT 0» del modulo 3. I sette riquadri si riempiono da soli e li
 > correggi lì. Prima di usarla leggi le sezioni CONTRADDIZIONI e NON DETERMINABILE: sono le
 > cose che il chatbot non ha potuto dedurre e che devi decidere tu. La scheda corretta
 > conservala: la riusi ogni mese, non si rifà.
@@ -741,7 +760,8 @@ NON usarli e non cercarli nei miei file)
        se non lo è      -> punto 6: STANZA 26 il giovedì la compilo io
 
   D. NON DETERMINABILE
-     I codici di indisponibilità: negli allegati non c'è il blocco
+     Il significato dei codici: negli allegati non c'è il blocco delle
+     indisponibilità, quindi non posso sapere che cosa bloccano
      Se STANZA 31 sia chiusa, compilata a mano o solo scoperta
      Se le esclusioni siano divieti o competenze specifiche
      Se MARINI sia part-time o abbia un'indisponibilità fissa
@@ -758,18 +778,21 @@ NON usarli e non cercarli nei miei file)
 |  riga. Non cancellare i numeri.                                |
 +---------------------------------------------------------------+
 
-1) Codici di indisponibilità usati oltre a X, Xm, Xp, Xn: significato e
-   parte della giornata bloccata.
-   PROPONI SEMPRE UNA DURATA, anche quando non sei sicuro: scrivi la tua
+1) Codici usati oltre ai cinque di base (X = tutto il giorno, Xm la mattina,
+   Xp il pomeriggio, Xg mattina e pomeriggio, Xn la notte): per ognuno il
+   significato e QUALE ATTIVITÀ blocca nel giorno in cui è scritto.
+   Questi codici non bloccano un orario, ma una sola attività: chi li usa
+   resta assegnabile a tutto il resto di quella giornata.
+   PROPONI SEMPRE UN'ATTIVITÀ, anche quando non sei sicuro: scrivi la tua
    ipotesi e marcala "(da confermare)". Non lasciare mai un codice senza
-   durata e non scrivere solo "significato non determinabile": un codice
-   senza durata non blocca nessuno, quindi a valle la persona risulterà
-   disponibile quando non lo è, e nessuno se ne accorgerà. Una durata
+   attività e non scrivere solo "significato non determinabile": un codice
+   senza attività non blocca niente, quindi a valle la persona risulterà
+   assegnabile quando non lo è, e nessuno se ne accorgerà. Un'attività
    sbagliata invece la vedo e la correggo.
-   Attenzione ai codici notturni: se il file NON ha un turno di notte tra
-   le attività, un codice di guardia notturna non può bloccare "la notte",
-   perché la notte non esiste in quel file. Propone di norma: blocca tutto
-   il giorno stesso e tutto il giorno successivo.
+   Se un codice sembra bloccare un orario e non un'attività — per esempio
+   una notte svolta in un'altra sede — segnalamelo al punto D invece di
+   metterlo qui: quello non è un codice, si segna con X sul giorno in cui
+   comincia e X sul giorno dopo.
    RISPOSTA:
 
 2) Priorità delle attività. Classifica OGNI attività in una di queste tre
@@ -857,14 +880,14 @@ CHIUDI LA RISPOSTA CON QUESTA RIGA, scritta esattamente così:
 
   "Copia il blocco SCHEDA PER IL PROMPT C qui sopra e incollalo nella pagina
    di compilazione, nel campo che chiede la risposta del PROMPT 0: i sette
-   riquadri della sezione C si riempiranno da soli e potrai correggerli lì.
+   riquadri del modulo 3 si riempiranno da soli e potrai correggerli lì.
    Prima di usarla, controlla le sezioni CONTRADDIZIONI e NON DETERMINABILE:
    quello che c'è scritto lì non l'ho potuto dedurre e va deciso da te."
 ```
 
 ---
 
-## PROMPT C — Assegnazione dei turni
+## PROMPT del modulo 3 — Assegnazione dei turni
 
 > Da usare quando il file è pronto e le indisponibilità sono state incollate.
 > È la parte che richiede più precisione: i punti 2, 4, 5 e 7 della scheda sono il cuore.
