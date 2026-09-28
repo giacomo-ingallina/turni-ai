@@ -67,7 +67,9 @@ def leggi_mese(testo):
 # ---------------------------------------------------------------- attività
 GIORNI_SETT = {"lunedì": 0, "lunedi": 0, "martedì": 1, "martedi": 1,
                "mercoledì": 2, "mercoledi": 2, "giovedì": 3, "giovedi": 3,
-               "venerdì": 4, "venerdi": 4, "sabato": 5, "domenica": 6}
+               "venerdì": 4, "venerdi": 4, "sabato": 5, "domenica": 6,
+               # anche abbreviati: «dal lun al sab»
+               "lun": 0, "mar": 1, "mer": 2, "gio": 3, "ven": 4, "sab": 5, "dom": 6}
 
 # «GIORNO solo sabato e domenica»  -> vale per tutte le attività
 SOLO = re.compile(r"^\s*([A-Za-z0-9 ,ed]+?)\s+solo\s+(.+?)\s*\.?\s*$", re.I)

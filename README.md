@@ -1191,6 +1191,8 @@ ho già fatto io, o diciture come «Chiuso». Non sovrascriverle, non spostarle 
 cancellarle, nemmeno se ti sembrano sbagliate o se ti servirebbe quella persona altrove:
 al massimo segnalamele alla fine. Tu riempi le celle vuote.
 
+Le celle colorate in grigio scuro sono turni che quel giorno non esistono: lasciale vuote.
+
 Scrivi SOLO i valori nelle celle dei turni. Non modificare font, colori, bordi o
 riempimenti già presenti nel file: la formattazione originale deve restare identica.
 

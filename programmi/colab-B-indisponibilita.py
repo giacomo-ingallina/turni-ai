@@ -7,12 +7,12 @@
 # ----------------------- DATI DA COMPILARE ---------------------------
 # Si scrivono a parole, come nelle schede.
 
-MESE_E_ANNO_DI_PARTENZA = """ottobre 2027"""
-QUANTI_MESI = 12
+MESE_E_ANNO_DI_PARTENZA = """novembre 2026"""
+QUANTI_MESI = """12"""
 
 NOMI_DELLE_PERSONE = """
-ANCONA F, BARKI, BIONDI, BOGNONI, COLOMBI, CONVERSANO, CUNSOLO, FIORE,
-INGALLINA, MARGONATO, MUSCI, PACI, STELLA
+LEONI, ROSSI M, ROSSI L, GALLINA, RUSSO, VERDI, HU,
+MARINI, CONTI A, CONTI S, FERRARI, GRECO, SANNA, LI
 """
 
 # CODICI PER UNA SINGOLA ATTIVITÀ — facoltativo
@@ -67,6 +67,13 @@ def leggi_mese(testo):
         raise Problema(f"non capisco il mese e l'anno da «{testo.strip()}». "
                        f"Scrivili così: novembre 2026")
     return MESI[m.group(1)], int(m.group(2)), m.group(1)
+
+def leggi_quanti(testo):
+    m = re.search(r"\d+", str(testo))
+    if not m or not 1 <= int(m.group()) <= 36:
+        raise Problema(f"non capisco quanti mesi da «{str(testo).strip()}». "
+                       f"Scrivi solo il numero, da 1 a 36: per esempio 12")
+    return int(m.group())
 
 # ---------------------------------------------------------------- persone
 def leggi_persone(testo):
@@ -135,6 +142,7 @@ def leggi_codici(testo):
 
 try:
     _nm, ANNO, _nome_mese = leggi_mese(MESE_E_ANNO_DI_PARTENZA)
+    QUANTI_MESI = leggi_quanti(QUANTI_MESI)
     MESE = _nome_mese.upper()
     PERSONE = leggi_persone(NOMI_DELLE_PERSONE)
     CODICI_IN_PIU, _av = leggi_codici(CODICI_IN_PIU_TESTO)
