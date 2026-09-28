@@ -652,11 +652,17 @@ COME ANALIZZARE
 4. Per ogni attività cerca:
    - se resta mai scoperta, e quanto spesso: le attività mai scoperte sono le
      prioritarie, quelle spesso vuote sono le facoltative;
-   - se è aperta solo in certi giorni o solo mattina/pomeriggio.
+   - se è aperta solo in certi giorni o solo mattina/pomeriggio;
+   - se trovi celle con diciture che non sono nomi di persona, come «Chiuso», non
+     contarle come celle vuote: dimmi dove compaiono e se in modo regolare. Il
+     significato lo decido io.
 5. Guarda se chi lavora la mattina in un'attività tende a restarci anche il pomeriggio
    oppure se i turni vengono spezzati per distribuire il carico. Non serve che tu ne
    ricavi una regola: riferiscimelo tra le osservazioni, mi serve per capire quanto la
    continuità contava finora.
+6. Se la stessa persona compare in due attività nella stessa mezza giornata,
+   riportamelo nella sezione CONTRADDIZIONI con l'etichetta DOPPIA ASSEGNAZIONE,
+   indicando quali attività e in quali periodi.
 
 REGOLE DELL'ANALISI — importanti
 
