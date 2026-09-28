@@ -179,7 +179,7 @@ Qui scrivi le regole con cui l'AI assegna i turni. Le domande sono sette:
 6. le attività o i giorni da lasciare vuoti, perché chiusi o perché li compili tu;
 7. i limiti al numero di turni per persona.
 
-![Le sette domande nel modulo](img/s2-sezione-c-regole.png)
+![Il riquadro per ricavare le regole dagli orari passati e la prima domanda del modulo](img/s2-sezione-c-regole.png)
 
 Si compila una volta sola: le risposte restano salvate e ogni mese reincolli lo stesso
 testo.
