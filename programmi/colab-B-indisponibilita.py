@@ -7,12 +7,12 @@
 # ----------------------- DATI DA COMPILARE ---------------------------
 # Si scrivono a parole, come nelle schede.
 
-MESE_E_ANNO_DI_PARTENZA = """novembre 2026"""
-QUANTI_MESI = """12"""
+MESE_E_ANNO_DI_PARTENZA = """ottobre 2027"""
+QUANTI_MESI = 12
 
 NOMI_DELLE_PERSONE = """
-LEONI, ROSSI M, ROSSI L, GALLINA, RUSSO, VERDI, HU,
-MARINI, CONTI A, CONTI S, FERRARI, GRECO, SANNA, LI
+ANCONA F, BARKI, BIONDI, BOGNONI, COLOMBI, CONVERSANO, CUNSOLO, FIORE,
+INGALLINA, MARGONATO, MUSCI, PACI, STELLA
 """
 
 # CODICI PER UNA SINGOLA ATTIVITÀ — facoltativo
@@ -32,7 +32,7 @@ MARINI, CONTI A, CONTI S, FERRARI, GRECO, SANNA, LI
 #   noG = indisponibile per il turno GUARDIA quel giorno
 #
 # IMPORTANTE: dentro la descrizione deve comparire il nome di un'attività
-# dichiarata in «Crea il file Excel con i turni vuoti», scritto come lì
+# dichiarata in «Crea il file Excel dell'orario con i turni da compilare», scritto come lì
 # (GUARDIA, non GUARDIE né «la guardia»). È da quel nome che si capisce che
 # cosa bloccare: se non corrisponde a nessuna attività il codice non funziona,
 # e lo script dell'orario si ferma e te lo dice.
@@ -67,13 +67,6 @@ def leggi_mese(testo):
         raise Problema(f"non capisco il mese e l'anno da «{testo.strip()}». "
                        f"Scrivili così: novembre 2026")
     return MESI[m.group(1)], int(m.group(2)), m.group(1)
-
-def leggi_quanti(testo):
-    m = re.search(r"\d+", str(testo))
-    if not m or not 1 <= int(m.group()) <= 36:
-        raise Problema(f"non capisco quanti mesi da «{str(testo).strip()}». "
-                       f"Scrivi solo il numero, da 1 a 36: per esempio 12")
-    return int(m.group())
 
 # ---------------------------------------------------------------- persone
 def leggi_persone(testo):
@@ -126,7 +119,7 @@ def leggi_codici(testo):
                 f"il codice «{sigla}» sembra bloccare una parte della giornata. Per "
                 f"quelle ci sono già i codici fissi X, Xm, Xp, Xg, Xn, che non si "
                 f"cambiano: i codici in più bloccano UNA ATTIVITÀ, non un orario. "
-                f"Una notte svolta altrove si segna con due X, sul giorno in cui "
+                f"Una notte svolta fuori da questo orario si segna con due X, sul giorno in cui "
                 f"comincia e su quello dopo.")
         fuori.append((sigla, d))
     sigle = [s for s, _ in fuori]
@@ -142,7 +135,6 @@ def leggi_codici(testo):
 
 try:
     _nm, ANNO, _nome_mese = leggi_mese(MESE_E_ANNO_DI_PARTENZA)
-    QUANTI_MESI = leggi_quanti(QUANTI_MESI)
     MESE = _nome_mese.upper()
     PERSONE = leggi_persone(NOMI_DELLE_PERSONE)
     CODICI_IN_PIU, _av = leggi_codici(CODICI_IN_PIU_TESTO)
@@ -176,7 +168,7 @@ ISTRUZIONI = [
     "  il giorno 10 sei assente tutto il giorno: X sulla riga del 10",
     "  il giorno 12 sei assente di giorno ma la notte puoi: Xg sulla riga del 12",
     "",
-    "Una notte svolta altrove occupa due giornate: si segna con due X,",
+    "Una notte svolta fuori da questo orario occupa due giornate: si segna con due X,",
     "una sul giorno in cui comincia e una sul giorno dopo, quando smonti.",
 ]
 if CODICI_IN_PIU:

@@ -24,7 +24,7 @@ una suddivisione di nonni e babysitter nella gestione dei nipoti.
 Scrivere in modo efficace le istruzioni per il chatbot, chiamate **prompt**, può essere
 lungo e complicato.
 
-Questa pagina è pensata per facilitare questo processo: è sufficiente inserire a parole poche
+Questa pagina è pensata per facilitare questo processo: è sufficiente inserire a parole le
 caratteristiche dell'orario desiderato — nomi del personale, indisponibilità, attività da
 assegnare e regole da seguire nella compilazione dei turni — per creare comandi pronti da
 copiare nei chatbot e ottenere l'orario con i turni compilati secondo l'organizzazione, le
@@ -51,118 +51,154 @@ prevedibili sull'Excel creato.
 </tr>
 </table>
 
-### 1. Crea il file Excel con i turni vuoti
+### 1. Crea il file Excel dell'orario con i turni da compilare
 
 Rispondi alle quattro domande, premi il tasto «Genera il comando pronto da incollare» e
 incolla il testo in una chat nuova del chatbot che userai — Claude, ChatGPT o Gemini:
 otterrai il file Excel dell'orario del mese, vuoto e pronto da compilare. Le domande sono
 queste:
 
-1. mese e anno del file;
-2. le attività da coprire: per ognuna il nome (ambulatorio 23), quanti turni al giorno
-   (2 turni) e come si chiamano (MAT e POM);
-3. i nomi delle persone che coprono i turni;
-4. i codici di indisponibilità che usi oltre a quelli di base (`X` = non disponibile tutto
-   il giorno, più uno per ogni parte della giornata: `Xm` la mattina, `Xp` il pomeriggio,
-   `Xn` la notte).
+1.  mese e anno del file;
+2.  le attività da coprire: per ognuna il nome (ambulatorio 23), quanti turni al giorno (2
+    turni) e come si chiamano (MAT e POM). Dovrai anche dichiarare in quali giorni della
+    settimana queste attività sono aperte;
+3.  i nomi delle persone che coprono i turni;
+4.  gli eventuali codici che prevedi di inserire nel file in cui raccogli le
+    indisponibilità per segnalare l'indisponibilità a una singola attività, per esempio al
+    turno di guardia in un determinato giorno.
 
-**Come chiami i turni conta**, perché da lì discendono le regole, senza che tu debba
-dichiararle:
+**IMPORTANTE: le attività possono essere ambulatori, guardie, sale operatorie, etc. I
+turni sono il periodo della giornata in cui si svolge l'attività, e sono questi:**
 
-| Nome del turno | Chi lo fa |
-|---|---|
-| `MAT` | resta libero il pomeriggio |
-| `POM` | resta libero la mattina |
-| `GIORNO` | non è libero per il resto della giornata |
-| `NOTTE` | non è libero quel giorno né il giorno dopo, perché smonta |
+| Nome del turno | Chi lo fa                                                 |
+|----------------|-----------------------------------------------------------|
+| `MAT`          | resta libero il pomeriggio                                |
+| `POM`          | resta libero la mattina                                   |
+| `GIORNO`       | non è libero per il resto della giornata                  |
+| `NOTTE`        | non è libero quel giorno né il giorno dopo, perché smonta |
 
 Non ci sono altri nomi di turno: se ne scrivi uno diverso da questi quattro il programma
 si ferma e te lo dice.
 
-**Un turno può anche esistere solo in certi giorni della settimana.** Capita con la guardia:
-dal lunedì al venerdì è divisa in mattina, pomeriggio e notte, mentre nel weekend è su due
-turni soli, giornata e notte. E capita con un ambulatorio aperto anche il sabato mattina.
-Si dichiara attività per attività, così due attività possono avere calendari diversi:
+**Un turno può anche esistere solo in certi giorni della settimana.** Vedi l'esempio
+sotto: la guardia, dal lunedì al venerdì, è divisa in mattina, pomeriggio e notte, mentre
+nel weekend è su due turni soli, giornata e notte. L'ambulatorio 24 invece è aperto anche
+il sabato mattina, ma non il sabato pomeriggio. Si dichiara attività per attività, così
+due attività possono avere calendari diversi:
 
-```
-AMB 24 - 2 turni: MAT, POM
-AMB 24, turno MAT: solo dal lunedì al sabato
-AMB 24, turno POM: solo dal lunedì al venerdì
-GUARDIA - 4 turni: MAT, POM, GIORNO, NOTTE
-GUARDIA, turni MAT e POM: solo dal lunedì al venerdì
-GUARDIA, turno GIORNO: solo sabato e domenica
-```
+    AMB 24 - 2 turni: MAT, POM
+    AMB 24, turno MAT: solo dal lunedì al sabato
+    AMB 24, turno POM: solo dal lunedì al venerdì
+    GUARDIA - 4 turni: MAT, POM, GIORNO, NOTTE
+    GUARDIA, turni MAT e POM: solo dal lunedì al venerdì
+    GUARDIA, turno GIORNO: solo sabato e domenica
 
-Il sabato, in questo esempio, l'ambulatorio lavora di mattina e la guardia è sulla giornata
-intera: due turni chiamati entrambi `MAT`, uno attivo e uno no, nello stesso giorno.
+Il sabato, in questo esempio, l'ambulatorio lavora di mattina e la guardia è sulla
+giornata intera: due turni chiamati entrambi `MAT` — quello della GUARDIA e quello di AMB
+24 — uno attivo e uno no, nello stesso giorno.
 
-Se invece la regola vale per tutte le attività, basta la forma corta senza il nome:
+Se devi solo dire una regola che vale per tutte le attività — per esempio che sono chiuse
+nel weekend — basta la forma corta, con il nome del turno e senza il nome dell'attività:
 
-```
-GIORNO solo sabato e domenica
-```
+    MAT e POM solo dal lunedì al venerdì
 
-Nel file le colonne ci sono tutte, ma **le celle dei giorni in cui quel turno non esiste sono
-grigio scuro**: non vanno compilate, e nessuno risulta libero per un turno che quel giorno
-non c'è. I giorni si scrivono come viene: «sabato e domenica», «dal lunedì al sabato», «nei
-giorni feriali», «nel weekend».
+Nel file le colonne ci sono tutte, ma **le celle dei giorni in cui quel turno non esiste
+sono grigio scuro**: non vanno compilate, e nessuno risulta libero per un turno che quel
+giorno non c'è. I giorni si scrivono come viene: «sabato e domenica», «dal lunedì al
+sabato», «nei giorni feriali», «nel weekend».
 
-Il nome nella riga di dichiarazione deve essere identico all'etichetta del turno, altrimenti
-il programma si ferma e te lo dice.
+Il nome nella riga di dichiarazione (per esempio `MAT`) deve essere identico all'etichetta
+del turno, altrimenti il programma si ferma e te lo dice.
 
 Se nel tuo caso servissero regole ancora diverse, chiedile al chatbot dopo aver creato il
 file.
 
-La regola per capire come va indicato un impegno: **se lo decidi tu è un'attività, se te lo
-comunicano è un'indisponibilità.**
+La quarta domanda ti chiede se prevedi di far segnare l'indisponibilità a una singola
+attività nel foglio delle indisponibilità: per esempio `noG` — se lì indichi «noG =
+indisponibile per il turno GUARDIA quel giorno» — scritto sul 14 ottobre, che vuol dire
+«quel giorno non posso fare la GUARDIA, per il resto ci sono».
+
+Il nome dell'attività dentro la descrizione deve essere quello di un'attività dichiarata
+alla domanda 2, scritto come lì — ad esempio GUARDIA se l'attività si chiama GUARDIA, non
+GUARDIE né «la guardia»: se non corrisponde a nessuna attività il codice non funziona. Qui
+questi codici servono a due cose sole: finire nella legenda del file dell'orario e far
+controllare che il nome dell'attività sia scritto giusto.
+
+Se ti bastano i codici di indisponibilità generali — `X` non disponibile tutto il giorno,
+`Xm` non disponibile la mattina, `Xp` non disponibile il pomeriggio, `Xg` non disponibile
+di giorno, cioè mattina e pomeriggio, con la notte che resta disponibile, e `Xn` non
+disponibile la notte — scrivi «nessuno».
 
 Il file che ottieni contiene, da sinistra a destra: il calendario del mese con una colonna
 per ogni turno di ogni attività, ancora vuote; tre colonne di controllo che segnalano le
 sovrapposizioni ed elencano ogni giorno chi è disponibile e chi è libero; il blocco in cui
 incollare le indisponibilità; la legenda dei codici; due blocchi che contano i turni per
-persona e per attività, uno per il mese in corso e uno per quello precedente; e in fondo due
-aree di calcolo che fanno funzionare le colonne di controllo — quelle non vanno toccate, e
-si possono nascondere.
+persona e per attività, uno per il mese in corso e uno per quello precedente; e in fondo
+due aree di calcolo che fanno funzionare le colonne di controllo: queste ultime sono
+nascoste e non vanno toccate.
 
-![Il calendario del mese con le colonne dei turni, ancora vuote](img/a1-orario-vuoto-turni.png)
+![Il calendario del mese con le colonne dei turni, ancora
+vuote](img/a1-orario-vuoto-turni.png)
 
-![Le tre colonne di controllo: CONTROLLO, DISPONIBILI e LIBERI](img/a4-colonne-controllo.png)
+![Le tre colonne di controllo: CONTROLLO, DISPONIBILI e
+LIBERI](img/a4-colonne-controllo.png)
 
-![Il blocco delle indisponibilità e la legenda dei codici](img/a2-blocco-disponibilita-legenda.png)
+![Il blocco delle indisponibilità e la legenda dei
+codici](img/a2-blocco-disponibilita-legenda.png)
 
-![I due blocchi di conteggio dei turni, mese corrente e mese precedente](img/a3-blocchi-conteggio.png)
+![I due blocchi di conteggio dei turni, mese corrente e mese
+precedente](img/a3-blocchi-conteggio.png)
 
-Se non premi «Svuota il modulo», quando torni sulla pagina per l'orario del mese successivo
-trovi i campi ancora compilati: ti basta cambiare il nome del mese e rigenerare. In
-alternativa conserva il testo generato — lo puoi aprire con TextEdit su Mac o Blocco note su
-Windows — e il mese dopo cambia il nome del mese direttamente lì: è la prima riga del blocco
-DATI DA COMPILARE, in cima al comando.
+Se non premi «Svuota il modulo», quando torni sulla pagina per l'orario del mese
+successivo trovi i campi ancora compilati: ti basta cambiare il nome del mese e
+rigenerare. In alternativa conserva il testo generato — lo puoi aprire con TextEdit su Mac
+o Blocco note su Windows — e il mese dopo cambia il nome del mese direttamente lì: è la
+prima riga del blocco DATI DA COMPILARE, in cima al comando.
 
 ---
 
 ### 2. Crea il file Excel per raccogliere le indisponibilità
 
-Genera il file Excel con un foglio per ogni mese, da caricare online — per esempio su Google
-Drive — così che tutti possano inserire le proprie indisponibilità: ognuno compila la propria
-colonna e tu poi le copi tutte dentro l'orario. Va creato una volta l'anno. Se lo invii nella
-stessa chat in cui hai creato il file dell'orario, ai punti 3 e 4 puoi scrivere «gli stessi
-del comando precedente». Le domande sono:
+Genera il file Excel con un foglio per ogni mese, da caricare online — per esempio su
+Google Drive — così che tutti possano inserire le proprie indisponibilità: ognuno compila
+la propria colonna e tu poi le copi tutte dentro l'orario. Va creato una volta l'anno, o
+più di rado se lo crei per più di 12 mesi. Le domande sono:
 
-1. mese e anno da cui partire;
-2. quanti mesi generare (di solito 12);
-3. i nomi delle persone, gli stessi di «Crea il file Excel con i turni vuoti»;
-4. i codici di indisponibilità, gli stessi di «Crea il file Excel con i turni vuoti».
+1.  mese e anno da cui partire;
+2.  quanti mesi generare (con 12 sei coperto per un anno);
+3.  i nomi delle persone, gli stessi di «Crea il file Excel dell'orario con i turni da
+    compilare»;
+4.  gli eventuali codici che prevedi di inserire nel file in cui raccogli le
+    indisponibilità per segnalare l'indisponibilità a una singola attività, per esempio al
+    turno di guardia in un determinato giorno.
 
-![Un foglio del file delle indisponibilità, con la legenda e le istruzioni per chi compila](img/b1-file-indisponibilita.png)
+La quarta domanda ti chiede se prevedi di far segnare l'indisponibilità a una singola
+attività nel foglio delle indisponibilità: per esempio `noG` — se lì indichi «noG =
+indisponibile per il turno GUARDIA quel giorno» — scritto sul 14 ottobre, che vuol dire
+«quel giorno non posso fare la GUARDIA, per il resto ci sono».
 
-Poi carica il file su Google Drive o dove preferisci, perché le persone possano inserire le
-proprie indisponibilità. Il servizio che scegli per condividerlo ti offre le protezioni
-necessarie — password, permessi di accesso — così che lo compili solo chi vuoi tu.
+Il nome dell'attività dentro la descrizione deve essere quello di un'attività dichiarata
+alla domanda 2 del modulo per creare il file dell'orario vuoto — ad esempio GUARDIA se
+l'attività si chiama GUARDIA, non GUARDIE né «la guardia»: se non corrisponde a nessuna
+attività il codice non funziona.
 
-**IMPORTANTE.**  I codici di indisponibilità devono essere gli stessi identici in tutte le
-passi — per esempio `noG` = indisponibile per il turno GUARDIA quel giorno. Se un
-codice esiste nel file delle indisponibilità ma non è dichiarato nel testo di assegnazione,
-il chatbot lo ignora e assegna qualcuno che non c'è.
+Se ti bastano i codici di indisponibilità generali — `X` non disponibile tutto il giorno,
+`Xm` non disponibile la mattina, `Xp` non disponibile il pomeriggio, `Xg` non disponibile
+di giorno, cioè mattina e pomeriggio, con la notte che resta disponibile, e `Xn` non
+disponibile la notte — scrivi «nessuno».
+
+![Un foglio del file delle indisponibilità, con la legenda e le istruzioni per chi
+compila](img/b1-file-indisponibilita.png)
+
+Poi carica il file su Google Drive o dove preferisci, perché le persone possano inserire
+le proprie indisponibilità. Il servizio che scegli per condividerlo, per esempio Google
+Drive, ti offre le protezioni necessarie — password, permessi di accesso — così che lo
+compili solo chi vuoi tu.
+
+**IMPORTANTE.** I codici aggiuntivi devono essere gli stessi identici in tutti i passi —
+per esempio `noG` = indisponibile per il turno GUARDIA quel giorno. Se un codice esiste
+nel file delle indisponibilità ma non è dichiarato nel testo di assegnazione, il chatbot
+lo ignora e assegna qualcuno che non c'è.
 
 ---
 
@@ -170,73 +206,110 @@ il chatbot lo ignora e assegna qualcuno che non c'è.
 
 Qui scrivi le regole con cui l'AI assegna i turni. Le domande sono sette:
 
-1. i codici di indisponibilità, gli stessi di «Crea il file Excel con i turni vuoti»;
-2. la priorità delle attività: quali devono essere sempre coperte e quali possono restare
-   vuote;
-3. la gerarchia tra le persone nel coprire le varie attività, vincolante o solo indicativa;
-4. i turni fissi ricorrenti: chi, quando, dove;
-5. le esclusioni e le incompatibilità;
-6. le attività o i giorni da lasciare vuoti, perché chiusi o perché li compili tu;
-7. i limiti al numero di turni per persona.
+1.  i codici aggiuntivi per indicare l'indisponibilità a una singola attività, gli stessi
+    di «Crea il file Excel dell'orario con i turni da compilare»;
+2.  la priorità delle attività: quali devono essere sempre coperte e quali possono restare
+    vuote. Se più di un'attività deve essere SEMPRE COPERTA, l'ordine in cui le scrivi
+    conta: in «SEMPRE COPERTA — GUARDIA, CCH1, CCH2» la GUARDIA sarà la prima attività a
+    essere coperta;
+3.  la gerarchia tra le persone nel coprire le varie attività, vincolante o solo
+    indicativa;
+4.  i turni fissi ricorrenti: chi, quando, dove;
+5.  le esclusioni e le incompatibilità;
+6.  le attività o i giorni da lasciare vuoti, perché chiusi o perché li compili tu;
+7.  i limiti al numero di turni per persona.
 
-![Il riquadro per ricavare le regole dagli orari passati e la prima domanda del modulo](img/s2-sezione-c-regole.png)
+Sopra ogni riquadro da riempire trovi la spiegazione di quella domanda e un esempio di
+risposta: leggili lì, mentre compili.
 
 Si compila una volta sola: le risposte restano salvate e ogni mese reincolli lo stesso
 testo.
 
-**Se hai già degli orari dei mesi passati, non devi scriverle a mano.** In cima alla sezione
-C c'è un testo da copiare — il PROMPT 0 — che si invia al chatbot allegando quegli orari:
-lui li legge, ricava le regole che avete usato finora e ti restituisce le sette risposte già
-scritte. Le rileggi, le correggi dove serve, e le incolli nei riquadri. Bastano tre orari,
-meglio cinque o sei.
+**Se hai già degli orari dei mesi passati, non devi scriverle a mano.** In cima al modulo
+c'è un testo da copiare — il PROMPT 0 — che si invia al chatbot allegando quegli orari:
+lui li legge, ricava le regole che avete usato finora e ti restituisce le sette risposte
+già scritte. Le rileggi, le correggi dove serve, e le incolli nei riquadri. Bastano tre
+orari, meglio cinque o sei.
 
-![Un orario già compilato, del tipo che si allega al PROMPT 0](img/c1-orario-assegnato.png)
+![Un orario già compilato, del tipo che si allega al PROMPT
+0](img/c1-orario-assegnato.png)
 
-La scheda che ottieni è una bozza ricavata da quello che si vede negli orari, non la verità
-sul tuo gruppo: leggi le sezioni CONTRADDIZIONI e NON DETERMINABILE della risposta prima di
-usarla.
+La scheda che ottieni è una bozza ricavata da quello che si vede negli orari, non la
+verità sul tuo gruppo: leggi le sezioni CONTRADDIZIONI e NON DETERMINABILE della risposta
+prima di usarla.
+
+#### Se usi un file dell'orario non generato dal modulo 1
+
+Per avere un risultato ottimizzato anche nelle versioni gratuite dei chatbot, l'orario
+deve avere questi requisiti:
+
+1.  una riga per ogni giorno del mese;
+2.  una colonna per ogni coppia attività + turno, con i soli turni `MAT`, `POM`, `GIORNO`
+    e `NOTTE`, scritti così nelle intestazioni: vedi l'immagine dell'orario modello qui
+    sotto;
+3.  un blocco INDISPONIBILITÀ con una colonna per persona, in cui le indisponibilità sono
+    segnate con i cinque codici: `X` non disponibile tutto il giorno, `Xm` non disponibile
+    la mattina, `Xp` non disponibile il pomeriggio, `Xg` non disponibile di giorno, cioè
+    mattina e pomeriggio, con la notte che resta disponibile, e `Xn` non disponibile la
+    notte. I codici per le indisponibilità a una singola attività (ad esempio `noG` =
+    indisponibile per il turno GUARDIA quel giorno) vanno inseriti nella domanda 1 di
+    questo modulo;
+4.  i nomi delle persone scritti in modo identico ovunque.
+
+![Un orario modello con i turni compilati, con le lettere delle colonne e i numeri delle
+righe di Excel](img/c5-orario-modello-colonne.png)
+
+Le colonne CONTROLLO, DISPONIBILI e LIBERI e i blocchi di conteggio dei turni non sono
+obbligatori. Senza i blocchi di conteggio, però, il carico del mese precedente va passato
+a mano: vedi [Variante: file senza blocchi di
+conteggio](#variante-file-senza-blocchi-di-conteggio).
 
 ---
 
-### 4 Fai compilare i turni dell'orario
+### 4. Fai compilare i turni dell'orario
 
-1. Quando il personale ha compilato le indisponibilità, copia le colonne delle
-   indisponibilità nel blocco dedicato dentro il file Excel dell'orario vuoto.
+1.  Quando tutto il personale ha indicato le proprie indisponibilità sul file delle
+    indisponibilità, copia le colonne delle indisponibilità nel blocco dedicato
+    «INDISPONIBILITÀ» dentro il file Excel dell'orario vuoto.
 
-   ![Il blocco dell'orario in cui si incollano le indisponibilità](img/c2-indisponibilita-inserite.png)
+    ![Il blocco dell'orario in cui si incollano le
+    indisponibilità](img/c2-indisponibilita-inserite.png)
 
-2. Allega il file con le indisponibilità inserite al chatbot — Claude, ChatGPT o Gemini.
-3. Incolla nel chatbot il comando generato da «Indica le regole per compilare i turni».
+2.  Allega il file con le indisponibilità inserite al chatbot — Claude, ChatGPT o Gemini.
+
+3.  Incolla nel chatbot il comando generato da «Indica le regole per compilare i turni».
 
 Otterrai il file Excel dell'orario con i turni compilati.
 
-![L'orario con i turni assegnati: nel weekend solo la GUARDIA, STANZA 31 sempre vuota](img/c1-orario-assegnato.png)
+![L'orario con i turni assegnati: nel weekend solo la GUARDIA, STANZA 31 sempre
+vuota](img/c1-orario-assegnato.png)
 
 **Dal mese successivo al primo:**
 
-1. Si rigenera il file dell'orario eseguendo di nuovo il comando di
-   «Crea il file Excel con i turni vuoti», cambiando solo il nome del mese: è la prima riga
-   del blocco DATI DA COMPILARE.
+1.  Si rigenera il file dell'orario eseguendo di nuovo il comando di «Crea il file Excel
+    dell'orario con i turni da compilare», cambiando solo il nome del mese: è la prima
+    riga del blocco DATI DA COMPILARE.
 
-   ![Dove si cambia il mese nel primo riquadro](img/s1-dove-scrivere-il-mese.png)
+    ![Dove si cambia il mese nel primo riquadro](img/s1-dove-scrivere-il-mese.png)
 
-2. Quando il personale ha compilato le indisponibilità, copiale nel file Excel dell'orario
-   vuoto, allegalo al chatbot e incolla il testo di «Indica le regole per compilare i turni»
-   che hai salvato. Se non lo trovi più, puoi ricompilare i riquadri come il mese
-   precedente.
+2.  Quando tutto il personale ha indicato le proprie indisponibilità, copiale nel blocco
+    «INDISPONIBILITÀ» del file Excel dell'orario vuoto, allegalo al chatbot e incolla il
+    testo di «Indica le regole per compilare i turni» che hai salvato. Se non lo trovi
+    più, puoi ricompilare i riquadri come il mese precedente.
 
-3. Se vuoi tenere conto dei turni assegnati nel mese precedente, riporta il carico del mese
-   appena chiuso: apri il file del mese scorso, seleziona il blocco TURNI MESE CORRENTE,
-   copialo e incollalo — con *incolla speciale > valori* — nel blocco TURNI MESE PRECEDENTE
-   del file nuovo. I due blocchi hanno le stesse colonne nello stesso ordine, quindi è un
-   copia-incolla solo. Il primo mese non c'è niente da riportare, perché non c'è un mese
-   precedente compilato.
+3.  Se vuoi tenere conto dei turni assegnati nel mese precedente, riporta il carico del
+    mese appena chiuso: apri il file del mese scorso, seleziona il blocco TURNI MESE
+    CORRENTE, copialo e incollalo — con *incolla speciale \> valori* — nel blocco TURNI
+    MESE PRECEDENTE del file nuovo. I due blocchi hanno le stesse colonne nello stesso
+    ordine, quindi è un copia-incolla solo. Il primo mese non c'è niente da riportare,
+    perché non c'è un mese precedente compilato.
 
-   ![I due blocchi di conteggio, mese corrente e mese precedente](img/a3-blocchi-conteggio.png)
+    ![I due blocchi di conteggio, mese corrente e mese
+    precedente](img/a3-blocchi-conteggio.png)
 
-   L'*incolla speciale > valori* non è un dettaglio: con un incolla normale si copiano anche
-   le formule, e il blocco del mese precedente comincia a ricalcolarsi sul mese in corso,
-   mostrando due colonne di numeri identici.
+    L'*incolla speciale \> valori* non è un dettaglio: con un incolla normale si copiano
+    anche le formule, e il blocco del mese precedente comincia a ricalcolarsi sul mese in
+    corso, mostrando due colonne di numeri identici.
 
 ---
 
@@ -316,9 +389,11 @@ CONTI S, FERRARI, GRECO, SANNA, LI
 noG = indisponibile per il turno GUARDIA quel giorno
 ```
 
-Due cose da notare. Le attività hanno un numero di turni diverso l'una dall'altra. E il codice `noG` non blocca un orario ma una sola attività: chi lo scrive il 14 ottobre quel giorno la guardia non la fa, ma per tutto il resto resta disponibile.
+Due cose da notare. Le attività hanno un numero di turni diverso l'una dall'altra:
+quattro con mattina e pomeriggio, due con la sola mattina, una con il solo pomeriggio, una
+con quattro turni, giornata e notte comprese. E il codice `noG` non blocca un orario ma una sola attività: chi lo scrive il 14 ottobre quel giorno la guardia non la fa, ma per tutto il resto resta disponibile.
 
-**Il file che ne esce**, nelle sue quattro parti:
+**Il file prodotto**, nelle sue quattro parti:
 
 ![Il calendario del mese con le colonne dei turni, ancora vuote](img/a1-orario-vuoto-turni.png)
 
@@ -359,7 +434,7 @@ Nomi e codici sono identici a quelli del primo riquadro, parola per parola: è l
 perché le colonne si incollino al posto giusto e perché nessun codice resti senza
 significato.
 
-**Il file che ne esce**, un foglio per ogni mese:
+**Il file prodotto**, con un foglio per ogni mese:
 
 ![Un foglio del file delle indisponibilità, con la legenda e le istruzioni per chi compila](img/b1-file-indisponibilita.png)
 
@@ -510,8 +585,8 @@ liberi sia il 5 sia il 6. La colonna DISPONIBILI invece guarda solo le indisponi
 assegnazioni — è la sua funzione, dire chi c'è quel giorno — quindi lì il 6 la persona
 compare ancora.
 
-Se una notte viene svolta altrove e ti arriva già decisa, non serve un codice apposta: chi
-la fa segna `X` sul giorno in cui comincia e `X` sul giorno dopo, e il blocco è completo.
+Se una notte viene svolta fuori dalle attività dell'orario, non serve un codice apposta:
+chi la svolge segna `X` sul giorno in cui comincia e `X` sul giorno dopo, e il blocco è completo.
 
 Un limite che resta: il primo giorno del mese non ha un ieri. Se qualcuno era di notte il 31
 del mese scorso, quello devi ricordartelo tu.
@@ -534,11 +609,11 @@ programma lo puoi eseguire da solo su **Google Colab**, che è gratuito, non ha 
 questo tipo e non richiede di installare niente:
 
 1. apri [Colab](https://colab.research.google.com/notebook#create=true);
-2. incolla il programma nella cella. Se lo hai copiato da un riquadro con i tre apici, copia
-   solo il codice: i tre apici sono i bordi del riquadro, e Colab li segnala come errore
-   alla riga 1;
-3. premi il tasto ▶ a sinistra e aspetta qualche secondo;
-4. in fondo compaiono i controlli sul file e parte il download.
+2. premi **Nuovo notebook**: si apre una pagina con una cella vuota;
+3. incolla dentro la cella il comando, copiato con il tasto «Genera il comando pronto da
+   incollare»;
+4. premi il tasto ▶ a sinistra della cella e aspetta qualche secondo;
+5. in fondo compaiono i controlli sul file e parte il download.
 
 Per «3 Indica le regole per compilare i turni» e «4 Fai compilare i turni dell'orario» il
 chatbot serve davvero, perché lì il lavoro è di lettura e di
@@ -597,9 +672,9 @@ destra c'è il pulsante per copiarli. I dati da cambiare sono tutti in cima, nel
 > Da usare una volta sola, all'inizio, da chi ha almeno 3 orari già compilati.
 > Non produce orari: produce la scheda da usare nel modulo 3.
 >
-> **Cosa fartene del risultato.** La risposta si chiude con un blocco intitolato
-> tutta la risposta e incollala nella pagina di compilazione, nel campo
-> «Risposta del PROMPT 0» del modulo 3. I sette riquadri si riempiono da soli e li
+> **Cosa fartene del risultato.** Copia tutta la risposta, dall'inizio alla fine, e
+> incollala nella pagina di compilazione, nel campo «Incolla qui l'intera risposta che il
+> chatbot ti ha dato» del modulo 3. I sette riquadri si riempiono da soli e li
 > correggi lì. Prima di usarla leggi le sezioni CONTRADDIZIONI e NON DETERMINABILE: sono le
 > cose che il chatbot non ha potuto dedurre e che devi decidere tu. La scheda corretta
 > conservala: la riusi ogni mese, non si rifà.
@@ -652,17 +727,11 @@ COME ANALIZZARE
 4. Per ogni attività cerca:
    - se resta mai scoperta, e quanto spesso: le attività mai scoperte sono le
      prioritarie, quelle spesso vuote sono le facoltative;
-   - se è aperta solo in certi giorni o solo mattina/pomeriggio;
-   - se trovi celle con diciture che non sono nomi di persona, come «Chiuso», non
-     contarle come celle vuote: dimmi dove compaiono e se in modo regolare. Il
-     significato lo decido io.
+   - se è aperta solo in certi giorni o solo mattina/pomeriggio.
 5. Guarda se chi lavora la mattina in un'attività tende a restarci anche il pomeriggio
    oppure se i turni vengono spezzati per distribuire il carico. Non serve che tu ne
    ricavi una regola: riferiscimelo tra le osservazioni, mi serve per capire quanto la
    continuità contava finora.
-6. Se la stessa persona compare in due attività nella stessa mezza giornata,
-   riportamelo nella sezione CONTRADDIZIONI con l'etichetta DOPPIA ASSEGNAZIONE,
-   indicando quali attività e in quali periodi.
 
 REGOLE DELL'ANALISI — importanti
 
@@ -904,7 +973,7 @@ CHIUDI LA RISPOSTA CON QUESTA RIGA, scritta esattamente così:
 Ti allego il file di turnistica con le indisponibilità già inserite. Devi assegnare le
 persone ai turni, scrivendo i nomi nelle celle delle attività.
 
-I codici di base nel blocco disponibilità sono sempre questi cinque:
+I codici di base nel blocco INDISPONIBILITÀ sono sempre questi cinque:
   X  = non disponibile tutto il giorno
   Xm = non disponibile la mattina, e quindi nemmeno in un turno GIORNO
   Xp = non disponibile il pomeriggio, e quindi nemmeno in un turno GIORNO
@@ -1003,7 +1072,10 @@ basta che sia chiaro.
    (Se non ce ne sono scrivi: nessuno)
    RISPOSTA:
 
-4) Turni fissi ricorrenti: chi, quando, dove. Uno per riga.
+4) Turni fissi ricorrenti: chi, quando, dove. Uno per riga. Qui posso anche chiedere,
+   per una singola attività, di privilegiare la continuità del personale da un giorno
+   all'altro: non è un turno fisso ma una preferenza (vedi EQUILIBRIO).
+   (Se non ce ne sono scrivi: nessuno)
    RISPOSTA:
 
 5) Due cose diverse, una per riga. Comincia ogni riga con una di
@@ -1070,6 +1142,7 @@ ESEMPIO DI SCHEDA COMPILATA, TUTTI I PUNTI
 
 4) RISPOSTA: SANNA: ogni martedì e ogni giovedì pomeriggio in AMB ESTERNO
              LI: ogni mercoledì mattina in STANZA 43
+             STANZA 23: privilegiare la continuità da un giorno all'altro
 
 5) RISPOSTA: ESCLUSIONE — LI non va mai in GUARDIA
              ESCLUSIONE — SANNA non va mai in GUARDIA
@@ -1100,12 +1173,14 @@ Come leggere l'esempio, punto per punto:
   degli altri. A PARITÀ è indicativo: conta prima l'equilibrio, e l'elenco scioglie solo i
   pareggi. Se usi PRIMA DISPONIBILE aspettati che le prime persone dell'elenco lavorino
   molto in quell'attività: è quello che hai chiesto. Se non va bene, mettici accanto un
-  limite POSSIBILMENTE ENTRO al punto 7. Se non c'è nessun ordine, la risposta corretta è
-  "A PARITÀ — nessuna preferenza: conta solo l'equilibrio";
+  limite POSSIBILMENTE ENTRO al punto 7. Se nessuna attività ha un ordine, basta scrivere
+  "nessuno": vale come "A PARITÀ — nessuna preferenza: conta solo l'equilibrio";
 - il punto 4 mette insieme due cose diverse: le persone con turni fissi e le attività
   aperte solo in certi giorni. Entrambe sono vincoli di calendario. Attenzione che un turno
   fisso salta se quel giorno la persona è indisponibile: l'indisponibilità sta più in alto
-  nella scala dei conflitti;
+  nella scala dei conflitti. Una richiesta di continuità da un giorno all'altro per
+  un'attività, se c'è, non è un turno fisso: è una preferenza e segue le regole di
+  EQUILIBRIO;
 - il punto 5 tiene separate due regole che si confondono facilmente. L'ESCLUSIONE dice chi
   può stare dove, e si scrive nei due sensi: "TIZIO non va mai in X" quando l'eccezione è
   la persona, "TIZIO va solo in X" o "in X vanno solo TIZIO e CAIO" quando l'eccezione è
@@ -1158,8 +1233,21 @@ invece chi risulta di notte l'ultimo giorno del mese, che mi serve per il mese s
   contrario: prima l'equilibrio, e l'elenco serve solo a sciogliere i pareggi.
 - Chi ha già superato un limite POSSIBILMENTE ENTRO del punto 7 va considerato più
   caricato degli altri, e quindi scelto per ultimo.
-- Privilegia la continuità: se una persona è disponibile sia la mattina che il pomeriggio,
-  assegnala a entrambi i turni della STESSA attività invece di spezzare.
+- Privilegia la continuità dentro la giornata: se una persona è disponibile sia la mattina
+  che il pomeriggio, assegnala a entrambi i turni della STESSA attività invece di spezzare.
+  Questa continuità vale solo dentro la stessa giornata, non da un giorno all'altro.
+- A parità di turni accumulati non scegliere sempre nello stesso ordine: preferisci chi in
+  quell'attività ha fatto meno turni nel mese, ed evita di rimettere nella stessa attività
+  e nello stesso turno chi l'ha coperta il giorno prima, se c'è un'alternativa con lo
+  stesso carico. Così le persone ruotano fra le attività.
+- Fa eccezione la continuità da un giorno all'altro che il punto 4 chiede per una singola
+  attività: lì, se chi l'ha coperta il giorno prima è disponibile, rimettilo, purché questo
+  non lo allontani dall'obiettivo di equilibrio qui sotto.
+- Obiettivo di fine mese: tra la persona con più turni e quella con meno non ci devono
+  essere più di 2 turni di differenza, a meno che lo impongano indisponibilità, turni
+  fissi, esclusioni, ordini PRIMA DISPONIBILE o limiti del punto 7.
+- Se puoi eseguire codice, fai l'assegnazione e tutti i conteggi con un programma invece
+  che a mano: a mano è facile perdere il conto, e l'equilibrio salta.
 
 ## COME RISOLVERE I CONFLITTI
 
@@ -1176,8 +1264,9 @@ Quando due regole si contraddicono, applica questa scala, dall'alto verso il bas
   4. Ordini PRIMA DISPONIBILE del punto 3: assegna il primo dell'elenco che è disponibile,
      anche se è più caricato degli altri. Cede solo ai livelli 1-3: se metterlo lì lascia
      scoperta una mezza giornata prioritaria altrove, passa al successivo dell'elenco.
-  5. Equilibrio del carico.
-  6. Continuità mattina/pomeriggio.
+  5. Continuità da un giorno all'altro, solo per le attività per cui la chiede il punto 4.
+  6. Equilibrio del carico.
+  7. Continuità mattina/pomeriggio.
 
 Se anche allargando la ricerca una mezza giornata prioritaria resta scoperta, NON inventare
 un nome e non spostare una persona da un'altra attività prioritaria: lascia la cella vuota
@@ -1190,8 +1279,7 @@ Le celle dei turni in cui c'è GIÀ SCRITTO QUALCOSA non si toccano: sono assegn
 ho già fatto io, o diciture come «Chiuso». Non sovrascriverle, non spostarle e non
 cancellarle, nemmeno se ti sembrano sbagliate o se ti servirebbe quella persona altrove:
 al massimo segnalamele alla fine. Tu riempi le celle vuote.
-
-Le celle colorate in grigio scuro sono turni che quel giorno non esistono: lasciale vuote.
+Le celle con lo sfondo grigio scuro sono turni che quel giorno non esistono: lasciale vuote.
 
 Scrivi SOLO i valori nelle celle dei turni. Non modificare font, colori, bordi o
 riempimenti già presenti nel file: la formattazione originale deve restare identica.
@@ -1208,7 +1296,11 @@ aggiornano da sole quando scrivi i nomi nelle celle dei turni.
 ## VERIFICHE PRIMA DI CONSEGNARE
 
 1. Ricalcola il foglio: zero errori di formula.
-2. La colonna CONTROLLO non segnala nessuna X su nessun giorno.
+2. La colonna CONTROLLO, se il file ce l'ha, non segnala nessuna X su nessun giorno.
+2bis. Ogni cella dei turni che hai riempito contiene il nome di una persona del blocco
+   delle indisponibilità. Se in una cella trovi il nome di un turno (MAT, POM, GIORNO,
+   NOTTE) o di un'attività, hai copiato le intestazioni o sbagliato riga: controlla che
+   ogni giorno, a partire dal primo del mese, sia sulla riga giusta, e correggi.
 3. Nessuna persona è assegnata in un turno in cui risulta indisponibile.
 3ter. Per ogni codice del punto 1, elencami i giorni in cui compare, con il nome di chi
    l'ha scritto, e dimmi quante volte quella persona risulta assegnata all'attività
@@ -1221,8 +1313,9 @@ aggiornano da sole quando scrivi i nomi nelle celle dei turni.
 4. Le attività a priorità massima sono coperte in ogni mezza giornata; elencami le
    eventuali eccezioni con il motivo.
 5. Riepilogami il numero di turni assegnati a ciascuna persona, per controllare
-   l'equilibrio. Se il file ha il blocco TURNI MESE CORRENTE, leggi i valori da lì invece
-   di contarli a mano. Se c'è anche il blocco del mese precedente, dimmi se qualcuno
+   l'equilibrio. Tra chi ha più turni e chi ne ha meno non ci devono essere più di 2
+   turni di differenza: se ce ne sono di più, dimmi chi e perché. Se il file ha il blocco
+   TURNI MESE CORRENTE, leggi i valori da lì invece di contarli a mano. Se c'è anche il blocco del mese precedente, dimmi se qualcuno
    risulta caricato più della media per due mesi di fila.
 6. Per ogni riga del punto 7 dammi il conteggio effettivo per persona. Se un
    POSSIBILMENTE ENTRO è stato superato, dimmi chi, di quanto e per coprire cosa.
@@ -1246,7 +1339,7 @@ Consegnami il file .xlsx.
 ### Variante: file senza blocchi di conteggio
 
 Se il file dell'orario non ha i due blocchi di conteggio — per esempio è un modello tuo,
-non generato dal comando di «Crea il file Excel con i turni vuoti» — il saldo di partenza va
+non generato dal comando di «Crea il file Excel dell'orario con i turni da compilare» — il saldo di partenza va
 passato a mano. Aggiungi in testa al testo di assegnazione queste righe:
 
 ```

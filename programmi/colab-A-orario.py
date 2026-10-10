@@ -30,7 +30,7 @@ MARINI, CONTI A, CONTI S, FERRARI, GRECO, SANNA, LI
 # Qui questi codici servono a due cose sole: finire nella legenda del file e
 # far controllare che il nome dell'attività sia scritto giusto. Non entrano in
 # nessuna formula e non rendono nessuno indisponibile: quel vincolo lo applica
-# il chatbot in fase di assegnazione, leggendo la scheda del PROMPT C.
+# il chatbot in fase di assegnazione, leggendo la scheda del modulo 3.
 # I cinque codici di indisponibilità sono fissi (X, Xm, Xp, Xg, Xn) e non si
 # cambiano. Dentro la descrizione deve comparire il nome di un'attività
 # dichiarata qui sopra, scritto come lì. «nessuno» se non ne servono.
@@ -67,9 +67,7 @@ def leggi_mese(testo):
 # ---------------------------------------------------------------- attività
 GIORNI_SETT = {"lunedì": 0, "lunedi": 0, "martedì": 1, "martedi": 1,
                "mercoledì": 2, "mercoledi": 2, "giovedì": 3, "giovedi": 3,
-               "venerdì": 4, "venerdi": 4, "sabato": 5, "domenica": 6,
-               # anche abbreviati: «dal lun al sab»
-               "lun": 0, "mar": 1, "mer": 2, "gio": 3, "ven": 4, "sab": 5, "dom": 6}
+               "venerdì": 4, "venerdi": 4, "sabato": 5, "domenica": 6}
 
 # «GIORNO solo sabato e domenica»  -> vale per tutte le attività
 SOLO = re.compile(r"^\s*([A-Za-z0-9 ,ed]+?)\s+solo\s+(.+?)\s*\.?\s*$", re.I)
@@ -389,7 +387,7 @@ for p in PERSONE:
     ws.cell(row=3, column=col, value=p); col += 1
 P1 = col - 1
 LP0, LP1 = get_column_letter(P0), get_column_letter(P1)
-ws.cell(row=2, column=C_GG, value="GUARDIE E INDISPONIBILITÀ")
+ws.cell(row=2, column=C_GG, value="INDISPONIBILITÀ")
 ws.merge_cells(start_row=2, start_column=C_GG, end_row=2, end_column=P1)
 col += 1
 
