@@ -275,7 +275,8 @@ conteggio](#variante-file-senza-blocchi-di-conteggio).
     ![Il blocco dell'orario in cui si incollano le
     indisponibilità](img/c2-indisponibilita-inserite.png)
 
-2.  Allega il file con le indisponibilità inserite al chatbot — Claude, ChatGPT o Gemini.
+2.  Allega il file dell'orario da compilare con le indisponibilità inserite al chatbot —
+    Claude, ChatGPT o Gemini.
 
 3.  Incolla nel chatbot il comando generato da «Indica le regole per compilare i turni».
 
