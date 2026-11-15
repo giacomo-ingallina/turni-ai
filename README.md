@@ -80,6 +80,18 @@ turni sono il periodo della giornata in cui si svolge l'attività, e sono questi
 Non ci sono altri nomi di turno: se ne scrivi uno diverso da questi quattro il programma
 si ferma e te lo dice.
 
+**Un'attività può anche non occupare chi la fa.** Una reperibilità, o un ruolo come il
+responsabile di sala che intanto lavora in sala, si somma agli altri turni: chi la fa
+resta assegnabile a tutto il resto e, se è di notte, il giorno dopo non smonta. Si
+dichiara con una riga a sé, sotto quella dell'attività:
+
+    REPERIBILE NOTTE - 1 turno: NOTTE
+    REPERIBILE NOTTE non occupa turni
+
+Nel file l'intestazione di quella colonna diventa `NOTTE (non occupa)`: non cambiarla,
+perché è da lì che le formule e il chatbot capiscono che quella colonna non impegna la
+persona.
+
 **Un turno può anche esistere solo in certi giorni della settimana.** Vedi l'esempio
 sotto: la guardia, dal lunedì al venerdì, è divisa in mattina, pomeriggio e notte, mentre
 nel weekend è su due turni soli, giornata e notte. L'ambulatorio 24 invece è aperto anche
@@ -246,7 +258,8 @@ deve avere questi requisiti:
 1.  una riga per ogni giorno del mese;
 2.  una colonna per ogni coppia attività + turno, con i soli turni `MAT`, `POM`, `GIORNO`
     e `NOTTE`, scritti così nelle intestazioni: vedi l'immagine dell'orario modello qui
-    sotto;
+    sotto. Se un'attività non occupa chi la fa, come una reperibilità, al turno si
+    aggiunge `(non occupa)`: per esempio `NOTTE (non occupa)`;
 3.  un blocco INDISPONIBILITÀ con una colonna per persona, in cui le indisponibilità sono
     segnate con i cinque codici: `X` non disponibile tutto il giorno, `Xm` non disponibile
     la mattina, `Xp` non disponibile il pomeriggio, `Xg` non disponibile di giorno, cioè
@@ -586,6 +599,10 @@ liberi sia il 5 sia il 6. La colonna DISPONIBILI invece guarda solo le indisponi
 assegnazioni — è la sua funzione, dire chi c'è quel giorno — quindi lì il 6 la persona
 compare ancora.
 
+Se invece la notte è una reperibilità, dopo la quale si lavora normalmente, dichiarala
+nel modulo 1 con una riga come «REPERIBILE NOTTE non occupa turni»: la colonna diventa
+`NOTTE (non occupa)` e per quella colonna lo smonto non c'è.
+
 Se una notte viene svolta fuori dalle attività dell'orario, non serve un codice apposta:
 chi la svolge segna `X` sul giorno in cui comincia e `X` sul giorno dopo, e il blocco è completo.
 
@@ -733,6 +750,13 @@ COME ANALIZZARE
    oppure se i turni vengono spezzati per distribuire il carico. Non serve che tu ne
    ricavi una regola: riferiscimelo tra le osservazioni, mi serve per capire quanto la
    continuità contava finora.
+6. Cerca le attività che NON OCCUPANO chi le fa. Sono quelle in cui la persona scritta
+   compare regolarmente, nello stesso momento, anche in un'altra attività — per esempio
+   un responsabile che intanto lavora in sala — oppure quelle di notte dopo le quali la
+   persona lavora normalmente il giorno dopo, senza smontare — per esempio una
+   reperibilità notturna. Non sono contraddizioni né deroghe: è il modo normale di
+   funzionare di quell'attività. Non mettere questi casi fra le CONTRADDIZIONI e non
+   ricavarne esclusioni: elenca l'attività nella sezione D-ter, con il conteggio.
 
 REGOLE DELL'ANALISI — importanti
 
@@ -760,6 +784,10 @@ D-bis. NOMI SENZA COLONNA: l'elenco del punto 1bis, cioè i nomi che compaiono n
    ognuno metti però le righe già pronte per i punti 4 e 5 — turni fissi, attività
    esclusive, giorni esclusivi, con i conteggi — così se decido che è una persona le sposto
    nella scheda in un copia-incolla.
+D-ter. ATTIVITÀ CHE NON OCCUPANO TURNI: l'elenco del punto 6. Per ciascuna dimmi in
+   quanti casi si verifica e scrivi la riga pronta da aggiungere nel modulo 1, nel
+   riquadro delle attività: «NOME non occupa turni». Se succede solo a volte, mettila
+   comunque qui e dimmelo: lo decido io.
 E. CARICO STORICO: per ciascuna persona il numero medio di turni al mese, e per i tipi
    di turno più pesanti (guardie, notti, se presenti) il conteggio per persona mese
    per mese. Mi serve per capire se il carico era equilibrato o no.
@@ -841,6 +869,12 @@ NON usarli e non cercarli nei miei file)
      Se STANZA 31 sia chiusa, compilata a mano o solo scoperta
      Se le esclusioni siano divieti o competenze specifiche
      Se MARINI sia part-time o abbia un'indisponibilità fissa
+
+  D-ter. ATTIVITÀ CHE NON OCCUPANO TURNI
+     REPERIBILE NOTTE: in 84 notti su 92 chi è reperibile lavora normalmente il
+     giorno dopo (3/3). Non si comporta come una notte di guardia: sembra una
+     reperibilità che si somma agli altri turni
+       riga per il modulo 1: REPERIBILE NOTTE non occupa turni
 
   E. CARICO STORICO
      LEONI 26 turni/mese di media, CONTI A 24, GRECO 23 ... FERRARI 11,
@@ -958,7 +992,8 @@ CHIUDI LA RISPOSTA CON QUESTA RIGA, scritta esattamente così:
    pagina di compilazione, nel campo che chiede la risposta del PROMPT 0:
    i sette riquadri del modulo 3 si riempiranno da soli, e sopra ti
    compariranno le sezioni OSSERVAZIONI INCERTE, CONTRADDIZIONI, NOMI SENZA
-   COLONNA e NON DETERMINABILE, da leggere prima di usare la scheda. Se
+   COLONNA, ATTIVITÀ CHE NON OCCUPANO TURNI e NON DETERMINABILE, da leggere
+   prima di usare la scheda. Se
    incolli solo il blocco finale i riquadri si riempiono lo stesso, ma quelle
    sezioni non le vedi."
 ```
@@ -1209,17 +1244,36 @@ Se un punto non ti riguarda, scrivi "nessuno". Se non sai cosa rispondere, scriv
 ## LA NOTTE OCCUPA DUE GIORNI
 
 Una notte blocca **il giorno in cui comincia e tutto il giorno successivo**: chi monta di
-notte non fa nient'altro quel giorno, e il giorno dopo smonta e recupera. Nessuna formula
-del file lo controlla: lo applichi tu, in assegnazione. Chi assegni alla NOTTE il giorno N
+notte non fa nient'altro quel giorno, e il giorno dopo smonta e recupera. Applicala tu,
+in assegnazione, senza affidarti alle formule del file. Chi assegni alla NOTTE il giorno N
 non va messo in nessun altro turno del giorno N — niente ambulatori quella mattina o quel
 pomeriggio — e in nessun turno del giorno N+1.
 
 Una notte svolta altrove mi arriva già decisa e non ha un codice suo: chi la fa segna X sul
 giorno in cui comincia e X sul giorno dopo, quindi la vedi già come indisponibilità.
 
-Le colonne DISPONIBILI e LIBERI non tengono conto di questa regola e il giorno dopo una
-notte mostrano la persona come libera: è atteso, non segnalarmelo come errore. Segnalami
-invece chi risulta di notte l'ultimo giorno del mese, che mi serve per il mese successivo.
+La colonna LIBERI, nei file creati dal modulo 1, ne tiene già conto: chi è di NOTTE il
+giorno N non compare fra i liberi né il giorno N né il giorno N+1. La colonna DISPONIBILI
+invece guarda solo le indisponibilità, e il giorno dopo una notte mostra la persona come
+disponibile: è atteso, non segnalarmelo come errore. Segnalami invece chi risulta di notte
+l'ultimo giorno del mese, che mi serve per il mese successivo.
+
+## ATTIVITÀ CHE NON OCCUPANO
+
+Alcune colonne dei turni possono avere un'aggiunta nell'intestazione: «(non occupa)», per
+esempio «NOTTE (non occupa)» o «GIORNO (non occupa)». Sono attività che si sommano agli
+altri turni, come una reperibilità o un ruolo di responsabile: chi ci è scritto resta
+assegnabile a tutte le altre attività dello stesso giorno, e se il turno è di notte il
+giorno dopo NON smonta. La regola della notte qui sopra vale solo per le colonne
+intestate NOTTE senza aggiunte.
+
+Per queste colonne valgono invece, come per tutte le altre, le indisponibilità e le
+regole della scheda: chi ha X non fa niente quel giorno, chi ha Xn non fa una
+reperibilità di notte, chi ha Xm, Xp o Xg non fa un turno «GIORNO (non occupa)», e
+esclusioni, turni fissi, priorità e limiti del punto 7 si applicano come altrove. Le
+colonne LIBERI e CONTROLLO tengono già conto della differenza: chi fa solo un'attività
+che non occupa compare fra i liberi, ed è giusto così. Nei conteggi del carico queste
+colonne contano come le altre, a meno che la scheda non dica diversamente.
 
 ## EQUILIBRIO
 
@@ -1281,6 +1335,8 @@ ho già fatto io, o diciture come «Chiuso». Non sovrascriverle, non spostarle 
 cancellarle, nemmeno se ti sembrano sbagliate o se ti servirebbe quella persona altrove:
 al massimo segnalamele alla fine. Tu riempi le celle vuote.
 Le celle con lo sfondo grigio scuro sono turni che quel giorno non esistono: lasciale vuote.
+Non cambiare le intestazioni delle colonne: l'aggiunta «(non occupa)», dove c'è, serve alle
+formule.
 
 Scrivi SOLO i valori nelle celle dei turni. Non modificare font, colori, bordi o
 riempimenti già presenti nel file: la formattazione originale deve restare identica.
@@ -1308,9 +1364,9 @@ aggiornano da sole quando scrivi i nomi nelle celle dei turni.
    bloccata proprio in quei giorni: deve essere zero. Dimmi anche a che cosa l'hai
    assegnata invece, così vedo che non è sparita dal resto dell'orario.
 3bis. Chi fa la notte non compare in nessun altro turno di quel giorno, e non compare in
-   nessun turno del giorno dopo. Elencami tutte le notti con la data e le due
-   giornate che hanno bloccato, così controllo anch'io: è la regola che le formule del
-   file non vedono.
+   nessun turno del giorno dopo. Vale per le colonne NOTTE, non per quelle «NOTTE (non
+   occupa)». Elencami tutte le notti con la data e le due giornate che hanno bloccato,
+   così controllo anch'io: è la regola più facile da sbagliare.
 4. Le attività a priorità massima sono coperte in ogni mezza giornata; elencami le
    eventuali eccezioni con il motivo.
 5. Riepilogami il numero di turni assegnati a ciascuna persona, per controllare

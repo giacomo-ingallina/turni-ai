@@ -95,18 +95,43 @@ OCCUPA = re.compile(
     r"(tutta la giornata|tutto il giorno|la giornata e quella dopo|"
     r"il giorno e quello dopo)\s*\.?\s*$", re.I)
 
+# «REPERIBILE NOTTE non occupa turni»: l'attività si somma agli altri turni. Chi la fa
+# resta libero per tutto il resto e, se il turno è di NOTTE, il giorno dopo non smonta.
+# Si accetta anche in coda alla riga dell'attività, e senza la parola «turni».
+NON_OCCUPA = re.compile(r"\s+non\s+occupa(?:\s+(?:i\s+|altri\s+)?turni)?\s*\.?\s*$", re.I)
+# nelle intestazioni del file il turno di queste attività porta questa aggiunta: le
+# formule cercano le etichette esatte (MAT, POM, GIORNO, NOTTE), quindi la ignorano
+NON_OCC_SUFF = " (non occupa)"
+
 def leggi_attivita(testo):
     """Una attività per riga: NOME - 2 turni: MAT, POM
     Una riga può invece dire in quali giorni della settimana esiste un turno:
     «MAT e POM solo dal lunedì al venerdì», oppure, per una sola attività,
-    «GUARDIA, turno GIORNO: solo sabato e domenica»."""
+    «GUARDIA, turno GIORNO: solo sabato e domenica».
+    Una riga «NOME non occupa turni» dice che quell'attività non rende occupata la
+    persona: per esempio una reperibilità, che si somma agli altri turni."""
     fuori, avvisi = [], []
     esclusivi, prolungati = [], []
     giorni, giorni_att = {}, {}
+    non_occupa = []
     for riga in _pulisci(testo).split("\n"):
         r = riga.strip().strip("-•").strip()
         if not r:
             continue
+        segna_non_occupa = False
+        m = NON_OCCUPA.search(r)
+        if m:
+            r = r[:m.start()].strip()
+            if ":" not in r:
+                # riga a sé: «REPERIBILE NOTTE non occupa turni»
+                if not r:
+                    raise Problema("c'è una riga «non occupa turni» senza il nome "
+                                   "dell'attività. Scrivila così: REPERIBILE NOTTE non "
+                                   "occupa turni")
+                non_occupa.append(r.upper())
+                continue
+            # in coda alla riga dell'attività: la si legge come le altre
+            segna_non_occupa = True
         m = SOLO_ATT.match(r)
         if m:
             gg = leggi_giorni(m.group(3))
@@ -145,20 +170,38 @@ def leggi_attivita(testo):
             raise Problema(f"nella riga «{r}» non trovo i due punti. "
                            f"Scrivila così: STANZA 23 - 2 turni: MAT, POM")
         testa, coda = r.split(":", 1)
+        # il nome è quello che precede il trattino, o l'indicazione «N turni»
+        nome = re.split(r"\s*-\s*|\s+\d+\s*turn", testa, flags=re.I)[0].strip()
+        if not nome:
+            raise Problema(f"nella riga «{r}» non trovo il nome dell'attività")
+        if ":" in coda or re.search(r"\bsolo\b", coda, re.I):
+            raise Problema(
+                f"nella riga «{r}» i giorni sono scritti dentro la riga dell'attività. "
+                f"Vanno su due righe: la prima con l'attività e i turni, per esempio "
+                f"«{nome} - 1 turno: GIORNO», e sotto una riga con i giorni, per esempio "
+                f"«{nome}, turno GIORNO: solo sabato e domenica».")
         turni = [x.strip().upper() for x in re.split(r"[,;/]| e ", coda) if x.strip()]
         if not turni:
             raise Problema(f"nella riga «{r}» non trovo i nomi dei turni")
-        # il nome è quello che precede il trattino, o l'indicazione «N turni»
-        nome = re.split(r"\s*-\s*|\s+\d+\s*turn", testa)[0].strip()
-        if not nome:
-            raise Problema(f"nella riga «{r}» non trovo il nome dell'attività")
-        dichiarati = re.search(r"(\d+)\s*turn", testa)
+        dichiarati = re.search(r"(\d+)\s*turn", testa, re.I)
         if dichiarati and int(dichiarati.group(1)) != len(turni):
             avvisi.append(f"«{nome}»: dichiari {dichiarati.group(1)} turni ma ne elenchi "
                           f"{len(turni)} ({', '.join(turni)}). Uso quelli elencati.")
         fuori.append((nome.upper(), turni))
+        if segna_non_occupa:
+            non_occupa.append(nome.upper())
     if not fuori:
         raise Problema("non ho trovato nessuna attività")
+    nomi_att = [n for n, _ in fuori]
+    ignoti = [n for n in non_occupa if n not in nomi_att]
+    if ignoti:
+        raise Problema("dichiari che " + ", ".join(ignoti) + " non occupa turni, ma non "
+                       "c'è nessuna attività con quel nome. Le attività sono: " +
+                       ", ".join(nomi_att) + ". Il nome deve essere scritto come nella "
+                       "riga dell'attività.")
+    if non_occupa and len(set(non_occupa)) == len(nomi_att):
+        raise Problema("hai dichiarato che nessuna attività occupa turni: almeno una deve "
+                       "occuparli, altrimenti nessuno risulta mai impegnato.")
     tutti = {t for _, ts in fuori for t in ts}
     ignoti = [t for t in esclusivi if t not in tutti]
     if ignoti:
@@ -177,7 +220,7 @@ def leggi_attivita(testo):
         raise Problema("queste dichiarazioni non corrispondono a nessuna attività con quel "
                        "turno: " + "; ".join(sbagliate) + ". Le attività sono: " + nomi +
                        ". Nome e turno devono essere scritti come nella riga dell'attività.")
-    return fuori, esclusivi, prolungati, giorni, giorni_att, avvisi
+    return fuori, esclusivi, prolungati, giorni, giorni_att, avvisi, non_occupa
 
 # ---------------------------------------------------------------- persone
 def leggi_persone(testo):
@@ -254,7 +297,8 @@ def leggi_codici(testo, attivita=None):
 try:
     NMESE, ANNO, _nome_mese = leggi_mese(MESE_E_ANNO)
     MESE = _nome_mese.upper()
-    ATTIVITA, _escl, _prol, _giorni, _giorni_att, _av1 = leggi_attivita(ATTIVITA_DA_COPRIRE)
+    (ATTIVITA, _escl, _prol, _giorni, _giorni_att, _av1,
+     _non_occ) = leggi_attivita(ATTIVITA_DA_COPRIRE)
     PERSONE = leggi_persone(NOMI_DELLE_PERSONE)
     _ammesse = ["MAT", "POM", "GIORNO", "NOTTE"]
     _ignoti = []
@@ -361,11 +405,18 @@ bordo = Border(*[Side(style="thin", color="BFBFBF")] * 4)
 
 ws["A1"], ws["B1"], ws["A2"] = MESE, ANNO, NMESE
 
+# Le attività che non occupano turni hanno l'etichetta del turno con un'aggiunta:
+# le formule di LIBERI cercano le etichette esatte, quindi chi è scritto lì resta
+# libero per tutto il resto, e dopo una NOTTE di quel tipo non smonta.
+NON_OCC = set(_non_occ)
+def etichetta(nome, turno):
+    return turno + NON_OCC_SUFF if nome in NON_OCC else turno
+
 col = 3; mappa = {}
 for nome, turni in ATTIVITA:
     a = col
     for t in turni:
-        ws.cell(row=3, column=col, value=t); col += 1
+        ws.cell(row=3, column=col, value=etichetta(nome, t)); col += 1
     mappa[nome] = (a, col - 1)
     ws.cell(row=2, column=a, value=nome)
     if col - 1 > a:
@@ -544,7 +595,8 @@ for nome, turni in ATTIVITA:
     a, b = mappa[nome]
     per = max(nome_max, (len(nome) + 2) // max(1, b - a + 1))
     for c in range(a, b + 1):
-        ws.column_dimensions[get_column_letter(c)].width = max(per, largh(turni))
+        ws.column_dimensions[get_column_letter(c)].width = max(
+            per, largh([etichetta(nome, x) for x in turni]))
 ws.column_dimensions[get_column_letter(C_CTRL - 1)].width = 3
 ws.column_dimensions[get_column_letter(C_CTRL)].width = largh(["CONTROLLO"])
 elenco = ", ".join(PERSONE)
@@ -579,11 +631,18 @@ if len(aiuto) > 250:
 dv.prompt = aiuto
 ws.add_data_validation(dv); dv.add(f"{LP0}{R0}:{LP1}{R1}")
 
+_righe_nota = 4 + len(LEGENDA) + 1
 if any(GIORNI_PARTE.get(p) for p in PARTI) or GIORNI_ATT:
-    _righe_nota = 4 + len(LEGENDA) + 1
     ws.cell(row=_righe_nota, column=C_LEG,
             value="Le celle grigio scuro sono turni che quel giorno non esistono: "
                   "non vanno compilate.").font = Font(name=CAL, size=10, italic=True)
+    _righe_nota += 1
+if NON_OCC:
+    ws.cell(row=_righe_nota, column=C_LEG,
+            value="Le colonne con «" + NON_OCC_SUFF.strip() + "» non occupano: chi ci è "
+                  "scritto resta libero per gli altri turni e dopo una notte non smonta. "
+                  "Non cambiare quelle intestazioni.").font = Font(name=CAL, size=10,
+                                                                    italic=True)
 
 ws.freeze_panes = "C4"
 ws.protection.sheet = False
@@ -726,6 +785,12 @@ esito(f"messaggio di aiuto entro i 255 caratteri di Excel: {len(d0.prompt or '')
       d0 is not None and len(d0.prompt or "") <= 255)
 esito(f"messaggio di errore entro i 255 caratteri: {len(d0.error or '')}",
       d0 is not None and len(d0.error or "") <= 255)
+if NON_OCC:
+    _int = [w.cell(row=3, column=c).value for n in sorted(NON_OCC)
+            for c in range(mappa[n][0], mappa[n][1] + 1)]
+    esito("attività che non occupano turni: " + ", ".join(sorted(NON_OCC)) +
+          " — intestazioni " + ", ".join(_int),
+          all(str(x).endswith(NON_OCC_SUFF) for x in _int))
 esito("nessun testo a capo",
       not any(c.alignment.wrap_text for row in w.iter_rows() for c in row))
 
